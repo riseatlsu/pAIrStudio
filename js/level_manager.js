@@ -1,75 +1,88 @@
 /**
  * Level Manager
  * Handles level progression, state management, and level configuration
+ * Refactored to use modular level system
  */
+
+import { levelLoader } from './core/LevelLoader.js';
 
 class LevelManager {
   constructor() {
-    // Restore saved progress or start at level 1
+    // Restore saved progress or start at tutorial level A
     const progress = this.getProgress();
-    this.currentLevel = progress.currentLevel || 1;
-    this.maxLevels = 8;
-    this.levelData = this.initializeLevelData();
-  }
-
-  /**
-   * Initialize level configurations
-   */
-  initializeLevelData() {
-    return {
-      1: {
-        title: "Level 1: Getting Started",
-        instructions: "Welcome to your first challenge! Move the box from the starting conveyor belt to the goal position. Use the blocks on the right to program the robot's movements.",
-        mapFile: "lvl1_v2.json",
-        playerStart: { x: 1, y: 6, direction: 0 },
-        itemSpawns: [
-          { spriteKey: 'boxes', x: 0, y: 7, frame: 0, scale: 1.5 }
-        ],
-        goalConveyors: [{ x: 7, y: 0 }],
-        conveyorLayer: 'Tile Layer 2'
-      },
-      2: {
-        title: "Level 2: Move Two",
-        instructions: "In this level, you will be tasked to move each box from on conveyour belt to the conveyour belt right across from it.",
-        mapFile: "lvl2.json", // Placeholder
-        playerStart: { x: 1, y: 4, direction: 0 },
-        itemSpawns: [
-            { spriteKey: 'boxes', x: 0, y: 7, frame: 0, scale: 1.5 },
-            { spriteKey: 'boxes', x: 0, y: 5, frame: 0, scale: 1.5 }
-        ],
-        goalConveyors: [{ x: 7, y: 7 },{ x: 7, y: 5 } ],
-        conveyorLayer: 'Tile Layer 2'
-      },
-      // Levels 3-8 can be added here
-      3: { title: "Level 3: Coming Soon", instructions: "To be implemented..." },
-      4: { title: "Level 4: Coming Soon", instructions: "To be implemented..." },
-      5: { title: "Level 5: Coming Soon", instructions: "To be implemented..." },
-      6: { title: "Level 6: Coming Soon", instructions: "To be implemented..." },
-      7: { title: "Level 7: Coming Soon", instructions: "To be implemented..." },
-      8: { title: "Level 8: Coming Soon", instructions: "To be implemented..." }
-    };
+    this.currentLevel = progress.currentLevel || 'A';
+    this.tutorialLevels = ['A', 'B', 'C'];
+    /// Set your amount of levels here
+    this.maxLevels = 2;
+    this.allLevels = [
+      ...this.tutorialLevels, 
+      ...Array.from({length: this.maxLevels}, (_, i) => (i + 1).toString()),
+      'S' // Survey
+    ];
+    
+    // Initialize level loader
+    this.levelLoader = levelLoader;
+    this.levelLoader.registerLevels();
+    
+    // Cache for current level instance
+    this.currentLevelInstance = null;
   }
 
   /**
    * Get current level configuration
+   * @returns {Promise<Object>} Level configuration
    */
-  getCurrentLevel() {
-    return this.levelData[this.currentLevel];
+  async getCurrentLevel() {
+    // Survey is not a game level
+    if (this.currentLevel === 'S') {
+      return null;
+    }
+    if (!this.currentLevelInstance || this.currentLevelInstance.id !== this.currentLevel) {
+      this.currentLevelInstance = await this.levelLoader.loadLevel(this.currentLevel);
+    }
+    return this.currentLevelInstance.getConfig();
   }
 
   /**
-   * Get level configuration by number
+   * Get current level instance
+   * @returns {Promise<BaseLevel>} Level instance
    */
-  getLevel(levelNumber) {
-    return this.levelData[levelNumber];
+  async getCurrentLevelInstance() {
+    // Survey is not a game level
+    if (this.currentLevel === 'S') {
+      return null;
+    }
+    if (!this.currentLevelInstance || this.currentLevelInstance.id !== this.currentLevel) {
+      this.currentLevelInstance = await this.levelLoader.loadLevel(this.currentLevel);
+    }
+    return this.currentLevelInstance;
+  }
+
+  /**
+   * Get level configuration by ID
+   * @param {string} levelId - Level identifier
+   * @returns {Promise<Object>} Level configuration
+   */
+  async getLevel(levelId) {
+    return await this.levelLoader.getLevelConfig(levelId);
+  }
+
+  /**
+   * Get level instance by ID
+   * @param {string} levelId - Level identifier
+   * @returns {Promise<BaseLevel>} Level instance
+   */
+  async getLevelInstance(levelId) {
+    return await this.levelLoader.loadLevel(levelId);
   }
 
   /**
    * Advance to next level
    */
   nextLevel() {
-    if (this.currentLevel < this.maxLevels) {
-      this.currentLevel++;
+    const currentIndex = this.allLevels.indexOf(this.currentLevel);
+    if (currentIndex < this.allLevels.length - 1) {
+      this.currentLevel = this.allLevels[currentIndex + 1];
       this.saveProgress();
       return true;
     }
@@ -79,9 +92,9 @@ class LevelManager {
   /**
    * Go to specific level
    */
-  goToLevel(levelNumber) {
-    if (levelNumber >= 1 && levelNumber <= this.maxLevels) {
-      this.currentLevel = levelNumber;
+  goToLevel(level) {
+    if (this.allLevels.includes(level)) {
+      this.currentLevel = level;
       this.saveProgress();
       return true;
     }
@@ -106,9 +119,9 @@ class LevelManager {
   getProgress() {
     try {
       const saved = localStorage.getItem('level_progress');
-      return saved ? JSON.parse(saved) : { currentLevel: 1, completed: [] };
+      return saved ? JSON.parse(saved) : { currentLevel: 'A', completed: [] };
     } catch (e) {
-      return { currentLevel: 1, completed: [] };
+      return { currentLevel: 'A', completed: [] };
     }
   }
 
@@ -135,42 +148,199 @@ class LevelManager {
   /**
    * Update UI with level progress
    */
-  updateProgressUI() {
+  async updateProgressUI() {
     const progress = this.getProgress();
-    const highestCompleted = progress.completed.length > 0 
-      ? Math.max(...progress.completed) 
-      : 0;
+    const currentIndex = this.allLevels.indexOf(this.currentLevel);
     
     console.log('Updating UI - Current:', this.currentLevel, 'Completed:', progress.completed);
     
-    // Update level circles
-    for (let i = 1; i <= this.maxLevels; i++) {
-      const circle = document.querySelector(`.level-circle:nth-child(${i})`);
-      if (circle) {
-        circle.classList.remove('active', 'completed', 'locked');
-        
-        if (i === this.currentLevel) {
-          circle.classList.add('active');
-        } else if (progress.completed.includes(i)) {
-          circle.classList.add('completed');
-        } else if (i > highestCompleted + 1) {
-          // Lock levels beyond the next available level
+    // Hide game interface if we're on the survey level
+    if (this.currentLevel === 'S') {
+      this.hideGameInterface();
+      // Show survey modal if we're on the survey level
+      if (window.showSurveyModal) {
+        // Delay slightly to ensure DOM is ready
+        setTimeout(() => window.showSurveyModal(), 100);
+      }
+    } else {
+      this.showGameInterface();
+    }
+    
+    // Get or create level progress container
+    const container = document.getElementById('level-progress-container');
+    if (!container) {
+      console.warn('Level progress container not found');
+      return;
+    }
+    
+    // Clear existing indicators
+    container.innerHTML = '';
+    
+    // Generate level indicators dynamically
+    this.allLevels.forEach((level, index) => {
+      // Add divider after tutorial levels
+      if (index === this.tutorialLevels.length) {
+        const divider = document.createElement('div');
+        divider.className = 'level-divider';
+        container.appendChild(divider);
+      }
+      
+      // Add divider before survey
+      if (level === 'S' && index > 0) {
+        const divider = document.createElement('div');
+        divider.className = 'level-divider';
+        container.appendChild(divider);
+      }
+      
+      // Create level circle
+      const circle = document.createElement('div');
+      circle.className = 'level-circle';
+      circle.textContent = level;
+      
+      // Add tutorial class for tutorial levels
+      if (this.tutorialLevels.includes(level)) {
+        circle.classList.add('tutorial');
+      }
+      
+      // Add survey class for survey
+      if (level === 'S') {
+        circle.classList.add('survey');
+      }
+      
+      // Set state classes
+      if (level === this.currentLevel) {
+        circle.classList.add('active');
+      } else if (progress.completed.includes(level)) {
+        circle.classList.add('completed');
+      } else if (level === 'S') {
+        // Survey is only accessible if all other levels are completed
+        const requiredLevels = this.allLevels.filter(l => l !== 'S');
+        const allCompleted = requiredLevels.every(l => progress.completed.includes(l));
+        if (!allCompleted) {
           circle.classList.add('locked');
         }
+      } else if (index > currentIndex + 1 || (currentIndex >= 0 && index > currentIndex && !progress.completed.includes(this.allLevels[currentIndex]))) {
+        // Lock levels beyond the next available level
+        circle.classList.add('locked');
       }
-    }
+      
+      // Add click handler for level navigation
+      circle.addEventListener('click', () => {
+        let canAccess = false;
+        
+        if (level === 'S') {
+          // Survey requires all other levels to be completed
+          const requiredLevels = this.allLevels.filter(l => l !== 'S');
+          canAccess = requiredLevels.every(l => progress.completed.includes(l));
+          
+          if (canAccess && level !== this.currentLevel) {
+            this.goToLevel(level);
+            this.showSurvey();
+          } else if (!canAccess) {
+            alert('Complete all levels before accessing the survey!');
+          }
+        } else {
+          canAccess = level === this.tutorialLevels[0] || 
+                      progress.completed.includes(level) ||
+                      (index <= currentIndex + 1 && progress.completed.includes(this.currentLevel));
+          
+          if (canAccess && level !== this.currentLevel) {
+            console.log(`Switching from level ${this.currentLevel} to level ${level}`);
+            
+            // Show game interface if coming from survey
+            if (this.currentLevel === 'S') {
+              this.showGameInterface();
+            }
+            
+            this.goToLevel(level);
+            this.updateProgressUI();
+            
+            // Update Blockly toolbox for new level
+            if (window.updateBlocklyToolbox) {
+              window.updateBlocklyToolbox();
+            }
+            
+            // Reload the game scene with the new level
+            if (window.GameAPI) {
+              window.GameAPI.loadNewLevel();
+            }
+          } else if (!canAccess) {
+            alert('Complete the previous levels first to unlock this level!');
+          }
+        }
+      });
+      
+      container.appendChild(circle);
+    });
 
-    // Update instructions
-    const level = this.getCurrentLevel();
-    const titleEl = document.querySelector('.instructions-title');
-    const textEl = document.querySelector('.instructions-text');
+    // Update instructions - now async
+    try {
+      if (this.currentLevel === 'S') {
+        // Survey instructions
+        const titleEl = document.querySelector('.instructions-title');
+        const textEl = document.querySelector('.instructions-text');
+        
+        if (titleEl) {
+          titleEl.innerHTML = '<i class="fas fa-clipboard-list"></i> Post-Experiment Survey';
+        }
+        if (textEl) {
+          textEl.textContent = 'Thank you for completing all levels! Please take a moment to complete this survey about your experience.';
+        }
+      } else {
+        const levelConfig = await this.getCurrentLevel();
+        const titleEl = document.querySelector('.instructions-title');
+        const textEl = document.querySelector('.instructions-text');
+        
+        if (titleEl && levelConfig) {
+          titleEl.innerHTML = `<i class="fas fa-info-circle"></i> ${levelConfig.title}`;
+        }
+        if (textEl && levelConfig) {
+          textEl.textContent = levelConfig.instructions;
+        }
+      }
+    } catch (error) {
+      console.error('Error updating instructions UI:', error);
+    }
+  }
+  
+  /**
+   * Show survey modal
+   */
+  showSurvey() {
+    // Hide game interface elements
+    this.hideGameInterface();
     
-    if (titleEl && level) {
-      titleEl.innerHTML = `<i class="fas fa-info-circle"></i> ${level.title}`;
+    if (window.showSurveyModal) {
+      window.showSurveyModal();
+    } else {
+      console.error('Survey modal function not found');
     }
-    if (textEl && level) {
-      textEl.textContent = level.instructions;
-    }
+  }
+  
+  /**
+   * Hide game interface when showing survey
+   */
+  hideGameInterface() {
+    const gamePanel = document.querySelector('.game-panel');
+    const blocklyPanel = document.querySelector('.blockly-panel');
+    const chatbot = document.getElementById('chatbot');
+    
+    if (gamePanel) gamePanel.style.display = 'none';
+    if (blocklyPanel) blocklyPanel.style.display = 'none';
+    if (chatbot) chatbot.style.display = 'none';
+  }
+  
+  /**
+   * Show game interface when leaving survey
+   */
+  showGameInterface() {
+    const gamePanel = document.querySelector('.game-panel');
+    const blocklyPanel = document.querySelector('.blockly-panel');
+    const chatbot = document.getElementById('chatbot');
+    
+    if (gamePanel) gamePanel.style.display = '';
+    if (blocklyPanel) blocklyPanel.style.display = '';
+    if (chatbot) chatbot.style.display = '';
   }
 }
 

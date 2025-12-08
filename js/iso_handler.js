@@ -22,14 +22,15 @@ export class IsometricTilemap {
   
   /**
    * Convert grid coordinates to screen coordinates using isometric projection
-   * @param {number} gridX - Grid X position
-   * @param {number} gridY - Grid Y position
+   * @param {number} gridX - Grid X position (row in array)
+   * @param {number} gridY - Grid Y position (column in array)
    * @param {number} z - Height offset (default 0)
    * @returns {{x: number, y: number}} Screen coordinates
    */
   gridToScreen(gridX, gridY, z = 0) {
-    const x = (gridX - gridY) * (this.tileWidth / 2);
-    const y = (gridX + gridY) * (this.tileHeight / 2) - z;
+    // Swap gridX and gridY to mirror across diagonal
+    const x = (gridY - gridX) * (this.tileWidth / 2);
+    const y = (gridY + gridX) * (this.tileHeight / 2) - z;
     return { x, y };
   }
   
@@ -40,8 +41,9 @@ export class IsometricTilemap {
    * @returns {{x: number, y: number}} Grid coordinates
    */
   screenToGrid(screenX, screenY) {
-    const gridX = (screenX / (this.tileWidth / 2) + screenY / (this.tileHeight / 2)) / 2;
-    const gridY = (screenY / (this.tileHeight / 2) - screenX / (this.tileWidth / 2)) / 2;
+    // Inverse of the mirrored gridToScreen transformation
+    const gridY = (screenX / (this.tileWidth / 2) + screenY / (this.tileHeight / 2)) / 2;
+    const gridX = (screenY / (this.tileHeight / 2) - screenX / (this.tileWidth / 2)) / 2;
     return { x: Math.floor(gridX), y: Math.floor(gridY) };
   }
   
@@ -86,15 +88,20 @@ export class IsometricTilemap {
           const tileId = layer.data[index];
           
           if (tileId > 0) {
+            // y is the array row (gridX), x is the array column (gridY)
+            const gridX = y;
+            const gridY = x;
+            
             // Calculate Z offset based on layer order (higher layers get more offset)
             const zOffset = layerIndex > 0 ? 8 : 0;
-            const screenPos = this.gridToScreen(x, y, zOffset);
+            const screenPos = this.gridToScreen(gridX, gridY, zOffset);
             
             const sprite = this.scene.add.sprite(screenPos.x, screenPos.y, this.tilesetTexture);
             sprite.setFrame(tileId - 1);
             sprite.setOrigin(0.5, 0.5);
-            sprite.gridX = x;
-            sprite.gridY = y;
+            // Store grid coordinates as they appear in the array
+            sprite.gridX = gridX;
+            sprite.gridY = gridY;
             sprite.gridZ = layerIndex; // Layer index determines depth priority
             sprite.layerName = layer.name;
             sprite.tileId = tileId;
@@ -555,10 +562,10 @@ export class IsometricPlayer {
   
   /**
    * Get the grid position in front of the player based on current direction
-   * Direction 0 (South) = facing towards higher Y (visually down-right in isometric)
-   * Direction 1 (East) = facing towards higher X (visually down-left in isometric)
-   * Direction 2 (West) = facing towards lower X (visually up-right in isometric)
-   * Direction 3 (North) = facing towards lower Y (visually up-left in isometric)
+   * Direction 0 (South) = facing towards higher gridX (toward increasing row numbers)
+   * Direction 1 (East) = facing towards higher gridY (toward increasing column numbers)
+   * Direction 2 (West) = facing towards lower gridY (toward decreasing column numbers)
+   * Direction 3 (North) = facing towards lower gridX (toward decreasing row numbers)
    * @returns {{x: number, y: number}} Grid coordinates in front of player
    */
   getPositionInFront() {
@@ -566,10 +573,10 @@ export class IsometricPlayer {
     let y = this.gridY;
     
     switch (this.direction) {
-      case 0: y += 1; break; // South: (2,2) -> (2,3)
-      case 1: x += 1; break; // East: (2,2) -> (3,2)
-      case 2: x -= 1; break; // West: (2,2) -> (1,2)
-      case 3: y -= 1; break; // North: (2,2) -> (2,1)
+      case 0: x += 1; break; // South: toward increasing row (4,1) -> (5,1)
+      case 1: y += 1; break; // East: toward increasing column (4,1) -> (4,2)
+      case 2: y -= 1; break; // West: toward decreasing column (4,1) -> (4,0)
+      case 3: x -= 1; break; // North: toward decreasing row (4,1) -> (3,1)
     }
     
     return { x, y };
@@ -709,6 +716,12 @@ export class IsometricItem {
     this.gridY = gridY;
     this.isCarried = false;
     this.carrier = null; // Reference to the player carrying this item
+    
+    // Item attributes
+    this.id = config.id || null; // Unique identifier for the item
+    this.targetConveyorId = config.targetConveyorId || null; // Which conveyor this item belongs to
+    this.damaged = config.damaged || false; // Whether the item is damaged
+    this.itemType = config.itemType || 'box'; // Type of item (box, crate, etc.)
     
     // Item height offset (items sit on top of conveyor belts)
     this.zHeight = config.zHeight || 20;

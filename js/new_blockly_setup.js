@@ -145,56 +145,117 @@ Blockly.Extensions.register('move_block_created', function() {
     return '';
   };
   
-  // --- Toolbox ---
-  const toolbox = {
-    "kind": "flyoutToolbox",
-    "contents": [
-      { "kind": "label", "text": "Blocks" },
-      { "kind": "block", "type": "move_forward" },
-      { "kind": "block", "type": "rotate_left" },
-      { "kind": "block", "type": "rotate_right" },
-      { "kind": "block", "type": "pick_object" },
-      { "kind": "block", "type": "release_object" },
-      { "kind": "block", "type": "controls_repeat" }
-    ]
-  };
-  
-  const blocklyDiv = document.getElementById('blockly-workspace');
-  const blocklyWorkspace = Blockly.inject(blocklyDiv, {
-    toolbox: toolbox,
-    zoom: {
-      controls: true,
-      startScale: 1.25,
-      maxScale: 3,
-      minScale: 0.3,
-      scaleSpeed: 1.2,
-      pinch: true
-    },
-    move: {
-      scrollbars: { horizontal: true, vertical: true },
-      drag: true,
-      wheel: false
-    },
-    trashcan: true
-  });
-  
-  // --- Workspace init ---
-  var startingBlocks = document.getElementById("blocks");
-  if (startingBlocks) {
-    Blockly.Xml.domToWorkspace(startingBlocks, blocklyWorkspace);
-    var startingBlock = Blockly.getMainWorkspace().getBlocksByType("custom_start")[0];
-    if (startingBlock) {
-      blocklyWorkspace.centerOnBlock(startingBlock.id);
-      startingBlock.setDeletable(false);
+  // --- Dynamic Toolbox Builder ---
+  async function buildToolboxForLevel() {
+    // Get current level configuration from LevelManager
+    let allowedBlocks = [];
+    
+    if (window.LevelManager) {
+      try {
+        // Survey level doesn't have a config
+        if (window.LevelManager.currentLevel === 'S') {
+          return {
+            "kind": "flyoutToolbox",
+            "contents": [] // Empty toolbox for survey
+          };
+        }
+        
+        const levelConfig = await window.LevelManager.getCurrentLevel();
+        if (levelConfig) {
+          allowedBlocks = levelConfig.allowedBlocks || [];
+          console.log('Building toolbox for level with blocks:', allowedBlocks);
+        }
+      } catch (error) {
+        console.warn('Could not load level config, using default blocks:', error);
+        allowedBlocks = ['custom_start', 'move_forward'];
+      }
+    } else {
+      // Fallback if LevelManager not available
+      console.warn('LevelManager not available, using default blocks');
+      allowedBlocks = ['custom_start', 'move_forward'];
     }
+    
+    // Build toolbox from allowed blocks (exclude custom_start from toolbox)
+    const toolboxBlocks = allowedBlocks.filter(id => id !== 'custom_start');
+    
+    return {
+      "kind": "flyoutToolbox",
+      "contents": [
+        { "kind": "label", "text": "Blocks" },
+        ...toolboxBlocks.map(id => ({
+          "kind": "block",
+          "type": id
+        }))
+      ]
+    };
   }
   
-  // --- Botões ---
-  blocklyWorkspace.registerButtonCallback("create-position", loadCreatePositionModal);
-  blocklyWorkspace.registerButtonCallback("delete-positions", loadPositionsForRemoval);
+  // --- Initialize Blockly workspace ---
+  async function initializeBlockly() {
+    const toolbox = await buildToolboxForLevel();
+    
+    const blocklyDiv = document.getElementById('blockly-workspace');
+    const blocklyWorkspace = Blockly.inject(blocklyDiv, {
+      toolbox: toolbox,
+      zoom: {
+        controls: true,
+        startScale: 1.25,
+        maxScale: 3,
+        minScale: 0.3,
+        scaleSpeed: 1.2,
+        pinch: true
+      },
+      move: {
+        scrollbars: { horizontal: true, vertical: true },
+        drag: true,
+        wheel: false
+      },
+      trashcan: true
+    });
+    
+    // Store workspace globally
+    window.blocklyWorkspace = blocklyWorkspace;
+    
+    // --- Workspace init ---
+    var startingBlocks = document.getElementById("blocks");
+    if (startingBlocks) {
+      Blockly.Xml.domToWorkspace(startingBlocks, blocklyWorkspace);
+      var startingBlock = Blockly.getMainWorkspace().getBlocksByType("custom_start")[0];
+      if (startingBlock) {
+        blocklyWorkspace.centerOnBlock(startingBlock.id);
+        startingBlock.setDeletable(false);
+      }
+    }
+    
+    // --- Botões ---
+    blocklyWorkspace.registerButtonCallback("create-position", loadCreatePositionModal);
+    blocklyWorkspace.registerButtonCallback("delete-positions", loadPositionsForRemoval);
+    
+    return blocklyWorkspace;
+  }
+  
+  // Initialize when DOM is ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeBlockly);
+  } else {
+    initializeBlockly();
+  }
+  
+  // Function to update toolbox when level changes
+  window.updateBlocklyToolbox = async function() {
+    if (!window.blocklyWorkspace) {
+      console.warn('Blockly workspace not initialized yet');
+      return;
+    }
+    
+    const toolbox = await buildToolboxForLevel();
+    window.blocklyWorkspace.updateToolbox(toolbox);
+    console.log('Toolbox updated for new level');
+  };
   
   // --- Execução do programa ---
   window.executeBlocklyCode = async function executeBlocklyCode() {
+    const blocklyWorkspace = window.blocklyWorkspace || Blockly.getMainWorkspace();
     const code = Blockly.JavaScript.workspaceToCode(blocklyWorkspace);
     console.log("Generated code:\n", code);
   
@@ -223,6 +284,8 @@ window.createBlocksFromChatGPT = function(response) {
     console.warn("No commands received from ChatGPT");
     return;
   }
+
+  const blocklyWorkspace = window.blocklyWorkspace || Blockly.getMainWorkspace();
 
   // Find the custom_start block
   const startBlock = blocklyWorkspace.getBlocksByType("custom_start")[0];
