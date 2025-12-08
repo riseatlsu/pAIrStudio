@@ -105,6 +105,33 @@ class ConsentManager {
     
     return consentData;
   }
+
+  /**
+   * Log general event with participant data
+   */
+  logEvent(eventName, eventData = {}) {
+    const participantId = this.getParticipantId();
+    
+    const logEntry = {
+      participantId: participantId,
+      eventName: eventName,
+      timestamp: new Date().toISOString(),
+      data: eventData
+    };
+    
+    console.log('Event logged:', logEntry);
+    
+    // Store in localStorage
+    try {
+      const eventLog = JSON.parse(localStorage.getItem('event_log') || '[]');
+      eventLog.push(logEntry);
+      localStorage.setItem('event_log', JSON.stringify(eventLog));
+    } catch (e) {
+      console.error('Error logging event:', e);
+    }
+    
+    return logEntry;
+  }
 }
 
 // Initialize consent manager

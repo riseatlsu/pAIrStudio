@@ -199,6 +199,53 @@
             color: white;
         }
 
+        .level-circle.tutorial {
+            background: linear-gradient(135deg, #17a2b8, #138496);
+            border-color: #17a2b8;
+            color: white;
+            font-weight: 800;
+        }
+
+        .level-circle.tutorial.active {
+            background: linear-gradient(135deg, var(--lsu-gold), #f4c430);
+            border-color: var(--lsu-gold);
+            color: var(--lsu-purple);
+            transform: scale(1.2);
+            box-shadow: 0 4px 15px rgba(253, 208, 35, 0.4);
+        }
+
+        .level-circle.tutorial.completed {
+            background: linear-gradient(135deg, var(--success-color), #20c997);
+            border-color: var(--success-color);
+        }
+
+        .level-circle.survey {
+            background: linear-gradient(135deg, #9b59b6, #8e44ad);
+            border-color: #9b59b6;
+            color: white;
+            font-weight: 800;
+        }
+
+        .level-circle.survey.active {
+            background: linear-gradient(135deg, var(--lsu-gold), #f4c430);
+            border-color: var(--lsu-gold);
+            color: var(--lsu-purple);
+            transform: scale(1.2);
+            box-shadow: 0 4px 15px rgba(253, 208, 35, 0.4);
+        }
+
+        .level-circle.survey.completed {
+            background: linear-gradient(135deg, var(--success-color), #20c997);
+            border-color: var(--success-color);
+        }
+
+        .level-divider {
+            width: 2px;
+            height: 30px;
+            background: rgba(255, 255, 255, 0.3);
+            margin: 0 0.5rem;
+        }
+
         /* ===== INSTRUCTIONS BANNER ===== */
         .instructions-banner {
             background: linear-gradient(135deg, rgba(70, 29, 124, 0.95), rgba(90, 44, 160, 0.95));
@@ -258,6 +305,28 @@
         .panel-header .icon {
             font-size: 1.3rem;
             margin-right: 0.5rem;
+        }
+
+        .header-clear-btn {
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 25px;
+            background: linear-gradient(135deg, #dc3545, #c82333);
+            color: var(--text-light);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            box-shadow: 0 2px 10px rgba(220, 53, 69, 0.3);
+        }
+
+        .header-clear-btn:hover {
+            background: linear-gradient(135deg, #e64555, #d13545);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(220, 53, 69, 0.5);
         }
 
         .panel-body {
@@ -1003,6 +1072,341 @@
                 width: 100%;
             }
         }
+
+        /* ===== SURVEY MODAL ===== */
+        .survey-modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 10000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(5px);
+            padding: 1rem;
+        }
+
+        .survey-modal-overlay.show {
+            display: flex;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .survey-modal {
+            background: white;
+            border-radius: 20px;
+            max-width: 800px;
+            width: 100%;
+            max-height: 90vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 10px 50px rgba(0, 0, 0, 0.5);
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .survey-modal-header {
+            background: linear-gradient(135deg, #9b59b6, #8e44ad);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .survey-modal-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .survey-modal-subtitle {
+            font-size: 1rem;
+            opacity: 0.9;
+            margin-top: 0.5rem;
+        }
+
+        .survey-modal-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 2rem;
+        }
+
+        .survey-question {
+            margin-bottom: 2rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .survey-question:last-child {
+            border-bottom: none;
+        }
+
+        .survey-question-header {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .survey-question-number {
+            font-weight: 700;
+            color: #9b59b6;
+            min-width: 30px;
+        }
+
+        .survey-question-text {
+            font-weight: 600;
+            color: #333;
+            flex: 1;
+        }
+
+        .required-indicator {
+            color: #dc3545;
+            margin-left: 0.25rem;
+        }
+
+        .survey-question-description {
+            color: #6c757d;
+            font-size: 0.9rem;
+            margin: 0.5rem 0 1rem 2rem;
+        }
+
+        .survey-options {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-left: 2rem;
+        }
+
+        .survey-option {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #333;
+        }
+
+        .survey-option:hover {
+            background: #f8f9fa;
+            color: #333;
+        }
+
+        .survey-option input[type="radio"],
+        .survey-option input[type="checkbox"] {
+            cursor: pointer;
+        }
+
+        .survey-option span {
+            color: #333;
+        }
+
+        .survey-text-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: inherit;
+            margin-left: 2rem;
+            transition: border-color 0.2s;
+            color: #333;
+        }
+
+        .survey-text-input:focus {
+            outline: none;
+            border-color: #9b59b6;
+        }
+
+        .survey-textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: inherit;
+            margin-left: 2rem;
+            resize: vertical;
+            transition: border-color 0.2s;
+            color: #333;
+        }
+
+        .survey-textarea:focus {
+            outline: none;
+            border-color: #9b59b6;
+        }
+
+        .survey-scale {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-left: 2rem;
+        }
+
+        .survey-scale-options {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .survey-scale-option {
+            cursor: pointer;
+        }
+
+        .survey-scale-option input[type="radio"] {
+            display: none;
+        }
+
+        .survey-scale-option span {
+            display: inline-block;
+            width: 45px;
+            height: 45px;
+            line-height: 45px;
+            text-align: center;
+            border: 2px solid #dee2e6;
+            border-radius: 50%;
+            font-weight: 600;
+            transition: all 0.2s;
+            color: #333;
+        }
+
+        .survey-scale-option:hover span {
+            background: #f8f9fa;
+            border-color: #9b59b6;
+        }
+
+        .survey-scale-option input[type="radio"]:checked + span {
+            background: linear-gradient(135deg, #9b59b6, #8e44ad);
+            border-color: #9b59b6;
+            color: white;
+        }
+
+        .survey-scale-label {
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+
+        .survey-modal-footer {
+            padding: 1.5rem 2rem;
+            background: #f8f9fa;
+            border-top: 1px solid #dee2e6;
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+
+        .survey-btn {
+            padding: 0.75rem 2rem;
+            font-size: 1rem;
+            font-weight: 700;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .survey-btn-submit {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+        }
+
+        .survey-btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
+        }
+
+        .survey-btn-submit:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* ===== THANK YOU PAGE ===== */
+        .thank-you-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--lsu-purple), var(--lsu-light-purple));
+            z-index: 10001;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+        }
+
+        .thank-you-overlay.show {
+            display: flex;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .thank-you-container {
+            background: white;
+            border-radius: 30px;
+            max-width: 700px;
+            width: 100%;
+            padding: 4rem 3rem;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: slideIn 0.5s ease-out;
+        }
+
+        .thank-you-icon {
+            font-size: 5rem;
+            margin-bottom: 2rem;
+            animation: bounceIn 0.8s ease-out;
+        }
+
+        .thank-you-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--lsu-purple);
+            margin-bottom: 1rem;
+        }
+
+        .thank-you-message {
+            font-size: 1.2rem;
+            color: #333;
+            line-height: 1.8;
+            margin-bottom: 2rem;
+        }
+
+        .thank-you-note {
+            background: #f8f9fa;
+            border-left: 4px solid var(--lsu-gold);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-top: 2rem;
+            text-align: left;
+            color: #333;
+        }
+
+        .thank-you-note strong {
+            color: var(--lsu-purple);
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+        
+        .thank-you-note p {
+            color: #333;
+        }
+
+        @keyframes bounceIn {
+            0% {
+                transform: scale(0);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1.2);
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
     </style>
 </head>
 
@@ -1077,15 +1481,8 @@
     <div class="main-container">
         <div class="container-fluid" style="max-width: 95%; padding: 0 2rem;">
             <!-- Level Progress Indicator -->
-            <div class="level-progress">
-                <div class="level-circle active">1</div>
-                <div class="level-circle">2</div>
-                <div class="level-circle">3</div>
-                <div class="level-circle">4</div>
-                <div class="level-circle">5</div>
-                <div class="level-circle">6</div>
-                <div class="level-circle">7</div>
-                <div class="level-circle">8</div>
+            <div class="level-progress" id="level-progress-container">
+                <!-- Level indicators will be generated dynamically by LevelManager -->
             </div>
 
             <!-- Instructions Banner -->
@@ -1128,10 +1525,6 @@
                                 <i class="fas fa-redo"></i>
                                 Reset Level
                             </button>
-                            <button class="action-btn clear-btn" id="clear-workspace-btn">
-                                <i class="fas fa-eraser"></i>
-                                Clear Workspace
-                            </button>
                         </div>
                     </div>
                 </div>
@@ -1140,7 +1533,9 @@
                 <div class="panel blockly-panel">
                     <div class="panel-header">
                         <span><i class="fas fa-puzzle-piece icon"></i>Visual Programming</span>
-                        <small>Drag & Drop Blocks</small>
+                        <button class="header-clear-btn" id="clear-workspace-btn" title="Clear Workspace">
+                            <i class="fas fa-eraser"></i> Clear
+                        </button>
                     </div>
                     <div class="panel-body">
                         <!-- Blockly Workspace -->
@@ -1251,6 +1646,41 @@
         </div>
     </div>
 
+    <!-- Survey Modal -->
+    <div class="survey-modal-overlay" id="survey-modal">
+        <div class="survey-modal">
+            <div class="survey-modal-header">
+                <h2 class="survey-modal-title">📋 Post-Experiment Survey</h2>
+                <p class="survey-modal-subtitle">Thank you for participating! Please share your experience.</p>
+            </div>
+            <div class="survey-modal-body" id="survey-questions-container">
+                <!-- Survey questions will be dynamically generated here -->
+            </div>
+            <div class="survey-modal-footer">
+                <button class="survey-btn survey-btn-submit" id="survey-submit-btn">
+                    <i class="fas fa-check"></i> Submit Survey
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Thank You Page -->
+    <div class="thank-you-overlay" id="thank-you-page">
+        <div class="thank-you-container">
+            <div class="thank-you-icon">🎉</div>
+            <h1 class="thank-you-title">Thank You!</h1>
+            <p class="thank-you-message">
+                Thank you for participating in this research study. Your responses have been successfully recorded 
+                and will contribute to improving educational programming tools.
+            </p>
+            <div class="thank-you-note">
+                <strong>You have completed the experiment!</strong>
+                You may now safely close this browser tab. If you have any questions about this study, 
+                please contact the research team.
+            </div>
+        </div>
+    </div>
+
     <!-- Draggable Chatbot -->
     <div class="chatbot-container" id="chatbot">
         <div class="chatbot-header" id="chatbot-header">
@@ -1259,9 +1689,6 @@
                 <span>Mike AI Assistant</span>
             </div>
             <div class="chatbot-controls">
-                <button class="chatbot-btn" id="clear-chat-btn" title="Clear chat">
-                    <i class="fas fa-trash"></i>
-                </button>
                 <button class="chatbot-btn" id="toggle-chat-btn" title="Minimize">
                     <i class="fas fa-minus" id="toggle-icon"></i>
                 </button>
@@ -1308,14 +1735,118 @@
     <script src="phaser/phaser.min.js"></script>
     
     <!-- App Scripts -->
+    <script type="module" src="./experiment-logger.js"></script>
     <script src="js/consent.js"></script>
-    <script src="js/level_manager.js"></script>
+    <script type="module" src="js/core/SurveyManager.js"></script>
+    <script type="module" src="js/level_manager.js"></script>
     <!-- <script src="js/game.js"></script> -->
     <!-- <script src="js/demo.js"></script> -->
     <script type="module" src="js/isoMoveExample2.js"></script>
     <script src="js/initial_setup.js"></script>
     <script src="js/bootstrap_setup.js"></script>
     <script src="js/new_blockly_setup.js"></script>
+
+    <script type="module">
+        // Initialize survey with questions
+        import { surveyQuestions } from './js/config/surveyQuestions.js';
+        
+        // Define survey questions when DOM is ready
+        document.addEventListener('DOMContentLoaded', function() {
+            if (window.SurveyManager) {
+                window.SurveyManager.defineQuestions(surveyQuestions);
+                console.log('Survey initialized with', surveyQuestions.length, 'questions');
+            }
+        });
+        
+        // Make showSurveyModal globally available
+        window.showSurveyModal = function() {
+            // Check if survey was already completed (via cookie)
+            if (window.ConsentManager && window.ConsentManager.getCookie('survey_completed') === 'true') {
+                // Show thank you page instead
+                const thankYouPage = document.getElementById('thank-you-page');
+                if (thankYouPage) {
+                    thankYouPage.classList.add('show');
+                }
+                return;
+            }
+            
+            const modal = document.getElementById('survey-modal');
+            const container = document.getElementById('survey-questions-container');
+            const submitBtn = document.getElementById('survey-submit-btn');
+            
+            if (!window.SurveyManager) {
+                console.error('SurveyManager not found');
+                return;
+            }
+            
+            // Generate survey HTML
+            container.innerHTML = '';
+            const questions = window.SurveyManager.getQuestions();
+            questions.forEach(question => {
+                const questionHTML = window.SurveyManager.generateQuestionHTML(question);
+                container.innerHTML += questionHTML;
+            });
+            
+            // Add event listeners for all inputs
+            container.querySelectorAll('input, textarea').forEach(input => {
+                input.addEventListener('change', function() {
+                    const questionId = this.closest('[data-question-id]').getAttribute('data-question-id');
+                    let value;
+                    
+                    if (this.type === 'checkbox') {
+                        // Handle checkboxes (multiple selection)
+                        const checked = Array.from(
+                            this.closest('[data-question-id]').querySelectorAll('input[type="checkbox"]:checked')
+                        ).map(cb => cb.value);
+                        value = checked;
+                    } else if (this.type === 'radio') {
+                        value = this.value;
+                        // Convert to number for scale questions
+                        if (!isNaN(this.value)) {
+                            value = parseInt(this.value);
+                        }
+                    } else {
+                        value = this.value;
+                    }
+                    
+                    window.SurveyManager.saveResponse(questionId, value);
+                });
+            });
+            
+            // Show modal
+            modal.classList.add('show');
+            
+            // Submit button handler
+            submitBtn.onclick = function() {
+                try {
+                    if (!window.SurveyManager.isValid()) {
+                        alert('Please answer all required questions before submitting.');
+                        return;
+                    }
+                    
+                    window.SurveyManager.complete();
+                    
+                    // Mark survey as completed in level progress
+                    if (window.LevelManager) {
+                        window.LevelManager.completeLevel('S');
+                        window.LevelManager.updateProgressUI();
+                    }
+                    
+                    // Close survey modal
+                    modal.classList.remove('show');
+                    
+                    // Show thank you page
+                    const thankYouPage = document.getElementById('thank-you-page');
+                    if (thankYouPage) {
+                        thankYouPage.classList.add('show');
+                    }
+                    
+                } catch (error) {
+                    alert(error.message);
+                }
+            };
+        };
+    </script>
 
     <script>
         // Basic JavaScript for interaction
@@ -1375,7 +1906,6 @@
             const chatSendBtn = document.getElementById('chat-send-btn');
             const toggleChatBtn = document.getElementById('toggle-chat-btn');
             const toggleIcon = document.getElementById('toggle-icon');
-            const clearChatBtn = document.getElementById('clear-chat-btn');
 
             // Make chatbot draggable
             let isDragging = false;
@@ -1386,17 +1916,22 @@
             let xOffset = 0;
             let yOffset = 0;
 
-            chatbotHeader.addEventListener('mousedown', dragStart);
+            chatbot.addEventListener('mousedown', dragStart);
             document.addEventListener('mousemove', drag);
             document.addEventListener('mouseup', dragEnd);
 
             function dragStart(e) {
+                // Don't drag if clicking on interactive elements
+                if (e.target.closest('.chatbot-input') || 
+                    e.target.closest('.chatbot-send') || 
+                    e.target.closest('.chatbot-messages') ||
+                    e.target.closest('.chatbot-btn')) {
+                    return;
+                }
+
                 initialX = e.clientX - xOffset;
                 initialY = e.clientY - yOffset;
-
-                if (e.target === chatbotHeader || e.target.closest('.chatbot-title')) {
-                    isDragging = true;
-                }
+                isDragging = true;
             }
 
             function drag(e) {
@@ -1434,15 +1969,6 @@
             };
 
             toggleChatBtn.addEventListener('click', window.toggleChat);
-
-            // Clear chat
-            window.clearChat = function() {
-                const welcomeMessage = chatMessages.querySelector('.bot-message');
-                chatMessages.innerHTML = '';
-                chatMessages.appendChild(welcomeMessage.cloneNode(true));
-            };
-
-            clearChatBtn.addEventListener('click', window.clearChat);
 
             // Send message function
             window.sendMessage = async function() {
@@ -1564,46 +2090,6 @@
                 }
             });
 
-            // ===== LEVEL CIRCLE CLICK HANDLERS =====
-            const levelCircles = document.querySelectorAll('.level-circle');
-            levelCircles.forEach((circle, index) => {
-                const levelNumber = index + 1;
-                circle.style.cursor = 'pointer';
-                
-                circle.addEventListener('click', function() {
-                    if (window.LevelManager) {
-                        const progress = window.LevelManager.getProgress();
-                        const currentLevel = window.LevelManager.currentLevel;
-                        
-                        // Determine if this level is accessible:
-                        // - Level 1 is always accessible
-                        // - Completed levels are always accessible
-                        // - The level immediately after the highest completed level is accessible
-                        const highestCompleted = progress.completed.length > 0 
-                            ? Math.max(...progress.completed) 
-                            : 0;
-                        const canAccess = levelNumber === 1 || 
-                                        progress.completed.includes(levelNumber) ||
-                                        levelNumber <= highestCompleted + 1;
-                        
-                        if (canAccess && levelNumber !== currentLevel) {
-                            console.log(`Switching from level ${currentLevel} to level ${levelNumber}`);
-                            // Switch to the selected level
-                            window.LevelManager.goToLevel(levelNumber);
-                            window.LevelManager.updateProgressUI();
-                            
-                            // Reload the game scene with the new level
-                            if (window.GameAPI) {
-                                window.GameAPI.loadNewLevel();
-                            }
-                        } else if (!canAccess) {
-                            // Show message that level is locked
-                            alert('Complete the previous levels first to unlock this level!');
-                        }
-                    }
-                });
-            });
-
             // ===== RESULT MODAL FUNCTIONS =====
             window.showResultModal = function(isWin, currentLevel, moveCount = 0) {
                 const modal = document.getElementById('result-modal');
@@ -1615,14 +2101,28 @@
                 const movesCount = document.getElementById('moves-count');
                 const buttons = document.getElementById('result-buttons');
 
+                // Determine if this is a tutorial level (A, B, C)
+                const isTutorial = window.LevelManager && window.LevelManager.tutorialLevels.includes(currentLevel);
+
                 // Update header style
                 header.className = 'result-modal-header ' + (isWin ? 'win' : 'lose');
 
                 // Update content based on win/lose
                 if (isWin) {
                     icon.textContent = '🎉';
-                    title.textContent = 'Level Complete!';
-                    message.textContent = 'Congratulations! You successfully completed the level and delivered the box to the goal.';
+                    if (isTutorial) {
+                        title.textContent = 'Tutorial Complete!';
+                        if (currentLevel === 'A') {
+                            message.textContent = 'Great job! You learned how to move forward. Now let\'s learn about turning and picking up objects.';
+                        } else if (currentLevel === 'B') {
+                            message.textContent = 'Excellent! You learned how to turn and interact with objects. Now let\'s try using loops!';
+                        } else if (currentLevel === 'C') {
+                            message.textContent = 'Perfect! You mastered the basics. You\'re ready for the real challenges!';
+                        }
+                    } else {
+                        title.textContent = 'Level Complete!';
+                        message.textContent = 'Congratulations! You successfully completed the level and delivered the box to the goal.';
+                    }
                 } else {
                     icon.textContent = '❌';
                     title.textContent = 'Level Failed';
@@ -1630,7 +2130,7 @@
                 }
 
                 // Update stats
-                levelNumber.textContent = currentLevel;
+                levelNumber.textContent = isTutorial ? `Tutorial ${currentLevel}` : `Level ${currentLevel}`;
                 movesCount.textContent = moveCount > 0 ? moveCount : '-';
 
                 // Clear and add appropriate buttons
@@ -1638,8 +2138,11 @@
 
                 if (isWin) {
                     // Check if there's a next level
-                    const maxLevels = window.LevelManager ? window.LevelManager.maxLevels : 8;
-                    if (currentLevel < maxLevels) {
+                    const allLevels = window.LevelManager ? window.LevelManager.allLevels : [];
+                    const currentIndex = allLevels.indexOf(currentLevel);
+                    const hasNextLevel = currentIndex >= 0 && currentIndex < allLevels.length - 1;
+                    
+                    if (hasNextLevel) {
                         // Show Next Level button
                         const nextBtn = document.createElement('button');
                         nextBtn.className = 'result-btn result-btn-next';
@@ -1650,6 +2153,10 @@
                                 window.LevelManager.completeLevel(currentLevel);
                                 window.LevelManager.nextLevel();
                                 window.LevelManager.updateProgressUI();
+                            }
+                            // Update Blockly toolbox for new level
+                            if (window.updateBlocklyToolbox) {
+                                window.updateBlocklyToolbox();
                             }
                             if (window.GameAPI) {
                                 window.GameAPI.loadNewLevel();
