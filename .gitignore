@@ -69,3 +69,7 @@ node_modules/
 .dataconnect
 
 functions/
+
+/dist
+
+/node_modules
