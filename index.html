@@ -3,1497 +3,131 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>MikeBotStudio — LSU</title>
+    <title>pAIrStudio</title>
     
-    <!-- Favicon -->
-    <link rel="icon" type="image/png" href="assets/mike_tiger.png">
+    <!-- Favicons (use project logo at multiple sizes for clearer tab icon) -->
+    <link rel="icon" type="image/png" sizes="64x64" href="assets/logo.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/logo.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/logo.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/logo.png">
+    <meta name="theme-color" content="#461d7c">
     
     <!-- Bootstrap 5 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     
     <!-- Font Awesome for icons -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-        <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-    
-    <style>
-        :root {
-            --lsu-purple: #461d7c;
-            --lsu-gold: #fdd023;
-            --lsu-light-purple: #5a2ca0;
-            --grass-green: #a5d6a7;
-            --dark-bg: #1a1a1a;
-            --panel-bg: #2b2b2b;
-            --light-panel: #f8f9fa;
-            --text-light: #ffffff;
-            --text-dark: #333333;
-            --border-color: #444444;
-            --success-color: #28a745;
-            --shadow-dark: rgba(0, 0, 0, 0.3);
-            --shadow-light: rgba(255, 255, 255, 0.1);
-        }
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 
-        /* ===== GLOBAL STYLES ===== */
-        * {
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Montserrat', sans-serif;
-            margin: 0;
-            padding: 0;
-            min-height: 100vh;
-            background: linear-gradient(180deg, var(--lsu-purple) 0%, var(--lsu-light-purple) 20%, var(--grass-green) 80%);
-            background-attachment: fixed;
-            color: var(--text-light);
-            overflow-x: hidden;
-        }
-
-        /* Subtle pattern overlay */
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-image: 
-                linear-gradient(45deg, rgba(255,255,255,0.03) 25%, transparent 25%),
-                linear-gradient(-45deg, rgba(255,255,255,0.03) 25%, transparent 25%);
-            background-size: 60px 60px;
-            pointer-events: none;
-            z-index: 1;
-        }
-
-        /* ===== HEADER ===== */
-        .lsu-header {
-            background: linear-gradient(135deg, var(--lsu-purple), var(--lsu-light-purple));
-            box-shadow: 0 4px 20px var(--shadow-dark);
-            position: relative;
-            z-index: 1000;
-        }
-
-        .navbar-brand {
-            font-weight: 800;
-            font-size: 1.5rem;
-            color: var(--text-light) !important;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-
-        .logo-tiger {
-            width: 50px;
-            height: 50px;
-            background: var(--lsu-gold);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            box-shadow: 0 3px 10px var(--shadow-dark);
-        }
-
-        .version-badge {
-            background: var(--lsu-gold);
-            color: var(--lsu-purple);
-            font-weight: 700;
-            padding: 0.4rem 0.8rem;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            box-shadow: 0 2px 8px var(--shadow-dark);
-        }
-
-        /* ===== MAIN CONTENT ===== */
-        .main-container {
-            position: relative;
-            z-index: 2;
-            padding: 2rem 0;
-        }
-
-        .page-header {
-            text-align: center;
-            margin-bottom: 2rem;
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            padding: 2rem;
-            border-radius: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .page-title {
-          font-weight: 800;
-          font-size: 3rem;
-          color:#FFD700; 
-          /* -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent; */
-          margin-bottom: 0.5rem;
-          text-shadow: 0 3px 6px rgba(0, 0, 0, 0.4);
-        }
-
-        .page-subtitle {
-            font-size: 1.2rem;
-            color: rgba(255, 255, 255, 0.9);
-            font-weight: 300;
-        }
-
-        /* ===== LEVEL PROGRESS INDICATOR ===== */
-        .level-progress {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-            padding: 1rem;
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 15px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .level-circle {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.2);
-            border: 3px solid rgba(255, 255, 255, 0.3);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            color: rgba(255, 255, 255, 0.5);
-            transition: all 0.3s ease;
-            font-size: 0.9rem;
-            cursor: pointer;
-            position: relative;
-        }
-        
-        .level-circle:hover:not(.locked) {
-            transform: scale(1.1);
-            border-color: var(--lsu-gold);
-        }
-        
-        .level-circle.locked {
-            cursor: not-allowed;
-            opacity: 0.5;
-        }
-        
-        .level-circle.locked::after {
-            content: '🔒';
-            position: absolute;
-            font-size: 0.7rem;
-            bottom: -2px;
-            right: -2px;
-        }
-
-        .level-circle.active {
-            background: linear-gradient(135deg, var(--lsu-gold), #f4c430);
-            border-color: var(--lsu-gold);
-            color: var(--lsu-purple);
-            transform: scale(1.2);
-            box-shadow: 0 4px 15px rgba(253, 208, 35, 0.4);
-        }
-
-        .level-circle.completed {
-            background: linear-gradient(135deg, var(--success-color), #20c997);
-            border-color: var(--success-color);
-            color: white;
-        }
-
-        .level-circle.tutorial {
-            background: linear-gradient(135deg, #17a2b8, #138496);
-            border-color: #17a2b8;
-            color: white;
-            font-weight: 800;
-        }
-
-        .level-circle.tutorial.active {
-            background: linear-gradient(135deg, var(--lsu-gold), #f4c430);
-            border-color: var(--lsu-gold);
-            color: var(--lsu-purple);
-            transform: scale(1.2);
-            box-shadow: 0 4px 15px rgba(253, 208, 35, 0.4);
-        }
-
-        .level-circle.tutorial.completed {
-            background: linear-gradient(135deg, var(--success-color), #20c997);
-            border-color: var(--success-color);
-        }
-
-        .level-circle.survey {
-            background: linear-gradient(135deg, #9b59b6, #8e44ad);
-            border-color: #9b59b6;
-            color: white;
-            font-weight: 800;
-        }
-
-        .level-circle.survey.active {
-            background: linear-gradient(135deg, var(--lsu-gold), #f4c430);
-            border-color: var(--lsu-gold);
-            color: var(--lsu-purple);
-            transform: scale(1.2);
-            box-shadow: 0 4px 15px rgba(253, 208, 35, 0.4);
-        }
-
-        .level-circle.survey.completed {
-            background: linear-gradient(135deg, var(--success-color), #20c997);
-            border-color: var(--success-color);
-        }
-
-        .level-divider {
-            width: 2px;
-            height: 30px;
-            background: rgba(255, 255, 255, 0.3);
-            margin: 0 0.5rem;
-        }
-
-        /* ===== INSTRUCTIONS BANNER ===== */
-        .instructions-banner {
-            background: linear-gradient(135deg, rgba(70, 29, 124, 0.95), rgba(90, 44, 160, 0.95));
-            backdrop-filter: blur(10px);
-            padding: 1.5rem;
-            border-radius: 15px;
-            border: 2px solid rgba(253, 208, 35, 0.3);
-            margin-bottom: 2rem;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-        }
-
-        .instructions-title {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-weight: 700;
-            font-size: 1.1rem;
-            color: var(--lsu-gold);
-            margin-bottom: 0.75rem;
-        }
-
-        .instructions-text {
-            color: rgba(255, 255, 255, 0.95);
-            line-height: 1.6;
-            font-size: 1rem;
-        }
-
-        /* ===== PANELS ===== */
-        .workspace-container {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 2rem;
-            margin-top: 2rem;
-        }
-
-        .panel {
-            background: var(--panel-bg);
-            border-radius: 15px;
-            border: 2px solid var(--border-color);
-            box-shadow: 0 10px 30px var(--shadow-dark);
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .panel-header {
-            background: linear-gradient(135deg, var(--lsu-purple), var(--lsu-light-purple));
-            padding: 1rem 1.5rem;
-            color: var(--text-light);
-            font-weight: 700;
-            font-size: 1.1rem;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .panel-header .icon {
-            font-size: 1.3rem;
-            margin-right: 0.5rem;
-        }
-
-        .header-clear-btn {
-            padding: 0.5rem 1rem;
-            font-size: 0.9rem;
-            font-weight: 600;
-            border: none;
-            border-radius: 25px;
-            background: linear-gradient(135deg, #dc3545, #c82333);
-            color: var(--text-light);
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 0.4rem;
-            box-shadow: 0 2px 10px rgba(220, 53, 69, 0.3);
-        }
-
-        .header-clear-btn:hover {
-            background: linear-gradient(135deg, #e64555, #d13545);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(220, 53, 69, 0.5);
-        }
-
-        .panel-body {
-            padding: 1rem;
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* ===== GAME PANEL ===== */
-        .game-panel .panel-body {
-            background: var(--dark-bg);
-        }
-
-        .game-controls {
-            margin-bottom: 1rem;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-            justify-content: center;
-            padding: 1rem;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-        }
-
-        .debug-btn {
-            background: rgba(255, 255, 255, 0.1);
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            color: var(--text-light);
-            padding: 0.5rem 1rem;
-            border-radius: 25px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            cursor: pointer;
-            text-decoration: none;
-        }
-
-        .debug-btn:hover,
-        .debug-btn.active {
-            background: var(--lsu-gold);
-            color: var(--lsu-purple);
-            border-color: var(--lsu-gold);
-            transform: translateY(-2px);
-        }
-
-        .game-canvas {
-            width: 100%;
-            height: 40vh;
-            background: var(--dark-bg);
-            border: 3px solid var(--border-color);
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .canvas-placeholder {
-            color: rgba(255, 255, 255, 0.5);
-            font-size: 1.5rem;
-            text-align: center;
-        }
-
-        /* ===== BLOCKLY PANEL ===== */
-        .blockly-panel .panel-body {
-            background: var(--light-panel);
-            color: var(--text-dark);
-        }
-
-        .blockly-workspace {
-            width: 100%;
-            height: 55vh;
-            border: 2px solid #ddd;
-            border-radius: 10px;
-            background: white;
-            margin-bottom: 1rem;
-        }
-
-        /* ===== DRAGGABLE CHATBOT ===== */
-        .chatbot-container {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            width: 380px;
-            max-height: 600px;
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-            display: flex;
-            flex-direction: column;
-            z-index: 1000;
-            transition: all 0.3s ease;
-        }
-
-        .chatbot-container.minimized {
-            max-height: 60px;
-        }
-
-        .chatbot-container.minimized .chatbot-messages,
-        .chatbot-container.minimized .chatbot-input-container {
-            display: none;
-        }
-
-        .chatbot-header {
-            background: linear-gradient(135deg, var(--lsu-purple), var(--lsu-light-purple));
-            color: white;
-            padding: 1rem 1.25rem;
-            border-radius: 15px 15px 0 0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            cursor: move;
-            user-select: none;
-        }
-
-        .chatbot-title {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-weight: 700;
-            font-size: 1.1rem;
-        }
-
-        .chatbot-title i {
-            font-size: 1.3rem;
-        }
-
-        .chatbot-controls {
-            display: flex;
-            gap: 0.5rem;
-        }
-
-        .chatbot-btn {
-            background: rgba(255, 255, 255, 0.2);
-            border: none;
-            color: white;
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s ease;
-        }
-
-        .chatbot-btn:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: scale(1.1);
-        }
-
-        .chatbot-messages {
-            flex: 1;
-            overflow-y: auto;
-            padding: 1rem;
-            background: #f8f9fa;
-            max-height: 450px;
-            min-height: 300px;
-        }
-
-        .chatbot-message {
-            margin-bottom: 1rem;
-            animation: slideInMessage 0.3s ease-out;
-        }
-
-        @keyframes slideInMessage {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .bot-message {
-            background: white;
-            padding: 0.875rem 1rem;
-            border-radius: 10px;
-            border-left: 4px solid var(--lsu-purple);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            line-height: 1.6;
-            color: #333;
-        }
-
-        .user-message {
-            background: linear-gradient(135deg, var(--lsu-purple), var(--lsu-light-purple));
-            color: white;
-            padding: 0.875rem 1rem;
-            border-radius: 10px;
-            margin-left: 2rem;
-            box-shadow: 0 2px 8px rgba(70, 29, 124, 0.3);
-            line-height: 1.6;
-        }
-
-        .chatbot-input-container {
-            display: flex;
-            gap: 0.75rem;
-            padding: 1rem;
-            background: white;
-            border-radius: 0 0 15px 15px;
-            border-top: 1px solid #e9ecef;
-        }
-
-        .chatbot-input {
-            flex: 1;
-            border: 2px solid #e9ecef;
-            border-radius: 25px;
-            padding: 0.75rem 1rem;
-            font-size: 0.95rem;
-            transition: border-color 0.3s ease;
-        }
-
-        .chatbot-input:focus {
-            outline: none;
-            border-color: var(--lsu-purple);
-            box-shadow: 0 0 0 3px rgba(70, 29, 124, 0.1);
-        }
-
-        .chatbot-send {
-            background: linear-gradient(135deg, var(--lsu-purple), var(--lsu-light-purple));
-            color: white;
-            border: none;
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-            flex-shrink: 0;
-        }
-
-        .chatbot-send:hover {
-            transform: scale(1.1);
-            box-shadow: 0 4px 15px rgba(70, 29, 124, 0.4);
-        }
-
-        .chatbot-send:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        /* Mobile responsive */
-        @media (max-width: 576px) {
-            .chatbot-container {
-                width: calc(100% - 20px);
-                right: 10px;
-                bottom: 10px;
-                left: 10px;
-            }
-        }
-
-        /* ===== ACTION BUTTONS ===== */
-        .action-buttons {
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-
-        .action-btn {
-            padding: 1rem 2rem;
-            font-size: 1.1rem;
-            font-weight: 700;
-            border: none;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            text-decoration: none;
-            color: white;
-        }
-
-        .run-btn {
-            background: linear-gradient(135deg, var(--success-color), #20c997);
-            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
-        }
-
-        .run-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(40, 167, 69, 0.4);
-            color: white;
-        }
-
-        .clear-btn {
-            background: linear-gradient(135deg, #dc3545, #c82333);
-            box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
-        }
-
-        .clear-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(220, 53, 69, 0.4);
-            color: white;
-        }
-
-        .reset-btn {
-            background: linear-gradient(135deg, #cc5500, #a04400);
-            box-shadow: 0 4px 15px rgba(204, 85, 0, 0.3);
-        }
-
-        .reset-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(204, 85, 0, 0.4);
-            color: white;
-        }
-
-        /* ===== RESPONSIVE DESIGN ===== */
-        @media (max-width: 992px) {
-            .workspace-container {
-                grid-template-columns: 1fr;
-                gap: 1rem;
-            }
-            
-            .page-title {
-                font-size: 2.5rem;
-            }
-            
-            .game-canvas {
-                height: 50vh;
-            }
-            
-            .blockly-workspace {
-                height: 45vh;
-            }
-        }
-
-        @media (max-width: 576px) {
-            .page-header {
-                padding: 1rem;
-            }
-            
-            .page-title {
-                font-size: 2rem;
-            }
-            
-            .ai-input-group {
-                flex-direction: column;
-            }
-            
-            .action-buttons {
-                flex-direction: column;
-                align-items: center;
-            }
-            
-            .action-btn {
-                width: 100%;
-                max-width: 300px;
-                justify-content: center;
-            }
-        }
-
-        /* ===== ANIMATIONS ===== */
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .panel {
-            animation: fadeInUp 0.6s ease-out;
-        }
-
-        .panel:nth-child(2) {
-            animation-delay: 0.1s;
-        }
-
-        /* ===== LOADING STATES ===== */
-        .loading {
-            position: relative;
-            overflow: hidden;
-        }
-
-        .loading::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-            animation: shimmer 1.5s infinite;
-        }
-
-        @keyframes shimmer {
-            0% { left: -100%; }
-            100% { left: 100%; }
-        }
-
-        /* ===== SCROLLBAR STYLING ===== */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 4px;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: var(--lsu-gold);
-            border-radius: 4px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: #f4c430;
-        }
-
-        /* ===== CONSENT SCREEN ===== */
-        .consent-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(135deg, var(--lsu-purple), var(--lsu-light-purple));
-            z-index: 10000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 2rem;
-        }
-
-        .consent-overlay.hidden {
-            display: none;
-        }
-
-        .consent-container {
-            max-width: 600px;
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-            overflow: hidden;
-            animation: slideUp 0.5s ease-out;
-        }
-
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(50px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .consent-header {
-            background: linear-gradient(135deg, var(--lsu-purple), var(--lsu-light-purple));
-            padding: 2rem;
-            text-align: center;
-        }
-
-        .consent-logo {
-            width: 80px;
-            height: 80px;
-            background: var(--lsu-gold);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2.5rem;
-            margin: 0 auto 1rem;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-        }
-
-        .consent-title {
-            color: white;
-            font-size: 2rem;
-            font-weight: 800;
-            margin: 0;
-        }
-
-        .consent-body {
-            padding: 2rem;
-        }
-
-        .consent-info-box {
-            background: #f8f9fa;
-            border-left: 4px solid var(--lsu-purple);
-            padding: 1.5rem;
-            border-radius: 8px;
-            margin-bottom: 1.5rem;
-        }
-
-        .consent-info-title {
-            font-weight: 700;
-            color: var(--lsu-purple);
-            margin-bottom: 1rem;
-            font-size: 1.1rem;
-        }
-
-        .consent-info-text {
-            color: #495057;
-            line-height: 1.6;
-            margin-bottom: 0.75rem;
-        }
-
-        .consent-info-text:last-child {
-            margin-bottom: 0;
-        }
-
-        .consent-checkbox-container {
-            display: flex;
-            align-items: flex-start;
-            gap: 0.75rem;
-            margin-bottom: 1.5rem;
-            padding: 1rem;
-            background: #fff3cd;
-            border-radius: 8px;
-            border: 2px solid #ffc107;
-        }
-
-        .consent-checkbox {
-            margin-top: 0.25rem;
-            width: 20px;
-            height: 20px;
-            cursor: pointer;
-        }
-
-        .consent-checkbox-label {
-            color: #856404;
-            font-weight: 600;
-            cursor: pointer;
-            user-select: none;
-        }
-
-        .consent-button {
-            width: 100%;
-            padding: 1.25rem;
-            background: linear-gradient(135deg, var(--lsu-purple), var(--lsu-light-purple));
-            color: white;
-            border: none;
-            border-radius: 50px;
-            font-size: 1.2rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(70, 29, 124, 0.3);
-        }
-
-        .consent-button:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(70, 29, 124, 0.4);
-        }
-
-        .consent-button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .consent-footer {
-            padding: 1rem 2rem;
-            background: #f8f9fa;
-            text-align: center;
-            color: #6c757d;
-            font-size: 0.85rem;
-        }
-
-        /* ===== RESULT MODAL ===== */
-        .result-modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.8);
-            z-index: 9999;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            padding: 2rem;
-            animation: fadeIn 0.3s ease-out;
-        }
-
-        .result-modal-overlay.show {
-            display: flex;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        .result-modal {
-            background: white;
-            border-radius: 20px;
-            max-width: 500px;
-            width: 100%;
-            overflow: hidden;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-            animation: slideUpBounce 0.5s ease-out;
-        }
-
-        @keyframes slideUpBounce {
-            0% {
-                opacity: 0;
-                transform: translateY(100px) scale(0.8);
-            }
-            60% {
-                transform: translateY(-10px) scale(1.02);
-            }
-            100% {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
-        }
-
-        .result-modal-header {
-            padding: 2.5rem 2rem 2rem;
-            text-align: center;
-            position: relative;
-        }
-
-        .result-modal-header.win {
-            background: linear-gradient(135deg, #28a745, #20c997);
-        }
-
-        .result-modal-header.lose {
-            background: linear-gradient(135deg, #dc3545, #c82333);
-        }
-
-        .result-icon {
-            font-size: 5rem;
-            margin-bottom: 1rem;
-            animation: iconBounce 0.6s ease-out 0.3s;
-            display: inline-block;
-        }
-
-        @keyframes iconBounce {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.2); }
-        }
-
-        .result-title {
-            font-size: 2.5rem;
-            font-weight: 800;
-            color: white;
-            margin: 0;
-            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-        }
-
-        .result-modal-body {
-            padding: 2rem;
-            text-align: center;
-        }
-
-        .result-message {
-            font-size: 1.2rem;
-            color: #495057;
-            margin-bottom: 2rem;
-            line-height: 1.6;
-        }
-
-        .result-stats {
-            display: flex;
-            justify-content: space-around;
-            margin-bottom: 2rem;
-            padding: 1.5rem;
-            background: #f8f9fa;
-            border-radius: 10px;
-        }
-
-        .result-stat {
-            text-align: center;
-        }
-
-        .result-stat-value {
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--lsu-purple);
-            display: block;
-        }
-
-        .result-stat-label {
-            font-size: 0.9rem;
-            color: #6c757d;
-            margin-top: 0.25rem;
-        }
-
-        .result-buttons {
-            display: flex;
-            gap: 1rem;
-            flex-wrap: wrap;
-        }
-
-        .result-btn {
-            flex: 1;
-            min-width: 150px;
-            padding: 1rem 1.5rem;
-            font-size: 1.1rem;
-            font-weight: 700;
-            border: none;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-        }
-
-        .result-btn-retry {
-            background: linear-gradient(135deg, #ffc107, #ff9800);
-            color: white;
-            box-shadow: 0 4px 15px rgba(255, 193, 7, 0.3);
-        }
-
-        .result-btn-retry:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(255, 193, 7, 0.4);
-        }
-
-        .result-btn-next {
-            background: linear-gradient(135deg, #28a745, #20c997);
-            color: white;
-            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
-        }
-
-        .result-btn-next:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
-        }
-
-        @media (max-width: 576px) {
-            .result-buttons {
-                flex-direction: column;
-            }
-            
-            .result-btn {
-                width: 100%;
-            }
-        }
-
-        /* ===== SURVEY MODAL ===== */
-        .survey-modal-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            z-index: 10000;
-            justify-content: center;
-            align-items: center;
-            backdrop-filter: blur(5px);
-            padding: 1rem;
-        }
-
-        .survey-modal-overlay.show {
-            display: flex;
-            animation: fadeIn 0.3s ease-out;
-        }
-
-        .survey-modal {
-            background: white;
-            border-radius: 20px;
-            max-width: 800px;
-            width: 100%;
-            max-height: 90vh;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            box-shadow: 0 10px 50px rgba(0, 0, 0, 0.5);
-            animation: slideIn 0.3s ease-out;
-        }
-
-        .survey-modal-header {
-            background: linear-gradient(135deg, #9b59b6, #8e44ad);
-            color: white;
-            padding: 2rem;
-            text-align: center;
-        }
-
-        .survey-modal-title {
-            font-size: 1.8rem;
-            font-weight: 700;
-            margin: 0;
-        }
-
-        .survey-modal-subtitle {
-            font-size: 1rem;
-            opacity: 0.9;
-            margin-top: 0.5rem;
-        }
-
-        .survey-modal-body {
-            flex: 1;
-            overflow-y: auto;
-            padding: 2rem;
-        }
-
-        .survey-question {
-            margin-bottom: 2rem;
-            padding-bottom: 2rem;
-            border-bottom: 1px solid #dee2e6;
-        }
-
-        .survey-question:last-child {
-            border-bottom: none;
-        }
-
-        .survey-question-header {
-            display: flex;
-            gap: 0.5rem;
-            margin-bottom: 1rem;
-        }
-
-        .survey-question-number {
-            font-weight: 700;
-            color: #9b59b6;
-            min-width: 30px;
-        }
-
-        .survey-question-text {
-            font-weight: 600;
-            color: #333;
-            flex: 1;
-        }
-
-        .required-indicator {
-            color: #dc3545;
-            margin-left: 0.25rem;
-        }
-
-        .survey-question-description {
-            color: #6c757d;
-            font-size: 0.9rem;
-            margin: 0.5rem 0 1rem 2rem;
-        }
-
-        .survey-options {
-            display: flex;
-            flex-direction: column;
-            gap: 0.75rem;
-            margin-left: 2rem;
-        }
-
-        .survey-option {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            padding: 0.75rem;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.2s;
-            color: #333;
-        }
-
-        .survey-option:hover {
-            background: #f8f9fa;
-            color: #333;
-        }
-
-        .survey-option input[type="radio"],
-        .survey-option input[type="checkbox"] {
-            cursor: pointer;
-        }
-
-        .survey-option span {
-            color: #333;
-        }
-
-        .survey-text-input {
-            width: 100%;
-            padding: 0.75rem;
-            border: 2px solid #dee2e6;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-family: inherit;
-            margin-left: 2rem;
-            transition: border-color 0.2s;
-            color: #333;
-        }
-
-        .survey-text-input:focus {
-            outline: none;
-            border-color: #9b59b6;
-        }
-
-        .survey-textarea {
-            width: 100%;
-            padding: 0.75rem;
-            border: 2px solid #dee2e6;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-family: inherit;
-            margin-left: 2rem;
-            resize: vertical;
-            transition: border-color 0.2s;
-            color: #333;
-        }
-
-        .survey-textarea:focus {
-            outline: none;
-            border-color: #9b59b6;
-        }
-
-        .survey-scale {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            margin-left: 2rem;
-        }
-
-        .survey-scale-options {
-            display: flex;
-            gap: 0.5rem;
-        }
-
-        .survey-scale-option {
-            cursor: pointer;
-        }
-
-        .survey-scale-option input[type="radio"] {
-            display: none;
-        }
-
-        .survey-scale-option span {
-            display: inline-block;
-            width: 45px;
-            height: 45px;
-            line-height: 45px;
-            text-align: center;
-            border: 2px solid #dee2e6;
-            border-radius: 50%;
-            font-weight: 600;
-            transition: all 0.2s;
-            color: #333;
-        }
-
-        .survey-scale-option:hover span {
-            background: #f8f9fa;
-            border-color: #9b59b6;
-        }
-
-        .survey-scale-option input[type="radio"]:checked + span {
-            background: linear-gradient(135deg, #9b59b6, #8e44ad);
-            border-color: #9b59b6;
-            color: white;
-        }
-
-        .survey-scale-label {
-            font-size: 0.9rem;
-            color: #6c757d;
-        }
-
-        .survey-modal-footer {
-            padding: 1.5rem 2rem;
-            background: #f8f9fa;
-            border-top: 1px solid #dee2e6;
-            display: flex;
-            gap: 1rem;
-            justify-content: flex-end;
-        }
-
-        .survey-btn {
-            padding: 0.75rem 2rem;
-            font-size: 1rem;
-            font-weight: 700;
-            border: none;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .survey-btn-submit {
-            background: linear-gradient(135deg, #28a745, #20c997);
-            color: white;
-            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
-        }
-
-        .survey-btn-submit:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
-        }
-
-        .survey-btn-submit:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        /* ===== THANK YOU PAGE ===== */
-        .thank-you-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, var(--lsu-purple), var(--lsu-light-purple));
-            z-index: 10001;
-            justify-content: center;
-            align-items: center;
-            padding: 2rem;
-        }
-
-        .thank-you-overlay.show {
-            display: flex;
-            animation: fadeIn 0.5s ease-out;
-        }
-
-        .thank-you-container {
-            background: white;
-            border-radius: 30px;
-            max-width: 700px;
-            width: 100%;
-            padding: 4rem 3rem;
-            text-align: center;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            animation: slideIn 0.5s ease-out;
-        }
-
-        .thank-you-icon {
-            font-size: 5rem;
-            margin-bottom: 2rem;
-            animation: bounceIn 0.8s ease-out;
-        }
-
-        .thank-you-title {
-            font-size: 2.5rem;
-            font-weight: 800;
-            color: var(--lsu-purple);
-            margin-bottom: 1rem;
-        }
-
-        .thank-you-message {
-            font-size: 1.2rem;
-            color: #333;
-            line-height: 1.8;
-            margin-bottom: 2rem;
-        }
-
-        .thank-you-note {
-            background: #f8f9fa;
-            border-left: 4px solid var(--lsu-gold);
-            padding: 1.5rem;
-            border-radius: 8px;
-            margin-top: 2rem;
-            text-align: left;
-            color: #333;
-        }
-
-        .thank-you-note strong {
-            color: var(--lsu-purple);
-            display: block;
-            margin-bottom: 0.5rem;
-        }
-        
-        .thank-you-note p {
-            color: #333;
-        }
-
-        @keyframes bounceIn {
-            0% {
-                transform: scale(0);
-                opacity: 0;
-            }
-            50% {
-                transform: scale(1.2);
-            }
-            100% {
-                transform: scale(1);
-                opacity: 1;
-            }
-        }
-    </style>
+    <!-- Project styles extracted to external file -->
+    <link rel="stylesheet" href="/src/styles.css">
 </head>
 
 <body>
-    <!-- Consent Screen -->
+    <!-- Consent Modal Overlay -->
     <div class="consent-overlay" id="consent-overlay">
-        <div class="consent-container">
+        <div class="consent-modal">
             <div class="consent-header">
-                <div class="consent-logo">🐅</div>
-                <h1 class="consent-title">MikeBotStudio</h1>
+                <img src="assets/logo.png" alt="pAIrStudio Logo" class="consent-logo" />
+                <h1 class="consent-title">Research Study Consent</h1>
+                <p class="consent-subtitle">pAIrStudio Warehouse Robot Programming Experiment</p>
             </div>
             
             <div class="consent-body">
-                <div class="consent-info-box">
-                    <div class="consent-info-title">
-                        <i class="fas fa-info-circle me-2"></i>
-                        Research Study Information
-                    </div>
-                    <p class="consent-info-text">
-                        <strong>Study Purpose:</strong> This experiment is designed to evaluate educational programming tools 
-                        and their effectiveness in teaching computational thinking skills.
-                    </p>
-                    <p class="consent-info-text">
-                        <strong>What You'll Do:</strong> You will complete a series of programming challenges using 
-                        visual block-based coding to control a robot in an isometric environment.
-                    </p>
-                    <p class="consent-info-text">
-                        <strong>Data Collection:</strong> We will collect interaction data, completion times, and 
-                        solution approaches. All data is anonymous and identified only by a randomly generated ID.
-                    </p>
-                    <p class="consent-info-text">
-                        <strong>Time Commitment:</strong> The study typically takes 20-30 minutes to complete.
+                <div class="consent-section">
+                    <h3>Study Purpose</h3>
+                    <p>This experiment evaluates educational programming tools and their effectiveness in teaching computational thinking skills through robot control.</p>
+                </div>
+                
+                <div class="consent-section">
+                    <h3>What You'll Do</h3>
+                    <p>You will complete programming challenges using visual block-based coding to control a warehouse robot. This typically takes 15-25 minutes.</p>
+                </div>
+                
+                <div class="consent-section">
+                    <h3>Experimental Groups</h3>
+                    <p>You may be randomly assigned to one of several groups with different features (such as AI assistance). Group assignment is automatic and anonymous.</p>
+                </div>
+                
+                <div class="consent-section">
+                    <h3>Data Collection & Privacy</h3>
+                    <p>We collect anonymous interaction data including: code blocks used, completion times, and performance metrics. Your data is identified only by a randomly generated participant ID. No personally identifiable information is collected.</p>
+                </div>
+                
+                <div class="consent-section">
+                    <h3>Voluntary Participation</h3>
+                    <p>Participation is voluntary. You may close the browser at any time to withdraw.</p>
+                </div>
+                
+                <div class="consent-section" style="background: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; border-radius: 4px; margin-bottom: 20px;">
+                    <h3 style="color: #856404; font-size: 16px; margin-bottom: 8px;">
+                        <i class="fas fa-info-circle"></i> Technical Requirements
+                    </h3>
+                    <p style="color: #856404; margin: 0; font-size: 14px;">
+                        <strong>Internet Connection:</strong> A stable internet connection is required throughout the study to save your progress and data.<br>
+                        <strong>Cookies & Local Storage:</strong> By clicking "Accept and Continue," you consent to this site using cookies and browser local storage to enhance your experience and preserve your session data.
                     </p>
                 </div>
-
+                
                 <div class="consent-checkbox-container">
                     <input type="checkbox" id="consent-checkbox" class="consent-checkbox">
                     <label for="consent-checkbox" class="consent-checkbox-label">
-                        I confirm that I am 18 years of age or older, I have read and understood the information above, 
-                        and I voluntarily consent to participate in this research study.
+                        I confirm that I am 18 years of age or older, I have read and understood the information above, and I voluntarily consent to participate in this research study.
                     </label>
                 </div>
-
+                
                 <button class="consent-button" id="consent-button" disabled>
-                    <i class="fas fa-play-circle me-2"></i>
-                    Get Started with Experiment
+                    <i class="fas fa-check-circle"></i> Accept and Continue
                 </button>
             </div>
-
+            
             <div class="consent-footer">
-                Louisiana State University • Educational Research Study
+                pAIrStudio Research Platform • Contact: research@pairstudio.edu
             </div>
         </div>
     </div>
 
     <!-- Header -->
     <header class="lsu-header">
-        <nav class="navbar navbar-expand-lg">
-            <div class="container-fluid" style="max-width: 95%; padding: 0 2rem;">
+        <nav class="navbar navbar-expand-lg lsu-navbar">
+            <div class="container-fluid page-container">
                 <a class="navbar-brand" href="#">
-                    <div class="logo-tiger">🐅</div>
-                    <span>MikeBotStudio</span>
+                    <span class="brand-text">p<span class="highlight-ai">AI</span>rStudio</span>
                 </a>
+                
+                <!-- Level Progress Indicator -->
+                <div class="level-progress level-progress-center" id="level-progress-container">
+                    <!-- Level indicators will be generated dynamically by LevelManager -->
+                </div>
+                
                 <div class="d-flex align-items-center gap-3">
-                    <span class="version-badge">LSU v1.0</span>
+                    <span class="version-badge">PS v1.0</span>
                 </div>
             </div>
         </nav>
     </header>
 
-    <!-- Main Content -->
-    <div class="main-container">
-        <div class="container-fluid" style="max-width: 95%; padding: 0 2rem;">
-            <!-- Level Progress Indicator -->
-            <div class="level-progress" id="level-progress-container">
-                <!-- Level indicators will be generated dynamically by LevelManager -->
-            </div>
+    <!-- Offline Notification Banner -->
+    <div class="offline-notification" id="offline-notification" style="display: none;">
+        <div class="offline-notification-content">
+            <i class="fas fa-wifi-slash"></i>
+            <span class="offline-message">
+                <strong>No Internet Connection</strong> - Please connect to the internet. Your progress is being saved locally and will sync when connection is restored.
+            </span>
+        </div>
+    </div>
 
+    <!-- Main Content -->
+    <div class="main-container main-container-inline">
+        <div class="container-fluid page-container">
             <!-- Instructions Banner -->
-            <div class="instructions-banner">
+            <div class="instructions-banner" id="instructions-banner">
                 <div class="instructions-title">
                     <i class="fas fa-info-circle"></i>
-                    Level 1 Instructions
+                    <span id="instructions-title-text">Level Instructions</span>
                 </div>
-                <div class="instructions-text">
-                    Welcome to your first challenge! Move the box from the starting conveyor belt to the goal position. 
-                    Use the blocks on the right to program the robot's movements.
+                <div class="instructions-text" id="instructions-text">
+                    Loading instructions...
                 </div>
             </div>
 
@@ -1503,28 +137,15 @@
                 <div class="panel game-panel">
                     <div class="panel-header">
                         <span><i class="fas fa-gamepad icon"></i>Simulation Viewer</span>
-                        <small>Interactive Preview</small>
+                        <button class="action-btn reset-btn btn-compact" id="reset-btn">
+                            <i class="fas fa-redo"></i>
+                            Reset Level
+                        </button>
                     </div>
                     <div class="panel-body">
                         <!-- Game Canvas -->
                         <div class="game-canvas" id="game-canvas">
-                            <div class="canvas-placeholder">
-                                <!-- <i class="fas fa-gamepad fa-3x mb-3"></i> -->
-                                <!-- <div>Game will load here</div>
-                                <small>Ready for your code!</small> -->
-                            </div>
-                        </div>
-                        
-                        <!-- Action Buttons -->
-                        <div class="action-buttons" style="margin-top: 1rem;">
-                            <button class="action-btn run-btn" id="run-code-btn">
-                                <i class="fas fa-play"></i>
-                                Run Code
-                            </button>
-                            <button class="action-btn reset-btn" id="reset-btn">
-                                <i class="fas fa-redo"></i>
-                                Reset Level
-                            </button>
+                            <!-- Phaser will inject here -->
                         </div>
                     </div>
                 </div>
@@ -1533,86 +154,31 @@
                 <div class="panel blockly-panel">
                     <div class="panel-header">
                         <span><i class="fas fa-puzzle-piece icon"></i>Visual Programming</span>
-                        <button class="header-clear-btn" id="clear-workspace-btn" title="Clear Workspace">
-                            <i class="fas fa-eraser"></i> Clear
+                        <button class="action-btn run-btn btn-compact" id="run-code-btn">
+                            <i class="fas fa-play"></i>
+                            Run Code
                         </button>
                     </div>
                     <div class="panel-body">
                         <!-- Blockly Workspace -->
-                        <div class="blockly-workspace" id="blockly-workspace">
-                            <!-- Blockly will be injected here -->
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modals -->
-    <!-- Create Position Modal -->
-    <div class="modal fade" id="create-position-modal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title">
-                        <i class="fas fa-plus-circle me-2"></i>
-                        Create New Position
-                    </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form>
-                        <div class="mb-3">
-                            <label for="position-name" class="form-label">Position Name</label>
-                            <input type="text" class="form-control form-control-lg" id="position-name" 
-                                   placeholder="e.g., Starting Point" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Coordinates</label>
-                            <div class="row">
-                                <div class="col">
-                                    <input type="number" class="form-control" placeholder="X" id="position-x">
+                        <div class="blockly-workspace" id="blockly-workspace" style="position: relative;">
+                            <div class="blockly-placeholder">
+                                <div class="text-center">
+                                    <i class="fas fa-puzzle-piece fa-3x mb-3"></i>
+                                    <div>Blockly will load here</div>
+                                    <small>Visual programming interface</small>
                                 </div>
-                                <div class="col">
-                                    <input type="number" class="form-control" placeholder="Y" id="position-y">
+                            </div>
+                            <!-- Lock overlay (shown when AI is driving in pair programming mode) -->
+                            <div class="blockly-lock-overlay" id="blockly-lock-overlay" style="display: none;">
+                                <div class="lock-message">
+                                    <i class="fas fa-lock"></i>
+                                    <h3>AI is Driving</h3>
+                                    <p>The AI will write the code. You can chat to provide guidance.</p>
                                 </div>
                             </div>
                         </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" id="create-position-btn">
-                        <i class="fas fa-plus me-1"></i>
-                        Create Position
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Delete Positions Modal -->
-    <div class="modal fade" id="delete-positions-modal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header bg-danger text-white">
-                    <h5 class="modal-title">
-                        <i class="fas fa-trash-alt me-2"></i>
-                        Delete Positions
-                    </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div id="delete-positions-container">
-                        <!-- Dynamic content will be loaded here -->
                     </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-danger" id="confirm-delete-btn">
-                        <i class="fas fa-trash me-1"></i>
-                        Delete Selected
-                    </button>
                 </div>
             </div>
         </div>
@@ -1629,16 +195,6 @@
                 <p class="result-message" id="result-message">
                     Great job! You successfully completed the level.
                 </p>
-                <div class="result-stats" id="result-stats">
-                    <div class="result-stat">
-                        <span class="result-stat-value" id="level-number">1</span>
-                        <span class="result-stat-label">Level</span>
-                    </div>
-                    <div class="result-stat">
-                        <span class="result-stat-value" id="moves-count">-</span>
-                        <span class="result-stat-label">Moves</span>
-                    </div>
-                </div>
                 <div class="result-buttons" id="result-buttons">
                     <!-- Buttons will be dynamically added here -->
                 </div>
@@ -1646,47 +202,16 @@
         </div>
     </div>
 
-    <!-- Survey Modal -->
-    <div class="survey-modal-overlay" id="survey-modal">
-        <div class="survey-modal">
-            <div class="survey-modal-header">
-                <h2 class="survey-modal-title">📋 Post-Experiment Survey</h2>
-                <p class="survey-modal-subtitle">Thank you for participating! Please share your experience.</p>
-            </div>
-            <div class="survey-modal-body" id="survey-questions-container">
-                <!-- Survey questions will be dynamically generated here -->
-            </div>
-            <div class="survey-modal-footer">
-                <button class="survey-btn survey-btn-submit" id="survey-submit-btn">
-                    <i class="fas fa-check"></i> Submit Survey
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Thank You Page -->
-    <div class="thank-you-overlay" id="thank-you-page">
-        <div class="thank-you-container">
-            <div class="thank-you-icon">🎉</div>
-            <h1 class="thank-you-title">Thank You!</h1>
-            <p class="thank-you-message">
-                Thank you for participating in this research study. Your responses have been successfully recorded 
-                and will contribute to improving educational programming tools.
-            </p>
-            <div class="thank-you-note">
-                <strong>You have completed the experiment!</strong>
-                You may now safely close this browser tab. If you have any questions about this study, 
-                please contact the research team.
-            </div>
-        </div>
+    <!-- Role Badge (for pair programming groups) -->
+    <div id="role-badge" style="display: none;">
+        <!-- Content will be dynamically inserted by RoleManager -->
     </div>
 
     <!-- Draggable Chatbot -->
-    <div class="chatbot-container" id="chatbot">
+    <div class="chatbot-container" id="chatbot" style="display: none;">
         <div class="chatbot-header" id="chatbot-header">
             <div class="chatbot-title">
-                <i class="fas fa-robot"></i>
-                <span>Mike AI Assistant</span>
+                <span>p<span class="highlight-ai-glow">AI</span>r Assistant</span>
             </div>
             <div class="chatbot-controls">
                 <button class="chatbot-btn" id="toggle-chat-btn" title="Minimize">
@@ -1696,13 +221,7 @@
         </div>
         
         <div class="chatbot-messages" id="chat-messages">
-            <div class="bot-message">
-                👋 Hi! I'm Mike, your AI assistant. I can help you navigate the maze and create block sequences. 
-                Try asking me:
-                <br>• "How do I move forward 3 steps?"
-                <br>• "What's the best path to reach the goal?"
-                <br>• "Execute: move forward 2, turn clockwise"
-            </div>
+            <!-- Messages will be added dynamically -->
         </div>
         
         <div class="chatbot-input-container">
@@ -1710,7 +229,7 @@
                 type="text" 
                 class="chatbot-input" 
                 id="chat-input" 
-                placeholder="Ask me anything about the maze..."
+                placeholder="Ask me anything about the level..."
             >
             <button class="chatbot-send" id="chat-send-btn">
                 <i class="fas fa-paper-plane"></i>
@@ -1718,497 +237,240 @@
         </div>
     </div>
 
-    <!-- Hidden XML for initial Blockly blocks -->
-    <xml xmlns="http://www.w3.org/1999/xhtml" id="blocks" style="display: none">
-        <block type="custom_start" id="start-block" deletable="false" x="20" y="20"></block>
-    </xml>
-
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     
-    <!-- Blockly Scripts -->
-    <script src="blockly/blockly_compressed.js"></script>
-    <script src="blockly/javascript_compressed.js"></script>
-    <script src="blockly/msg/en.js"></script>
+    <!-- Phaser Script (Bundle managed) -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/phaser@3.90.0/dist/phaser.min.js"></script> -->
     
-    <!-- Phaser Script -->
-    <script src="phaser/phaser.min.js"></script>
+    <!-- TODO: Add Blockly when ready -->
+    <!-- <script src="https://unpkg.com/blockly/blockly.min.js"></script> -->
     
-    <!-- App Scripts -->
-    <script type="module" src="./experiment-logger.js"></script>
-    <script src="js/consent.js"></script>
-    <script type="module" src="js/core/SurveyManager.js"></script>
-    <script type="module" src="js/level_manager.js"></script>
-    <!-- <script src="js/game.js"></script> -->
-    <!-- <script src="js/demo.js"></script> -->
-    <script type="module" src="js/isoMoveExample2.js"></script>
-    <script src="js/initial_setup.js"></script>
-    <script src="js/bootstrap_setup.js"></script>
-    <script src="js/new_blockly_setup.js"></script>
-
+    <!-- App Entry Point -->
+    <script type="module" src="/src/main.js"></script>
+    
+    <!-- Experiment Manager Initialization -->
     <script type="module">
-        // Initialize survey with questions
-        import { surveyQuestions } from './js/config/surveyQuestions.js';
+        import { experimentManager } from '/src/experiment/ExperimentManager.js';
+        import { chatbotManager } from '/src/chatbot/ChatbotManager.js';
+        import { roleManager } from '/src/chatbot/RoleManager.js';
         
-        // Define survey questions when DOM is ready
-        document.addEventListener('DOMContentLoaded', function() {
-            if (window.SurveyManager) {
-                window.SurveyManager.defineQuestions(surveyQuestions);
-                console.log('Survey initialized with', surveyQuestions.length, 'questions');
-            }
-        });
-        
-        // Make showSurveyModal globally available
-        window.showSurveyModal = function() {
-            // Check if survey was already completed (via cookie)
-            if (window.ConsentManager && window.ConsentManager.getCookie('survey_completed') === 'true') {
-                // Show thank you page instead
-                const thankYouPage = document.getElementById('thank-you-page');
-                if (thankYouPage) {
-                    thankYouPage.classList.add('show');
-                }
+        // Function to initialize chatbot and role managers
+        function initializeChatbotSystem() {
+            if (!experimentManager.groupId) {
+                console.log('⚠️ No group assigned - skipping chatbot initialization');
                 return;
             }
             
-            const modal = document.getElementById('survey-modal');
-            const container = document.getElementById('survey-questions-container');
-            const submitBtn = document.getElementById('survey-submit-btn');
+            console.log(`📊 Initializing for group: ${experimentManager.groupId}`);
             
-            if (!window.SurveyManager) {
-                console.error('SurveyManager not found');
-                return;
-            }
+            // Initialize Role Manager (for pair programming)
+            roleManager.initialize(experimentManager);
             
-            // Generate survey HTML
-            container.innerHTML = '';
-            const questions = window.SurveyManager.getQuestions();
-            questions.forEach(question => {
-                const questionHTML = window.SurveyManager.generateQuestionHTML(question);
-                container.innerHTML += questionHTML;
+            // Initialize Chatbot Manager
+            chatbotManager.initialize(experimentManager, roleManager);
+            
+            // Connect RoleManager to ChatbotManager for role switch notifications
+            roleManager.onRoleChange((newRole) => {
+                chatbotManager.onRoleChange(newRole);
             });
             
-            // Add event listeners for all inputs
-            container.querySelectorAll('input, textarea').forEach(input => {
-                input.addEventListener('change', function() {
-                    const questionId = this.closest('[data-question-id]').getAttribute('data-question-id');
-                    let value;
-                    
-                    if (this.type === 'checkbox') {
-                        // Handle checkboxes (multiple selection)
-                        const checked = Array.from(
-                            this.closest('[data-question-id]').querySelectorAll('input[type="checkbox"]:checked')
-                        ).map(cb => cb.value);
-                        value = checked;
-                    } else if (this.type === 'radio') {
-                        value = this.value;
-                        // Convert to number for scale questions
-                        if (!isNaN(this.value)) {
-                            value = parseInt(this.value);
-                        }
-                    } else {
-                        value = this.value;
-                    }
-                    
-                    window.SurveyManager.saveResponse(questionId, value);
-                });
-            });
+            console.log('✅ Chatbot system initialized');
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('%c🐅 pAIrStudio v1.0', 'font-size: 24px; color: #fdd023; font-weight: bold;');
+            console.log('%cWarehouse Robot Simulation Platform', 'color: #5a2ca0;');
             
-            // Show modal
-            modal.classList.add('show');
+            // Initialize experiment manager
+            experimentManager.initialize();
             
-            // Submit button handler
-            submitBtn.onclick = function() {
-                try {
-                    if (!window.SurveyManager.isValid()) {
-                        alert('Please answer all required questions before submitting.');
-                        return;
-                    }
-                    
-                    window.SurveyManager.complete();
-                    
-                    // Mark survey as completed in level progress
-                    if (window.LevelManager) {
-                        window.LevelManager.completeLevel('S');
-                        window.LevelManager.updateProgressUI();
-                    }
-                    
-                    // Close survey modal
-                    modal.classList.remove('show');
-                    
-                    // Show thank you page
-                    const thankYouPage = document.getElementById('thank-you-page');
-                    if (thankYouPage) {
-                        thankYouPage.classList.add('show');
-                    }
-                    
-                } catch (error) {
-                    alert(error.message);
-                }
-            };
-        };
-    </script>
-
-    <script>
-        // Basic JavaScript for interaction
-        document.addEventListener('DOMContentLoaded', function() {
-            // ===== CONSENT SCREEN HANDLING =====
+            // Check if user has already consented
+            const hasConsented = experimentManager.getCookie('pair_consented');
             const consentOverlay = document.getElementById('consent-overlay');
             const consentCheckbox = document.getElementById('consent-checkbox');
             const consentButton = document.getElementById('consent-button');
-
-            // Check if user has already consented
-            if (window.ConsentManager && window.ConsentManager.hasConsented()) {
-                // User has already consented, hide overlay
+            
+            if (hasConsented === 'true' && experimentManager.groupId) {
+                // User has already consented and has a group assignment
                 consentOverlay.classList.add('hidden');
+                console.log(`Returning user in group: ${experimentManager.groupId}`);
                 
-                // Initialize level manager UI
+                // Initialize DataLogger for returning user
+                if (window.dataLogger) {
+                    window.dataLogger.initExperiment().then(() => {
+                        window.dataLogger.setParticipantId(
+                            experimentManager.participantId, 
+                            experimentManager.groupId
+                        );
+                        console.log('DataLogger: Initialized for returning user');
+                    }).catch(err => {
+                        console.error('DataLogger: Initialization failed:', err);
+                    });
+                }
+                
+                // Set level progression based on assigned group
                 if (window.LevelManager) {
-                    window.LevelManager.updateProgressUI();
+                    window.LevelManager.setLevelProgression(experimentManager.groupId);
+                    console.log(`📚 Level progression configured for ${experimentManager.groupId}`);
+                }
+                
+                // Initialize chatbot system if this group has chatbot support
+                if (experimentManager.hasFeature('chatbot')) {
+                    initializeChatbotSystem();
                 }
             } else {
                 // Show consent screen
                 consentOverlay.classList.remove('hidden');
-            }
-
-            // Enable/disable button based on checkbox
-            consentCheckbox.addEventListener('change', function() {
-                consentButton.disabled = !this.checked;
-            });
-
-            // Handle consent button click
-            consentButton.addEventListener('click', function() {
-                if (!consentCheckbox.checked) return;
-
-                // Process consent and get participant ID
-                const participantId = window.ConsentManager.processConsent();
-                window.ConsentManager.logConsent(participantId);
-
-                // Hide consent screen with animation
-                consentOverlay.style.opacity = '0';
-                consentOverlay.style.transition = 'opacity 0.5s ease-out';
                 
-                setTimeout(() => {
-                    consentOverlay.classList.add('hidden');
-                    consentOverlay.style.opacity = '1';
+                // Enable/disable button based on checkbox
+                consentCheckbox.addEventListener('change', function() {
+                    consentButton.disabled = !this.checked;
+                });
+                
+                // Handle consent button click
+                consentButton.addEventListener('click', function() {
+                    if (!consentCheckbox.checked) return;
                     
-                    // Initialize level manager UI
+                    // Check internet connection immediately
+                    if (!navigator.onLine) {
+                        // Show offline notification immediately
+                        const banner = document.getElementById('offline-notification');
+                        if (banner) {
+                            banner.style.display = 'block';
+                            document.body.classList.add('offline-mode');
+                        }
+                        
+                        // Alert user
+                        alert('⚠️ No Internet Connection\n\nPlease connect to the internet before continuing. Your progress requires an active connection to be saved.');
+                        return; // Don't proceed with consent
+                    }
+                    
+                    // Disable button and show loading state
+                    consentButton.disabled = true;
+                    consentButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+                    
+                    // Don't assign group yet - wait for first experimental level
+                    // Assign experimental group on consent
+                    const assignedGroup = experimentManager.assignGroup();
+                    
+                    // Save consent
+                    experimentManager.setCookie('pair_consented', 'true', 365);
+                    
+                    console.log('✅ Consent accepted');
+                    console.log(`👤 Participant ID: ${experimentManager.participantId}`);
+                    console.log(`📊 Assigned to group: ${assignedGroup}`);
+                    
+                    // Set level progression based on assigned group
                     if (window.LevelManager) {
-                        window.LevelManager.updateProgressUI();
+                        window.LevelManager.setLevelProgression(assignedGroup);
+                        console.log(`📚 Level progression configured for ${assignedGroup}`);
                     }
-                }, 500);
-            });
+                    
+                    // Initialize chatbot system if needed for this group
+                    if (experimentManager.hasFeature('chatbot')) {
+                        roleManager.initialize(experimentManager);
+                        chatbotManager.initialize(experimentManager, roleManager);
+                        console.log('✅ Chatbot system initialized for group with chatbot support');
+                    }
+                    
+                    // Hide consent screen with animation
+                    setTimeout(() => {
+                        consentOverlay.style.opacity = '0';
+                        consentOverlay.style.transition = 'opacity 0.5s ease-out';
+                        
+                        setTimeout(() => {
+                            consentOverlay.classList.add('hidden');
+                            consentOverlay.style.opacity = '1';
+                        }, 500);
+                    }, 500);
+                });
+            }
+        });
+    </script>
+    
+    <script>
+        // Log basic info
+        console.log('%c🐅 pAIrStudio v1.0', 'font-size: 24px; color: #fdd023; font-weight: bold;');
+        console.log('%cLSU Warehouse Robot Simulation Platform', 'color: #5a2ca0;');
+        
+        // Result Modal Functions
+        window.showResultModal = function(isWin, currentLevel) {
+            const modal = document.getElementById('result-modal');
+            const header = document.getElementById('result-modal-header');
+            const icon = document.getElementById('result-icon');
+            const title = document.getElementById('result-title');
+            const message = document.getElementById('result-message');
+            const buttons = document.getElementById('result-buttons');
 
-            // ===== DRAGGABLE CHATBOT =====
-            const chatbot = document.getElementById('chatbot');
-            const chatbotHeader = document.getElementById('chatbot-header');
-            const chatMessages = document.getElementById('chat-messages');
-            const chatInput = document.getElementById('chat-input');
-            const chatSendBtn = document.getElementById('chat-send-btn');
-            const toggleChatBtn = document.getElementById('toggle-chat-btn');
-            const toggleIcon = document.getElementById('toggle-icon');
+            // Update header style
+            header.className = 'result-modal-header ' + (isWin ? 'win' : 'lose');
 
-            // Make chatbot draggable
-            let isDragging = false;
-            let currentX;
-            let currentY;
-            let initialX;
-            let initialY;
-            let xOffset = 0;
-            let yOffset = 0;
-
-            chatbot.addEventListener('mousedown', dragStart);
-            document.addEventListener('mousemove', drag);
-            document.addEventListener('mouseup', dragEnd);
-
-            function dragStart(e) {
-                // Don't drag if clicking on interactive elements
-                if (e.target.closest('.chatbot-input') || 
-                    e.target.closest('.chatbot-send') || 
-                    e.target.closest('.chatbot-messages') ||
-                    e.target.closest('.chatbot-btn')) {
-                    return;
-                }
-
-                initialX = e.clientX - xOffset;
-                initialY = e.clientY - yOffset;
-                isDragging = true;
+            // Update content based on win/lose
+            if (isWin) {
+                icon.textContent = '🎉';
+                title.textContent = 'Level Complete!';
+                message.textContent = 'Congratulations! You successfully completed the level and delivered the box to the goal.';
+            } else {
+                icon.textContent = '❌';
+                title.textContent = 'Level Failed';
+                message.textContent = 'The box was dropped in the wrong location. Try again!';
             }
 
-            function drag(e) {
-                if (isDragging) {
-                    e.preventDefault();
-                    currentX = e.clientX - initialX;
-                    currentY = e.clientY - initialY;
-                    xOffset = currentX;
-                    yOffset = currentY;
+            // Clear and add appropriate buttons
+            buttons.innerHTML = '';
 
-                    setTranslate(currentX, currentY, chatbot);
-                }
-            }
-
-            function dragEnd(e) {
-                initialX = currentX;
-                initialY = currentY;
-                isDragging = false;
-            }
-
-            function setTranslate(xPos, yPos, el) {
-                el.style.transform = `translate(${xPos}px, ${yPos}px)`;
-            }
-
-            // Toggle chat minimize/maximize
-            window.toggleChat = function() {
-                chatbot.classList.toggle('minimized');
-                if (chatbot.classList.contains('minimized')) {
-                    toggleIcon.className = 'fas fa-plus';
-                    toggleChatBtn.title = 'Maximize';
-                } else {
-                    toggleIcon.className = 'fas fa-minus';
-                    toggleChatBtn.title = 'Minimize';
-                }
-            };
-
-            toggleChatBtn.addEventListener('click', window.toggleChat);
-
-            // Send message function
-            window.sendMessage = async function() {
-                const message = chatInput.value.trim();
-                if (!message) return;
-
-                // Add user message to chat
-                const userMessageDiv = document.createElement('div');
-                userMessageDiv.className = 'chatbot-message user-message';
-                userMessageDiv.textContent = message;
-                chatMessages.appendChild(userMessageDiv);
-                chatMessages.scrollTop = chatMessages.scrollHeight;
-
-                // Clear input
-                chatInput.value = '';
-
-                // Disable send button
-                chatSendBtn.disabled = true;
-                chatSendBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-
-                try {
-                    // Send to ChatGPT API
-                    const response = await fetch('http://localhost:3000/chatgpt', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ prompt: message })
-                    });
-
-                    const data = await response.json();
-                    console.log('ChatGPT response:', data);
-
-                    // Check if we got commands
-                    if (data.commands && data.commands.length > 0) {
-                        // Add bot response
-                        const botMessageDiv = document.createElement('div');
-                        botMessageDiv.className = 'chatbot-message bot-message';
-                        botMessageDiv.innerHTML = `✅ I've created ${data.commands.length} block(s) for you! Check your workspace.`;
-                        chatMessages.appendChild(botMessageDiv);
-
-                        // Generate blocks (call function from new_blockly_setup.js)
-                        if (window.createBlocksFromChatGPT) {
-                            window.createBlocksFromChatGPT(data);
-                        }
-                    } else {
-                        // No commands, just show a response
-                        const botMessageDiv = document.createElement('div');
-                        botMessageDiv.className = 'chatbot-message bot-message';
-                        botMessageDiv.textContent = 'I understand, but I couldn\'t generate any blocks from that. Try asking me to create specific movements like "move forward 3 steps" or "turn clockwise".';
-                        chatMessages.appendChild(botMessageDiv);
-                    }
-                } catch (error) {
-                    console.error('Error sending message:', error);
-                    const errorMessageDiv = document.createElement('div');
-                    errorMessageDiv.className = 'chatbot-message bot-message';
-                    errorMessageDiv.textContent = '❌ Sorry, I encountered an error. Make sure the server is running on localhost:3000.';
-                    chatMessages.appendChild(errorMessageDiv);
-                }
-
-                // Re-enable send button
-                chatSendBtn.disabled = false;
-                chatSendBtn.innerHTML = '<i class="fas fa-paper-plane"></i>';
-                chatMessages.scrollTop = chatMessages.scrollHeight;
-            };
-
-            // Send message on Enter key
-            chatInput.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    window.sendMessage();
-                }
-            });
-
-            chatSendBtn.addEventListener('click', window.sendMessage);
-
-            // Run code button - triggers same function as Start Program in Blockly
-            const runBtn = document.getElementById('run-code-btn');
-            runBtn.addEventListener('click', function() {
-                console.log('Running code from Run Code button...');
-                // Call the same function that Start Program button uses
-                if (typeof executeBlocklyCode === 'function') {
-                    executeBlocklyCode();
-                } else {
-                    console.error('executeBlocklyCode function not found');
-                }
-            });
-
-            // Clear workspace button
-            const clearBtn = document.getElementById('clear-workspace-btn');
-            clearBtn.addEventListener('click', function() {
-                if (confirm('Are you sure you want to clear the workspace?')) {
-                    console.log('Clearing workspace...');
-                    // Get reference to Blockly workspace
-                    if (typeof Blockly !== 'undefined' && Blockly.getMainWorkspace()) {
-                        const workspace = Blockly.getMainWorkspace();
-                        // Get all blocks except the starting block
-                        const allBlocks = workspace.getAllBlocks(false);
-                        allBlocks.forEach(block => {
-                            // Don't delete the custom_start block
-                            if (block.type !== 'custom_start') {
-                                block.dispose();
-                            }
-                        });
-                        console.log('Workspace cleared (kept starting block)');
-                    } else {
-                        console.error('Blockly workspace not found');
-                    }
-                }
-            });
-
-            // Reset button
-            const resetBtn = document.getElementById('reset-btn');
-            resetBtn.addEventListener('click', function() {
-                console.log('Resetting robot to initial position...');
-                // Call the same function that resets the level
-                if (typeof GameAPI !== 'undefined' && GameAPI.resetLevel) {
-                    GameAPI.resetLevel();
-                    console.log('Robot reset to starting position');
-                } else {
-                    console.error('GameAPI.resetLevel not found');
-                }
-            });
-
-            // ===== RESULT MODAL FUNCTIONS =====
-            window.showResultModal = function(isWin, currentLevel, moveCount = 0) {
-                const modal = document.getElementById('result-modal');
-                const header = document.getElementById('result-modal-header');
-                const icon = document.getElementById('result-icon');
-                const title = document.getElementById('result-title');
-                const message = document.getElementById('result-message');
-                const levelNumber = document.getElementById('level-number');
-                const movesCount = document.getElementById('moves-count');
-                const buttons = document.getElementById('result-buttons');
-
-                // Determine if this is a tutorial level (A, B, C)
-                const isTutorial = window.LevelManager && window.LevelManager.tutorialLevels.includes(currentLevel);
-
-                // Update header style
-                header.className = 'result-modal-header ' + (isWin ? 'win' : 'lose');
-
-                // Update content based on win/lose
-                if (isWin) {
-                    icon.textContent = '🎉';
-                    if (isTutorial) {
-                        title.textContent = 'Tutorial Complete!';
-                        if (currentLevel === 'A') {
-                            message.textContent = 'Great job! You learned how to move forward. Now let\'s learn about turning and picking up objects.';
-                        } else if (currentLevel === 'B') {
-                            message.textContent = 'Excellent! You learned how to turn and interact with objects. Now let\'s try using loops!';
-                        } else if (currentLevel === 'C') {
-                            message.textContent = 'Perfect! You mastered the basics. You\'re ready for the real challenges!';
-                        }
-                    } else {
-                        title.textContent = 'Level Complete!';
-                        message.textContent = 'Congratulations! You successfully completed the level and delivered the box to the goal.';
-                    }
-                } else {
-                    icon.textContent = '❌';
-                    title.textContent = 'Level Failed';
-                    message.textContent = 'The box was dropped in the wrong location. Try again!';
-                }
-
-                // Update stats
-                levelNumber.textContent = isTutorial ? `Tutorial ${currentLevel}` : `Level ${currentLevel}`;
-                movesCount.textContent = moveCount > 0 ? moveCount : '-';
-
-                // Clear and add appropriate buttons
-                buttons.innerHTML = '';
-
-                if (isWin) {
-                    // Check if there's a next level
-                    const allLevels = window.LevelManager ? window.LevelManager.allLevels : [];
-                    const currentIndex = allLevels.indexOf(currentLevel);
-                    const hasNextLevel = currentIndex >= 0 && currentIndex < allLevels.length - 1;
+            if (isWin) {
+                // Check if there's a next level
+                const levelManager = window.LevelManager;
+                if (levelManager) {
+                    const currentIndex = levelManager.allLevelIds.indexOf(currentLevel);
+                    const hasNextLevel = currentIndex >= 0 && currentIndex < levelManager.allLevelIds.length - 1;
                     
                     if (hasNextLevel) {
                         // Show Next Level button
                         const nextBtn = document.createElement('button');
                         nextBtn.className = 'result-btn result-btn-next';
-                        nextBtn.innerHTML = '<i class="fas fa-arrow-right"></i> Next Level';
+                        nextBtn.innerHTML = '<i class=\"fas fa-arrow-right\"></i> Next Level';
                         nextBtn.onclick = function() {
                             modal.classList.remove('show');
-                            if (window.LevelManager) {
-                                window.LevelManager.completeLevel(currentLevel);
-                                window.LevelManager.nextLevel();
-                                window.LevelManager.updateProgressUI();
-                            }
-                            // Update Blockly toolbox for new level
-                            if (window.updateBlocklyToolbox) {
-                                window.updateBlocklyToolbox();
-                            }
                             if (window.GameAPI) {
-                                window.GameAPI.loadNewLevel();
+                                window.GameAPI.nextLevel();
                             }
                         };
                         buttons.appendChild(nextBtn);
-                    } else {
-                        // Last level completed
-                        const completeBtn = document.createElement('button');
-                        completeBtn.className = 'result-btn result-btn-next';
-                        completeBtn.innerHTML = '<i class="fas fa-trophy"></i> All Levels Complete!';
-                        completeBtn.onclick = function() {
-                            modal.classList.remove('show');
-                            if (window.LevelManager) {
-                                window.LevelManager.completeLevel(currentLevel);
-                                window.LevelManager.updateProgressUI();
-                            }
-                        };
-                        buttons.appendChild(completeBtn);
                     }
-                    
-                    // Also add retry button for wins
-                    const retryBtn = document.createElement('button');
-                    retryBtn.className = 'result-btn result-btn-retry';
-                    retryBtn.innerHTML = '<i class="fas fa-redo"></i> Try Again';
-                    retryBtn.onclick = function() {
-                        modal.classList.remove('show');
-                        if (window.GameAPI) {
-                            window.GameAPI.resetLevel();
-                        }
-                    };
-                    buttons.appendChild(retryBtn);
-                } else {
-                    // Show Retry button for losses
-                    const retryBtn = document.createElement('button');
-                    retryBtn.className = 'result-btn result-btn-retry';
-                    retryBtn.innerHTML = '<i class="fas fa-redo"></i> Start Over';
-                    retryBtn.onclick = function() {
-                        modal.classList.remove('show');
-                        if (window.GameAPI) {
-                            window.GameAPI.resetLevel();
-                        }
-                    };
-                    buttons.appendChild(retryBtn);
                 }
+                
+                // Also add retry button for wins
+                const retryBtn = document.createElement('button');
+                retryBtn.className = 'result-btn result-btn-retry';
+                retryBtn.innerHTML = '<i class=\"fas fa-redo\"></i> Try Again';
+                retryBtn.onclick = function() {
+                    modal.classList.remove('show');
+                    if (window.GameAPI) {
+                        window.GameAPI.resetLevel();
+                    }
+                };
+                buttons.appendChild(retryBtn);
+            } else {
+                // Show Retry button for losses
+                const retryBtn = document.createElement('button');
+                retryBtn.className = 'result-btn result-btn-retry';
+                retryBtn.innerHTML = '<i class=\"fas fa-redo\"></i> Start Over';
+                retryBtn.onclick = function() {
+                    modal.classList.remove('show');
+                    if (window.GameAPI) {
+                        window.GameAPI.resetLevel();
+                    }
+                };
+                buttons.appendChild(retryBtn);
+            }
 
-                // Show modal
-                modal.classList.add('show');
-            };
-
-            console.log('MikeBotStudio initialized successfully!');
-        });
+            // Show modal
+            modal.classList.add('show');
+        };
     </script>
 </body>
 </html>
