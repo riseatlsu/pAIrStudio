@@ -20,6 +20,7 @@ export class BlocklyManager {
         this.currentLevelId = null;
         this.autoSaveEnabled = true;
         this.isRunning = false; // Track if code is currently executing
+        this.pendingLevelConfig = null; // Store config if update requested before init
     }
 
     init(containerId) {
@@ -29,8 +30,18 @@ export class BlocklyManager {
         const container = document.getElementById(containerId);
         if (!container) return;
 
+        // Preserve the lock overlay before clearing (it needs to stay in the DOM)
+        const lockOverlay = document.getElementById('blockly-lock-overlay');
+        const lockOverlayParent = lockOverlay ? lockOverlay.parentElement : null;
+        const lockOverlayHTML = lockOverlay ? lockOverlay.outerHTML : null;
+        
         // Clear placeholder content to prevent layout issues
         container.innerHTML = '';
+        
+        // Restore the lock overlay after clearing
+        if (lockOverlayHTML && lockOverlayParent === container) {
+            container.insertAdjacentHTML('beforeend', lockOverlayHTML);
+        }
 
         this.workspace = Blockly.inject(container, {
             toolbox: this.getToolbox(),
@@ -60,6 +71,13 @@ export class BlocklyManager {
         });
 
         window.blocklyWorkspace = this.workspace; // For debug/external access
+        
+        // Apply pending level config if any (fixes race condition on refresh)
+        if (this.pendingLevelConfig) {
+            console.log('BlocklyManager: Applying pending level config...');
+            this.updateToolboxForLevel(this.pendingLevelConfig);
+            this.pendingLevelConfig = null;
+        }
     }
 
     /**
@@ -68,7 +86,8 @@ export class BlocklyManager {
      */
     updateToolboxForLevel(levelConfig) {
         if (!this.workspace) {
-            console.warn('BlocklyManager: Workspace not initialized yet, cannot update toolbox');
+            console.warn('BlocklyManager: Workspace not initialized yet, queueing toolbox update');
+            this.pendingLevelConfig = levelConfig;
             return;
         }
 

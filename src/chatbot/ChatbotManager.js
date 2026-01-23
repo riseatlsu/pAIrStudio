@@ -7,6 +7,7 @@
 import { CHATBOT_PROMPTS } from './PromptConfig.js';
 import { ChatbotUI } from './ChatbotUI.js';
 import * as BlocklyActions from './BlocklyActions.js';
+import { directionToString } from '../game/iso/DirectionConstants.js';
 
 const CHAT_FUNCTION_URL = "https://us-central1-pair-studio-v1.cloudfunctions.net/getChatResponse";
 
@@ -53,19 +54,30 @@ class ChatbotManager {
 
         // Check if current level has chatbot disabled
         const currentLevel = window.LevelManager ? window.LevelManager.levels[window.LevelManager.currentLevelId] : null;
-        const shouldShowNow = !currentLevel || currentLevel.chatbotEnabled !== false;
+        const isChatbotDisabledForLevel = currentLevel?.chatbotEnabled === false;
+        const isTutorialChatbotTraining = currentLevel?.id === 'tutorial_C';
+        const shouldShowNow = !isChatbotDisabledForLevel;
         
         // Handle workspace blocking for Pair Programming mode
         if (this.currentMode === 'pairProgramming' && this.roleManager) {
-            const userRole = this.roleManager.getCurrentRole();
-            if (userRole === 'navigator') {
-                // User is navigator - AI is driver - disable user's workspace interaction
-                BlocklyActions.disableWorkspace();
-                console.log('ChatbotManager: Workspace disabled - User is navigator, AI is the driver');
-            } else {
-                // User is driver - AI is navigator - enable workspace for user
+            if (isTutorialChatbotTraining) {
                 BlocklyActions.enableWorkspace();
-                console.log('ChatbotManager: Workspace enabled - User is the driver, AI is navigator');
+                console.log('ChatbotManager: Workspace enabled - Tutorial C chatbot training');
+            } else if (isChatbotDisabledForLevel) {
+                // Tutorials/Baseline: chatbot disabled means user must drive
+                BlocklyActions.enableWorkspace();
+                console.log('ChatbotManager: Workspace enabled - Chatbot disabled for this level');
+            } else {
+                const userRole = this.roleManager.getCurrentRole();
+                if (userRole === 'navigator') {
+                    // User is navigator - AI is driver - disable user's workspace interaction
+                    BlocklyActions.disableWorkspace();
+                    console.log('ChatbotManager: Workspace disabled - User is navigator, AI is the driver');
+                } else {
+                    // User is driver - AI is navigator - enable workspace for user
+                    BlocklyActions.enableWorkspace();
+                    console.log('ChatbotManager: Workspace enabled - User is the driver, AI is navigator');
+                }
             }
         } else {
             // Standard mode - workspace always enabled
@@ -337,13 +349,16 @@ class ChatbotManager {
 
             const data = await response.json();
             
-            // Get current role for parse-time filtering
-            const role = this.currentMode === 'pairProgramming' && this.roleManager 
-                ? this.roleManager.getCurrentRole() 
-                : null;
+            // Get AI role for parse-time filtering
+            let aiRole = null;
+            if (this.currentMode === 'pairProgramming' && this.roleManager) {
+                const userRole = this.roleManager.getCurrentRole();
+                // AI role is opposite of user role
+                aiRole = userRole === 'driver' ? 'navigator' : 'driver';
+            }
             
             // Try to parse JSON code blocks from response
-            return this.parseAIResponse(data.response, role);
+            return this.parseAIResponse(data.response, aiRole);
         } catch (error) {
             console.error("ChatbotManager: Error calling the chatbot:", error);
             return { message: "Sorry, I'm having trouble connecting to the brain right now." };
@@ -353,10 +368,10 @@ class ChatbotManager {
     /**
      * Parse AI response for JSON code blocks
      * @param {string} response - Raw response from AI
-     * @param {string|null} role - Current role (for permission filtering)
+     * @param {string|null} aiRole - Current AI role (for permission filtering)
      * @returns {Object} Parsed response with message and optional blocks
      */
-    parseAIResponse(response, role = null) {
+    parseAIResponse(response, aiRole = null) {
         // Check if response contains a JSON code block
         const jsonMatch = response.match(/```json\s*([\s\S]*?)```/);
         
@@ -374,9 +389,9 @@ class ChatbotManager {
                 // Parse the cleaned JSON
                 const parsed = JSON.parse(jsonString);
                 
-                // HARD AFFORDANCE RESTRICTION: Strip blocks if navigator (user is driver)
-                if (role === 'navigator' && parsed.blocks) {
-                    console.warn('ChatbotManager: Navigator attempted to send blocks - BLOCKED at parse level');
+                // HARD AFFORDANCE RESTRICTION: Strip blocks if AI is navigator
+                if (aiRole === 'navigator' && parsed.blocks) {
+                    console.warn('ChatbotManager: AI Navigator attempted to send blocks - BLOCKED at parse level');
                     delete parsed.blocks;
                 }
                 
@@ -408,6 +423,14 @@ class ChatbotManager {
             // Get current workspace state (what blocks are already placed)
             const currentWorkspace = BlocklyActions.getWorkspaceState();
             
+            // Get player start info and convert direction to string
+            const playerStart = currentLevel.player ? { ...currentLevel.player } : null;
+            if (playerStart && playerStart.startDir !== undefined) {
+                // Convert direction to string for chatbot
+                playerStart.startDirection = directionToString(playerStart.startDir);
+                // Keep numeric startDir for backward compatibility if needed
+            }
+            
             // Return ONLY initial level configuration (not dynamic game state)
             // This ensures the chatbot works from the starting conditions only
             return {
@@ -419,7 +442,7 @@ class ChatbotManager {
                 winConditions: currentLevel.winConditions,
                 mapSize: currentLevel.map ? { width: currentLevel.map.width, height: currentLevel.map.height } : null,
                 objects: currentLevel.objects,
-                playerStart: currentLevel.player,
+                playerStart: playerStart,
                 currentWorkspace: currentWorkspace
             };
         } catch (error) {
@@ -553,6 +576,8 @@ class ChatbotManager {
         // Check if chatbot should be disabled for this level
         if (levelConfig && levelConfig.chatbotEnabled === false) {
             console.log(`ChatbotManager: Chatbot disabled for level ${levelId}`);
+            // Ensure Blockly toolbox/workspace is enabled in tutorials/baseline
+            BlocklyActions.enableWorkspace();
             this.hide();
             return;
         }
@@ -566,6 +591,23 @@ class ChatbotManager {
         
         // Show chatbot if it was hidden
         this.show();
+
+        // Ensure workspace permissions match current role in pair programming
+        if (this.currentMode === 'pairProgramming' && this.roleManager) {
+            if (levelId === 'tutorial_C') {
+                BlocklyActions.enableWorkspace();
+                console.log('ChatbotManager: Workspace enabled - Tutorial C chatbot training');
+            } else {
+                const userRole = this.roleManager.getCurrentRole();
+                if (userRole === 'navigator') {
+                    BlocklyActions.disableWorkspace();
+                    console.log('ChatbotManager: Workspace disabled - User is navigator, AI is the driver');
+                } else {
+                    BlocklyActions.enableWorkspace();
+                    console.log('ChatbotManager: Workspace enabled - User is the driver, AI is navigator');
+                }
+            }
+        }
         
         // Clear UI
         if (this.ui) {

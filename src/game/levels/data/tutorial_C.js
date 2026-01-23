@@ -2,6 +2,8 @@
 // Tutorial level for groups with chatbot support
 // Teaches participants how to interact with the AI assistant
 
+import { NORTH, SOUTH, EAST, WEST } from '../../iso/DirectionConstants';
+
 export const TutorialC = {
     id: "tutorial_C",
     title: "Tutorial: Working with AI",
@@ -43,7 +45,7 @@ export const TutorialC = {
     player: {
         startRow: 2,
         startCol: 2,
-        startDir: 3,  // Facing North
+        startDir: NORTH,  // Facing North
         scale: 1.5
     },
 
@@ -61,7 +63,7 @@ export const TutorialC = {
 
     // Toolbox configuration - similar to tutorial_A
     allowedBlocks: {
-        actions: ['move_forward', 'turn_clockwise', 'turn_counterclockwise', 'pick_object', 'drop_object'],
+        actions: true,
         sensing: false,
         logic: false,
         math: false,

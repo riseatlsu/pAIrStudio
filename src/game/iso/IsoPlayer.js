@@ -1,5 +1,6 @@
 import { MoveableObject } from './IsoObjects';
 import { gridToScreen } from './IsoUtils';
+import { directionToNumber, directionToString } from './DirectionConstants';
 
 export class IsoPlayer extends MoveableObject {
   constructor(scene, board, gridRow, gridCol, texture, config = {}) {
@@ -26,7 +27,8 @@ export class IsoPlayer extends MoveableObject {
     // SE (East)  = Grid Col+
     // SW (South) = Grid Row+
     // NW (West)  = Grid Col-
-    this.direction = config.direction || 0;
+    // Accepts both string directions ('NORTH', 'SOUTH', etc.) and numeric (0-3)
+    this.direction = directionToNumber(config.direction !== undefined ? config.direction : 0);
     
     // Fix initial facing
     this.sprite.setFrame(this.direction);
@@ -50,6 +52,14 @@ export class IsoPlayer extends MoveableObject {
         case 3: dRow = -1; break; // North (NE) => Grid Row-
     }
     return { row: this.gridRow + dRow, col: this.gridCol + dCol };
+  }
+
+  /**
+   * Get the current direction as a string name
+   * @returns {string} Cardinal direction ('NORTH', 'SOUTH', 'EAST', 'WEST')
+   */
+  getDirectionName() {
+    return directionToString(this.direction);
   }
 
   // --- API for Blockly / Executor ---

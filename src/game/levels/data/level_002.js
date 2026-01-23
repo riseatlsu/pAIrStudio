@@ -2,6 +2,8 @@
 // Objective: Sort boxes to different conveyor belts based on a simple pattern
 // AI DISABLED for all groups - independent problem solving
 
+import { NORTH, SOUTH, EAST, WEST } from '../../iso/DirectionConstants';
+
 export const Level2 = {
     id: "level_002",
     title: "Sorting Challenge",
@@ -53,7 +55,7 @@ export const Level2 = {
     player: {
         startRow: 3,
         startCol: 3,
-        startDir: 2, // Facing West
+        startDir: WEST, // Facing West
         scale: 1.5
     },
 

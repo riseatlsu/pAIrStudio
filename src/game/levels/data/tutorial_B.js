@@ -1,6 +1,8 @@
 // Tutorial Level B - Advanced Blocks
 // Non-experimental tutorial level teaching loops and logic
 
+import { NORTH, SOUTH, EAST, WEST } from '../../iso/DirectionConstants';
+
 export const TutorialB = {
     id: "tutorial_B",
     title: "Tutorial: Loops & Logic",
@@ -43,7 +45,7 @@ export const TutorialB = {
     player: {
         startRow: 2,  
         startCol: 1,  
-        startDir: 3,  // Facing North
+        startDir: NORTH,  // Facing North
         scale: 1.5
     },
 
@@ -61,7 +63,7 @@ export const TutorialB = {
 
     // Toolbox configuration - introduce loops
     allowedBlocks: {
-        actions: ['move_forward', 'turn_clockwise', 'turn_counterclockwise', 'pick_object', 'drop_object'],
+        actions: true,
         sensing: false,
         logic: false,
         math: false,

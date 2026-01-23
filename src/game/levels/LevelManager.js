@@ -67,7 +67,13 @@ export class LevelManager {
             let instructions = config.instructions || config.description || 'Complete the level objectives.';
             
             // Append role information if in pair programming mode AND this is an experimental level
-            if (config.isExperiment !== false && window.RoleManager && window.RoleManager.isPairProgrammingMode) {
+            // EXCEPTION: Do not show role info if chatbot is explicitly disabled for this level (like Baseline Level 3)
+            const chatbotEnabled = config.chatbotEnabled !== false; // Correctly handle undefined (default true) vs false
+            
+            if (config.isExperiment !== false 
+                && window.RoleManager && window.RoleManager.isPairProgrammingMode
+                && chatbotEnabled) {
+                
                 const role = window.RoleManager.getCurrentRole();
                 const roleInfo = role === 'driver' 
                     ? '\n\n🚗 Your Role: Driver - You write the code. The AI will guide you.'
@@ -174,6 +180,8 @@ export class LevelManager {
                 console.error(`Level not found: ${levelId}`);
                 return;
             }
+            // REGISTER IT NOW so other managers (like RoleManager) can see it
+            this.levels[levelId] = config;
         }
         
         // Set current level ID FIRST

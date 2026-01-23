@@ -2,11 +2,13 @@
 // Objective: Navigate around obstacles to deliver boxes
 // AI DISABLED for all groups - spatial reasoning challenge
 
+import { NORTH, SOUTH, EAST, WEST } from '../../iso/DirectionConstants';
+
 export const Level3 = {
     id: "level_003",
     title: "Obstacle Course",
     description: "Navigate around obstacles to deliver packages to the correct locations.",
-    instructions: "The warehouse floor has obstacles blocking direct paths. You must navigate around them to pick up boxes and deliver them to their destinations. Think about the most efficient route!",
+    instructions: "The warehouse floor has obstacles blocking direct paths. You must navigate around them to pick up boxes and deliver them to their destinations. Bring each box to its respective closest conveyor belt. Think about the most efficient route!",
     
     // Experimental level settings
     isExperiment: true,
@@ -32,31 +34,33 @@ export const Level3 = {
     objects: {
         stationary: [
             // Input conveyors
-            { type: "conveyor", row: 0, col: 4, id: "input_north", attributes: { allowDrop: true } },
-            { type: "conveyor", row: 8, col: 4, id: "input_south", attributes: { allowDrop: true } },
+            { type: "conveyor", row: 0, col: 0, id: "input_north", attributes: { allowDrop: true } },
+            { type: "conveyor", row: 8, col: 0, id: "input_south", attributes: { allowDrop: true } },
             
             // Output conveyor (center)
-            { type: "conveyor", row: 4, col: 4, id: "output_center", attributes: { allowDrop: true } }
+            { type: "conveyor", row: 3, col: 4, id: "output_north", attributes: { allowDrop: true } },
+
+            { type: "conveyor", row: 5, col: 4, id: "output_south", attributes: { allowDrop: true } }
         ],
         moveable: [
             // Box from north
-            { type: "box", id: "box_north", row: 0, col: 4, attributes: {} },
+            { type: "box", id: "box_north", row: 0, col: 0, attributes: {} },
             
             // Box from south
-            { type: "box", id: "box_south", row: 8, col: 4, attributes: {} }
+            { type: "box", id: "box_south", row: 8, col: 0, attributes: {} }
         ]
     },
 
     player: {
-        startRow: 4,
+        startRow: 5,
         startCol: 0,
-        startDir: 1, // Facing East
+        startDir: EAST, // Facing East
         scale: 1.5
     },
 
     winConditions: [
-        { type: "itemAtPos", itemId: "box_north", row: 4, col: 4 },
-        { type: "itemAtPos", itemId: "box_south", row: 4, col: 4 }
+        { type: "itemAtPos", itemId: "box_north", row: 3, col: 4 },
+        { type: "itemAtPos", itemId: "box_south", row: 5, col: 4 }
     ],
 
     maxSteps: 60,
