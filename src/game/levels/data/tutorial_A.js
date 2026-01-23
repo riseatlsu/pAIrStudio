@@ -1,6 +1,8 @@
 // Tutorial Level A - Introduction
 // Non-experimental tutorial level with no chatbot assistance
 
+import { NORTH, SOUTH, EAST, WEST } from '../../iso/DirectionConstants';
+
 export const TutorialA = {
     id: "tutorial_A",
     title: "Tutorial: Basic Movement",
@@ -43,7 +45,7 @@ export const TutorialA = {
     player: {
         startRow: 1,  // Row 1
         startCol: 2,  // Column 2
-        startDir: 3, // Facing North (towards row 0)
+        startDir: NORTH, // Facing North (towards row 0)
         scale: 1.5
     },
 

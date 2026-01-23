@@ -303,10 +303,14 @@ export function disableWorkspace() {
         block.setDeletable(false);
     });
     
-    // Disable toolbox
+    // Keep toolbox visible but disable interactions
     const toolbox = workspace.getToolbox();
     if (toolbox) {
-        toolbox.setVisible(false);
+        toolbox.setVisible(true);
+    }
+    const container = document.getElementById('blockly-workspace');
+    if (container) {
+        container.classList.add('blockly-disabled');
     }
     
     console.log('BlocklyActions: Workspace interaction disabled');
@@ -333,6 +337,10 @@ export function enableWorkspace() {
     const toolbox = workspace.getToolbox();
     if (toolbox) {
         toolbox.setVisible(true);
+    }
+    const container = document.getElementById('blockly-workspace');
+    if (container) {
+        container.classList.remove('blockly-disabled');
     }
     
     console.log('BlocklyActions: Workspace interaction enabled');

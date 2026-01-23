@@ -1,6 +1,8 @@
 // Level 1 Definition
 // Objective: Move the box from the input conveyor (Left) to the output conveyor (Right).
 
+import { NORTH, SOUTH, EAST, WEST } from '../../iso/DirectionConstants';
+
 export const Level1 = {
     id: "level_001",
     title: "First Steps",
@@ -45,7 +47,7 @@ export const Level1 = {
     player: {
         startRow: 2,
         startCol: 2,
-        startDir: 3, // Facing North (NE)
+        startDir: NORTH, // Facing North (NE)
         scale: 1.5 // Slightly smaller than 2.1
     },
 

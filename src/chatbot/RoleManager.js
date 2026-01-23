@@ -116,35 +116,40 @@ class RoleManager {
     advanceToLevel(levelId) {
         if (!this.isPairProgrammingMode) return;
 
+        this.currentLevel = 0; // Default if not numbered
+
         // Extract level number from ID (only for numbered levels)
         const numberMatch = levelId.match(/\d+/);
-        if (!numberMatch) {
-            // Not a numbered level (e.g., tutorial_A) - don't change role
-            console.log('RoleManager: Non-numbered level, keeping current role');
-            return;
-        }
+        
+        if (numberMatch) {
+            const levelNumber = parseInt(numberMatch[0], 10);
+            this.currentLevel = levelNumber;
 
-        const levelNumber = parseInt(numberMatch[0], 10);
-        this.currentLevel = levelNumber;
+            // Determine role based on odd/even and initial role
+            // If started as driver: drive on odd (1,3,5), navigate on even (2,4,6)
+            // If started as navigator: navigate on odd (1,3,5), drive on even (2,4,6)
+            const shouldBeDriver = (this.initialRole === 'driver') ? (levelNumber % 2 === 1) : (levelNumber % 2 === 0);
+            const targetRole = shouldBeDriver ? 'driver' : 'navigator';
 
-        // Determine role based on odd/even and initial role
-        // If started as driver: drive on odd (1,3,5), navigate on even (2,4,6)
-        // If started as navigator: navigate on odd (1,3,5), drive on even (2,4,6)
-        const shouldBeDriver = (this.initialRole === 'driver') ? (levelNumber % 2 === 1) : (levelNumber % 2 === 0);
-        const targetRole = shouldBeDriver ? 'driver' : 'navigator';
-
-        // Only switch if role needs to change
-        if (this.currentRole !== targetRole) {
-            this.currentRole = targetRole;
-            this.updateRoleBadge();
-            this.updateBlocklyLock();
-            console.log(`RoleManager: Level ${levelNumber} - Role is now ${this.currentRole}`);
-            
-            // Notify callback (e.g., ChatbotManager)
-            if (this.onRoleChangeCallback) {
-                this.onRoleChangeCallback(this.currentRole);
+            // Switch role if needed
+            if (this.currentRole !== targetRole) {
+                this.currentRole = targetRole;
+                this.updateRoleBadge();
+                console.log(`RoleManager: Level ${levelNumber} - Role is now ${this.currentRole}`);
+                
+                // Notify callback (e.g., ChatbotManager)
+                if (this.onRoleChangeCallback) {
+                    this.onRoleChangeCallback(this.currentRole);
+                }
             }
+        } else {
+            console.log('RoleManager: Non-numbered level, keeping current role');
         }
+
+        // ALWAYS update the lock state when entering a new level
+        // This is critical because some levels (like tutorials) might disable the chatbot
+        // and force an unlock, regardless of the role
+        this.updateBlocklyLock();
     }
 
     /**
@@ -179,8 +184,30 @@ class RoleManager {
             return;
         }
 
-        // Navigator can code (unlocked), AI is driver (locked)
-        if (this.currentRole === 'navigator') {
+        // CRITICAL CHECK: If chatbot is disabled for this level (e.g. Tutorial A/B or Baseline),
+        // we MUST unlock the workspace regardless of role so the user can complete the level.
+        if (window.LevelManager && window.LevelManager.currentLevelId) {
+            const levelId = window.LevelManager.currentLevelId;
+            const levelConfig = window.LevelManager.levels[levelId];
+            
+            // Tutorial C teaches chatbot usage; always allow workspace interaction
+            if (levelId === 'tutorial_C') {
+                console.log('RoleManager: Tutorial C - Forcing unlock');
+                this.unlockBlockly();
+                return;
+            }
+            
+            // If explicit false, unlock it. (undefined usually implies true/default)
+            if (levelConfig && levelConfig.chatbotEnabled === false) {
+                console.log('RoleManager: Level has chatbot disabled - Forcing unlock');
+                this.unlockBlockly();
+                return;
+            }
+        }
+
+        // If User is Driver -> Unlocked (User writes code)
+        // If User is Navigator -> Locked (AI writes code)
+        if (this.currentRole === 'driver') {
             this.unlockBlockly();
         } else {
             this.lockBlockly();
@@ -193,7 +220,8 @@ class RoleManager {
     lockBlockly() {
         const overlay = document.getElementById('blockly-lock-overlay');
         if (overlay) {
-            overlay.style.display = 'flex';
+            // Keep workspace visible; do not occlude when AI is driver
+            overlay.style.display = 'none';
         }
 
         // Disable workspace interaction
