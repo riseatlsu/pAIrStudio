@@ -1056,6 +1056,370 @@ body.offline-mode .main-container {
     transition: all 0.2s ease;
 }
 
+/* ===== SANDBOX MODE ===== */
+.sandbox-mode-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, var(--lsu-purple), var(--lsu-light-purple));
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    animation: fadeIn 0.3s ease-out;
+}
+
+.sandbox-mode-overlay.hidden {
+    display: none;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.sandbox-mode-modal {
+    max-width: 900px;
+    width: 100%;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    overflow: hidden;
+    animation: slideUp 0.5s ease-out;
+}
+
+.sandbox-mode-header {
+    background: linear-gradient(135deg, var(--lsu-purple), var(--lsu-light-purple));
+    padding: 2rem;
+    text-align: center;
+    color: white;
+}
+
+.sandbox-logo {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+    margin: 0 auto 1rem;
+    display: block;
+}
+
+.sandbox-mode-title {
+    font-size: 2rem;
+    font-weight: 800;
+    margin: 0 0 0.5rem 0;
+}
+
+.sandbox-mode-subtitle {
+    font-size: 1.1rem;
+    opacity: 0.9;
+    margin: 0;
+}
+
+.sandbox-mode-body {
+    padding: 2rem;
+}
+
+.sandbox-mode-description {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.sandbox-mode-description h3 {
+    color: var(--lsu-purple);
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.sandbox-mode-description p {
+    color: #666;
+    line-height: 1.6;
+}
+
+.sandbox-mode-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.5rem;
+    max-width: 1200px;
+    width: 100%;
+}
+
+.sandbox-mode-card {
+    background: rgba(255, 255, 255, 0.95);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 15px;
+    padding: 2rem 1.5rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    min-height: 220px;
+}
+
+.sandbox-mode-card:hover {
+    border-color: var(--lsu-gold);
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(253, 208, 35, 0.4);
+    background: rgba(255, 255, 255, 1);
+}
+
+.mode-card-icon {
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 1rem;
+    background: linear-gradient(135deg, var(--lsu-purple), var(--lsu-light-purple));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 2rem;
+}
+
+.mode-card-title {
+    font-weight: 700;
+    color: var(--lsu-purple);
+    margin-bottom: 0.75rem;
+    font-size: 1.1rem;
+}
+
+.mode-card-description {
+    color: #333;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin: 0;
+}
+
+.sandbox-change-mode-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(255, 255, 255, 0.15);
+    color: white;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    padding: 0.5rem 1rem;
+    border-radius: 25px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.sandbox-change-mode-btn:hover {
+    background: rgba(255, 255, 255, 0.25);
+    border-color: var(--lsu-gold);
+    transform: translateY(-2px);
+}
+
+.sandbox-header-pill {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(255, 255, 255, 0.12);
+    color: var(--text-light);
+    padding: 0.5rem 1rem;
+    border-radius: 999px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+}
+
+.sandbox-header-pill i {
+    color: var(--lsu-gold);
+}
+
+@media (max-width: 768px) {
+    .sandbox-mode-options {
+        grid-template-columns: 1fr;
+    }
+    
+    .sandbox-mode-modal {
+        margin: 1rem;
+    }
+}
+
+/* ===== SANDBOX MODE (OLD STYLES) ===== */
+.sandbox-header-pill {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(255, 255, 255, 0.12);
+    color: var(--text-light);
+    padding: 0.5rem 1rem;
+    border-radius: 999px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+}
+
+.sandbox-header-pill i {
+    color: var(--lsu-gold);
+}
+
+.return-link {
+    color: var(--text-light);
+    font-weight: 600;
+    text-decoration: none;
+    transition: opacity 0.2s ease;
+}
+
+.return-link:hover {
+    opacity: 0.75;
+}
+
+.sandbox-banner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1.5rem;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+}
+
+.sandbox-banner-text h2 {
+    font-weight: 700;
+    margin: 0 0 0.5rem 0;
+}
+
+.sandbox-banner-text p {
+    margin: 0;
+    max-width: 520px;
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.sandbox-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: flex-end;
+}
+
+.sandbox-control {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    min-width: 200px;
+}
+
+.sandbox-control label {
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.sandbox-control .form-select {
+    background: rgba(0, 0, 0, 0.35);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    border-radius: 12px;
+    padding: 0.5rem 0.75rem;
+}
+
+.sandbox-control .form-select option {
+    color: #333;
+}
+
+.sandbox-hint {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 0.9rem;
+    font-style: italic;
+    padding: 0.5rem 0;
+}
+
+.sandbox-hint i {
+    color: var(--lsu-gold);
+}
+
+/* ===== SANDBOX PAGE SPECIFIC OVERRIDES ===== */
+body.sandbox-page {
+    overflow-y: auto;
+    height: auto;
+    min-height: 100vh;
+}
+
+body.sandbox-page .main-container {
+    padding-bottom: 2.5rem !important;
+}
+
+body.sandbox-page .workspace-container {
+    height: 700px;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+
+body.sandbox-page .panel {
+    height: 100%;
+}
+
+body.sandbox-page .game-panel,
+body.sandbox-page .blockly-panel {
+    max-height: 100%;
+}
+
+body.sandbox-page .blockly-workspace {
+    height: 100%;
+}
+
+body.sandbox-page .game-canvas {
+    height: 100%;
+}
+
+@media (max-width: 992px) {
+    .sandbox-banner {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .sandbox-controls {
+        width: 100%;
+    }
+
+    .sandbox-control {
+        flex: 1 1 100%;
+    }
+    
+    body.sandbox-page .workspace-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .sandbox-mode-options {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    body.sandbox-page .panel {
+        min-height: 350px;
+    }
+    
+    .sandbox-control {
+        min-width: 100%;
+    }
+    
+    .sandbox-mode-options {
+        grid-template-columns: 1fr;
+    }
+    
+    .sandbox-mode-title {
+        font-size: 2rem;
+    }
+    
+    .sandbox-mode-subtitle {
+        font-size: 1rem;
+        margin-bottom: 2rem;
+    }
+}
+
+/* ===== CHATBOT CONTINUATION ===== */
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
 .chatbot-btn:hover {
     background: rgba(255, 255, 255, 0.3);
     transform: scale(1.1);
