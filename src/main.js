@@ -32,8 +32,7 @@ window.game = game; // Expose for GameAPI
 // Initialize Blockly
 const blocklyManager = new BlocklyManager();
 
-// Wait for DOM
-document.addEventListener('DOMContentLoaded', () => {
+function initializeUI() {
     console.log('🚀 Initializing pAIrStudio...');
     
     // Expose DataLogger globally (but don't initialize until consent)
@@ -62,7 +61,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     console.log('✅ pAIrStudio initialization complete');
-});
+}
+
+// Initialize immediately if DOM is ready, otherwise wait
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeUI);
+} else {
+    // DOM already loaded (e.g., when dynamically imported in sandbox mode)
+    initializeUI();
+}
 
 // Export managers for global access
 window.ChatbotManager = chatbotManager;

@@ -1,4 +1,21 @@
 // src/utils/DataLogger.js
+//
+// Firebase Data Logger for pAIrStudio
+// 
+// CONFIGURING COLLECTION NAMES:
+// By default, data is stored in:
+//   - 'participants' collection (main documents)
+//   - 'events' sub-collection (under each participant)
+//
+// To change collection names, call setCollectionNames() before initialization:
+//   import dataLogger from './utils/DataLogger.js';
+//   dataLogger.setCollectionNames('experiment_participants', 'user_events');
+//   dataLogger.initialize();
+//
+// Or modify the defaults in the constructor (lines 30-31):
+//   this.participantsCollection = 'your_collection_name';
+//   this.eventsCollection = 'your_events_name';
+//
 
 import { initializeApp } from "firebase/app";
 import { getFirestore, collection, addDoc, serverTimestamp, setDoc, doc, updateDoc, getDoc } from "firebase/firestore";
@@ -26,6 +43,10 @@ class DataLogger {
         this.app = initializeApp(firebaseConfig);
         this.db = getFirestore(this.app);
         this.auth = getAuth(this.app);
+
+        // Collection names (configurable)
+        this.participantsCollection = 'participants';
+        this.eventsCollection = 'events';
 
         // State
         this.currentUserId = null;
@@ -67,6 +88,20 @@ class DataLogger {
         // Bind methods
         this.initExperiment = this.initExperiment.bind(this);
         this.logEvent = this.logEvent.bind(this);
+    }
+
+    /**
+     * Configure custom collection names (must be called before initExperiment)
+     * @param {string} participantsCollection - Name for participants collection
+     * @param {string} eventsCollection - Name for events sub-collection
+     */
+    setCollectionNames(participantsCollection, eventsCollection) {
+        if (this.isFirebaseReady) {
+            console.warn('DataLogger: Collection names should be set before initExperiment() is called');
+        }
+        this.participantsCollection = participantsCollection || 'participants';
+        this.eventsCollection = eventsCollection || 'events';
+        console.log(`DataLogger: Collection names set to '${this.participantsCollection}' and '${this.eventsCollection}'`);
     }
 
     /**
@@ -206,6 +241,11 @@ class DataLogger {
      * @param {string} group - Experimental group/condition
      */
     async setParticipantId(participantId, group) {
+        // Skip in sandbox mode
+        if (window.experimentManager?.sandboxMode) {
+            return;
+        }
+        
         // Store locally regardless of connection status
         this.sessionData.participantId = participantId;
         this.currentCondition = group;
@@ -233,7 +273,7 @@ class DataLogger {
         }
 
         try {
-            const userRef = doc(this.db, "participants", this.currentUserId);
+            const userRef = doc(this.db, this.participantsCollection, this.currentUserId);
             
             // Check if exists to avoid overwriting if called multiple times
             const docSnap = await getDoc(userRef);
@@ -270,6 +310,11 @@ class DataLogger {
      * @param {object} eventData 
      */
     async logEvent(eventType, eventData = {}) {
+        // Skip logging in sandbox mode
+        if (window.experimentManager?.sandboxMode) {
+            return;
+        }
+        
         if (!this.isFirebaseReady || !this.currentUserId) {
             console.log(`DataLogger: Queueing event: ${eventType} (offline or not authenticated)`);
             this.eventQueue.push({ eventType, eventData });
@@ -299,7 +344,7 @@ class DataLogger {
             // Deep clean to remove all undefined values (Firestore doesn't support them)
             const cleanedEntry = this.deepClean(logEntry);
 
-            await addDoc(collection(this.db, `participants/${this.currentUserId}/events`), cleanedEntry);
+            await addDoc(collection(this.db, `${this.participantsCollection}/${this.currentUserId}/${this.eventsCollection}`), cleanedEntry);
             // console.log(`DataLogger: Logged ${eventType}`);
         } catch (error) {
             console.error("DataLogger: Logging error:", error);
@@ -444,7 +489,7 @@ class DataLogger {
         if (!this.currentUserId || !levelId) return;
         
         try {
-            const userRef = doc(this.db, "participants", this.currentUserId);
+            const userRef = doc(this.db, this.participantsCollection, this.currentUserId);
             const levelMessages = this.sessionData.levels[levelId]?.chatMessages || [];
             
             await updateDoc(userRef, {
@@ -471,7 +516,7 @@ class DataLogger {
         // Also update the main participant doc with survey data
         if (this.currentUserId) {
             try {
-                const userRef = doc(this.db, "participants", this.currentUserId);
+                const userRef = doc(this.db, this.participantsCollection, this.currentUserId);
                 await updateDoc(userRef, {
                     [`surveys.${surveyId}`]: {
                         responses,
@@ -526,7 +571,7 @@ class DataLogger {
         const totalTime = Date.now() - this.experimentStartTime;
         
         try {
-            const userRef = doc(this.db, "participants", this.currentUserId);
+            const userRef = doc(this.db, this.participantsCollection, this.currentUserId);
             await updateDoc(userRef, {
                 status: 'completed',
                 completionTime: serverTimestamp(),

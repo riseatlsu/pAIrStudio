@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>pAIrStudio Sandbox</title>
+    <link rel="icon" type="image/png" sizes="64x64" href="../assets/logo.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../assets/logo.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../assets/logo.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="../assets/logo.png">
+    <meta name="theme-color" content="#461d7c">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/src/styles.css">
+</head>
+<body>
+    <!-- Mode Selection Overlay -->
+    <div class="sandbox-mode-overlay" id="sandbox-mode-overlay">
+        <div class="sandbox-mode-modal">
+            <div class="sandbox-mode-header">
+                <img src="../assets/logo.png" alt="pAIrStudio Logo" class="sandbox-logo" />
+                <h1 class="sandbox-mode-title">Sandbox Mode</h1>
+                <p class="sandbox-mode-subtitle">Select an experimental group configuration</p>
+            </div>
+            
+            <div class="sandbox-mode-body">
+                <div class="sandbox-mode-description">
+                    <h3>Choose Your Experience</h3>
+                    <p>Select which experimental mode you'd like to explore. You can switch modes at any time using the "Change Mode" button.</p>
+                </div>
+                
+                <div class="sandbox-mode-options" id="sandbox-mode-options">
+                    <!-- Mode cards will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <header class="lsu-header">
+        <nav class="navbar navbar-expand-lg lsu-navbar">
+            <div class="container-fluid page-container">
+                <a class="navbar-brand" href="../">
+                    <span class="brand-text">p<span class="highlight-ai">AI</span>rStudio</span>
+                </a>
+                <div class="level-progress level-progress-center" id="level-progress-container"></div>
+                <div class="sandbox-header-pill">
+                    <i class="fas fa-cubes"></i>
+                    <span>Sandbox Mode</span>
+                </div>
+                <div class="d-flex align-items-center gap-3">
+                    <button class="sandbox-change-mode-btn" id="sandbox-change-mode-btn">
+                        <i class="fas fa-exchange-alt"></i>
+                        <span>Change Mode</span>
+                    </button>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div class="offline-notification" id="offline-notification" style="display: none;">
+        <div class="offline-notification-content">
+            <i class="fas fa-wifi-slash"></i>
+            <span class="offline-message">
+                <strong>No Internet Connection</strong> - Please connect to the internet to use online features.
+            </span>
+        </div>
+    </div>
+
+    <div class="main-container main-container-inline">
+        <div class="container-fluid page-container">
+            <div class="instructions-banner" id="instructions-banner">
+                <div class="instructions-title">
+                    <i class="fas fa-info-circle"></i>
+                    <span id="instructions-title-text">Level Instructions</span>
+                </div>
+                <div class="instructions-text" id="instructions-text">
+                    Choose a mode and level to get started.
+                </div>
+            </div>
+
+            <div class="workspace-container">
+                <div class="panel game-panel">
+                    <div class="panel-header">
+                        <span><i class="fas fa-gamepad icon"></i>Simulation Viewer</span>
+                        <button class="action-btn reset-btn btn-compact" id="reset-btn">
+                            <i class="fas fa-redo"></i>
+                            Reset Level
+                        </button>
+                    </div>
+                    <div class="panel-body">
+                        <div class="game-canvas" id="game-canvas"></div>
+                    </div>
+                </div>
+
+                <div class="panel blockly-panel">
+                    <div class="panel-header">
+                        <span><i class="fas fa-puzzle-piece icon"></i>Visual Programming</span>
+                        <button class="action-btn run-btn btn-compact" id="run-code-btn">
+                            <i class="fas fa-play"></i>
+                            Run Code
+                        </button>
+                    </div>
+                    <div class="panel-body">
+                        <div class="blockly-workspace" id="blockly-workspace" style="position: relative;">
+                            <div class="blockly-placeholder">
+                                <div class="text-center">
+                                    <i class="fas fa-puzzle-piece fa-3x mb-3"></i>
+                                    <div>Blockly will load here</div>
+                                    <small>Visual programming interface</small>
+                                </div>
+                            </div>
+                            <div class="blockly-lock-overlay" id="blockly-lock-overlay" style="display: none;">
+                                <div class="lock-message">
+                                    <i class="fas fa-lock"></i>
+                                    <h3>AI is Driving</h3>
+                                    <p>The AI will write the code. You can chat to provide guidance.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="result-modal-overlay" id="result-modal">
+        <div class="result-modal">
+            <div class="result-modal-header" id="result-modal-header">
+                <div class="result-icon" id="result-icon">🎉</div>
+                <h2 class="result-title" id="result-title">Level Complete!</h2>
+            </div>
+            <div class="result-modal-body">
+                <p class="result-message" id="result-message">
+                    Great job! You successfully completed the level.
+                </p>
+                <div class="result-buttons" id="result-buttons"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="role-badge" style="display: none;"></div>
+
+    <div class="chatbot-container" id="chatbot" style="display: none;">
+        <div class="chatbot-header" id="chatbot-header">
+            <div class="chatbot-title">
+                <span>p<span class="highlight-ai-glow">AI</span>r Assistant</span>
+            </div>
+            <div class="chatbot-controls">
+                <button class="chatbot-btn" id="toggle-chat-btn" title="Minimize">
+                    <i class="fas fa-minus" id="toggle-icon"></i>
+                </button>
+            </div>
+        </div>
+        <div class="chatbot-messages" id="chat-messages"></div>
+        <div class="chatbot-input-container">
+            <input type="text" class="chatbot-input" id="chat-input" placeholder="Ask about this level...">
+            <button class="chatbot-send" id="chat-send-btn">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+    
+    <script>
+        // Result Modal Functions for Sandbox Mode
+        window.showResultModal = function(isWin, currentLevel) {
+            const modal = document.getElementById('result-modal');
+            const header = document.getElementById('result-modal-header');
+            const icon = document.getElementById('result-icon');
+            const title = document.getElementById('result-title');
+            const message = document.getElementById('result-message');
+            const buttons = document.getElementById('result-buttons');
+
+            // Update header style
+            header.className = 'result-modal-header ' + (isWin ? 'win' : 'lose');
+
+            // Update content based on win/lose
+            if (isWin) {
+                icon.textContent = '🎉';
+                title.textContent = 'Level Complete!';
+                message.textContent = 'Congratulations! You successfully completed the level and delivered the box to the goal.';
+            } else {
+                icon.textContent = '❌';
+                title.textContent = 'Level Failed';
+                message.textContent = 'The box was dropped in the wrong location. Try again!';
+            }
+
+            // Clear and add appropriate buttons
+            buttons.innerHTML = '';
+
+            if (isWin) {
+                // Check if there's a next level
+                const levelManager = window.LevelManager;
+                if (levelManager) {
+                    const currentIndex = levelManager.allLevelIds.indexOf(currentLevel);
+                    const hasNextLevel = currentIndex >= 0 && currentIndex < levelManager.allLevelIds.length - 1;
+                    
+                    if (hasNextLevel) {
+                        // Show Next Level button
+                        const nextBtn = document.createElement('button');
+                        nextBtn.className = 'result-btn result-btn-next';
+                        nextBtn.innerHTML = '<i class="fas fa-arrow-right"></i> Next Level';
+                        nextBtn.onclick = function() {
+                            modal.classList.remove('show');
+                            if (window.GameAPI) {
+                                window.GameAPI.nextLevel();
+                            }
+                        };
+                        buttons.appendChild(nextBtn);
+                    }
+                }
+                
+                // Also add retry button for wins
+                const retryBtn = document.createElement('button');
+                retryBtn.className = 'result-btn result-btn-retry';
+                retryBtn.innerHTML = '<i class="fas fa-redo"></i> Try Again';
+                retryBtn.onclick = function() {
+                    modal.classList.remove('show');
+                    if (window.GameAPI) {
+                        window.GameAPI.resetLevel();
+                    }
+                };
+                buttons.appendChild(retryBtn);
+            } else {
+                // Show Retry button for losses
+                const retryBtn = document.createElement('button');
+                retryBtn.className = 'result-btn result-btn-retry';
+                retryBtn.innerHTML = '<i class="fas fa-redo"></i> Start Over';
+                retryBtn.onclick = function() {
+                    modal.classList.remove('show');
+                    if (window.GameAPI) {
+                        window.GameAPI.resetLevel();
+                    }
+                };
+                buttons.appendChild(retryBtn);
+            }
+
+            // Show modal
+            modal.classList.add('show');
+        };
+    </script>
+    
+    <script type="module" src="/src/sandbox/sandbox.js"></script>
+</body>
+</html>

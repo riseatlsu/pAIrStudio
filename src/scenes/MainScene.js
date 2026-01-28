@@ -14,8 +14,10 @@ export class MainScene extends Phaser.Scene {
   }
 
   preload() {
-    // Load Assets
-    this.load.setPath('assets');
+    // Load Assets - resolve base path for GitHub Pages compatibility
+    const basePath = import.meta.env?.BASE_URL || '/';
+    const sanitizedBase = basePath.endsWith('/') ? basePath.slice(0, -1) : basePath;
+    this.load.setPath(`${sanitizedBase}/assets`);
     
     // 1. Isometric Tiles (Floor=0, Conveyor=1)
     this.load.spritesheet('tiles', 'fixes_factory.png', { 

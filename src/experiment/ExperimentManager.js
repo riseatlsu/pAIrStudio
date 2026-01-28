@@ -8,6 +8,7 @@ export class ExperimentManager {
         this.groupId = null;
         this.participantId = null;
         this.features = null;
+        this.sandboxMode = false;
     }
 
     /**
@@ -80,7 +81,7 @@ export class ExperimentManager {
     /**
      * Manually set the group (e.g., for debugging or specific assignment overrides)
      */
-    setGroup(groupId) {
+    setGroup(groupId, options = {}) {
         if (!GROUP_FEATURES[groupId]) {
             console.error(`ExperimentManager: Invalid group ID '${groupId}'`);
             return;
@@ -88,7 +89,10 @@ export class ExperimentManager {
         
         this.groupId = groupId;
         this.features = GROUP_FEATURES[groupId];
-        this.setCookie('pair_group', groupId, 30); // 30 days
+        const shouldPersist = options.persist !== false && !this.sandboxMode;
+        if (shouldPersist) {
+            this.setCookie('pair_group', groupId, 30); // 30 days
+        }
         console.log(`ExperimentManager: Assigned to '${groupId}'`);
     }
 
@@ -116,6 +120,9 @@ export class ExperimentManager {
     // --- Cookie Helpers ---
 
     setCookie(name, value, days = 365) {
+        if (this.sandboxMode) {
+            return;
+        }
         let expires = "";
         if (days) {
             const date = new Promise((resolve) => resolve(new Date())); // Simplify
@@ -127,6 +134,9 @@ export class ExperimentManager {
     }
 
     getCookie(name) {
+        if (this.sandboxMode) {
+            return null;
+        }
         const nameEQ = name + "=";
         const ca = document.cookie.split(';');
         for (let i = 0; i < ca.length; i++) {
@@ -142,6 +152,15 @@ export class ExperimentManager {
         this.setCookie('pair_participant_id', '', -1);
         this.groupId = null;
         this.features = null;
+    }
+
+    enableSandboxMode(enable = true) {
+        this.sandboxMode = enable;
+        if (enable) {
+            this.groupId = null;
+            this.features = null;
+            this.participantId = null;
+        }
     }
 }
 

@@ -6,6 +6,7 @@ export class LevelManager {
     constructor() {
         this.currentLevelId = null;
         this.levels = {}; // Registry of all loaded definitions
+        this.sandboxMode = false;
         this.completedLevels = this.loadProgress();
         
         // Level progression is now dynamic based on experimental group
@@ -23,6 +24,29 @@ export class LevelManager {
         console.log(`LevelManager: Set progression for group ${groupId}:`, this.allLevelIds);
         
         // Update progress UI if it exists
+        if (document.getElementById('level-progress-container')) {
+            this.updateProgressUI();
+        }
+    }
+
+    /**
+     * Enable or disable sandbox mode which bypasses persistence and locks
+     * @param {boolean} enable
+     */
+    setSandboxMode(enable = true) {
+        this.sandboxMode = enable;
+        if (enable) {
+            this.completedLevels = [];
+            console.log('LevelManager: Sandbox mode enabled');
+        }
+    }
+
+    /**
+     * Directly set a custom level progression (used by sandbox UI)
+     * @param {Array<string>} levelIds
+     */
+    setCustomProgression(levelIds = []) {
+        this.allLevelIds = [...levelIds];
         if (document.getElementById('level-progress-container')) {
             this.updateProgressUI();
         }
@@ -163,6 +187,9 @@ export class LevelManager {
      * Only current level is accessible - no going back to completed levels
      */
     isLevelUnlocked(levelId) {
+        if (this.sandboxMode) {
+            return true;
+        }
         // Only the current level is unlocked
         return levelId === this.currentLevelId;
     }
@@ -250,6 +277,9 @@ export class LevelManager {
      */
     getCurrentLevel() {
         try {
+            if (this.sandboxMode) {
+                return this.allLevelIds.length > 0 ? this.allLevelIds[0] : 'tutorial_A';
+            }
             const saved = localStorage.getItem('pair_studio_current_level');
             // If a level is saved and it exists in our progression, use it
             if (saved && this.allLevelIds.includes(saved)) {
@@ -268,6 +298,9 @@ export class LevelManager {
      */
     saveCurrentLevel(levelId) {
         try {
+            if (this.sandboxMode) {
+                return;
+            }
             localStorage.setItem('pair_studio_current_level', levelId);
         } catch (e) {
             console.error('Failed to save current level', e);
@@ -276,6 +309,9 @@ export class LevelManager {
 
     loadProgress() {
         try {
+            if (this.sandboxMode) {
+                return [];
+            }
             const stored = localStorage.getItem('pair_studio_progress');
             return stored ? JSON.parse(stored) : [];
         } catch (e) {
@@ -289,12 +325,14 @@ export class LevelManager {
             this.completedLevels.push(levelId);
         }
         
-        // Save simple list of completed IDs
-        localStorage.setItem('pair_studio_progress', JSON.stringify(this.completedLevels));
-        
-        // Save specific level snapshot (end state)
-        if (gameStateSnapshot) {
-            localStorage.setItem(`pair_studio_snapshot_${levelId}`, JSON.stringify(gameStateSnapshot));
+        if (!this.sandboxMode) {
+            // Save simple list of completed IDs
+            localStorage.setItem('pair_studio_progress', JSON.stringify(this.completedLevels));
+            
+            // Save specific level snapshot (end state)
+            if (gameStateSnapshot) {
+                localStorage.setItem(`pair_studio_snapshot_${levelId}`, JSON.stringify(gameStateSnapshot));
+            }
         }
         
         // Update UI after completing level
@@ -307,7 +345,9 @@ export class LevelManager {
     completeLevel(levelId) {
         if (!this.completedLevels.includes(levelId)) {
             this.completedLevels.push(levelId);
-            localStorage.setItem('pair_studio_progress', JSON.stringify(this.completedLevels));
+            if (!this.sandboxMode) {
+                localStorage.setItem('pair_studio_progress', JSON.stringify(this.completedLevels));
+            }
             this.updateProgressUI();
             
             // Log level completion

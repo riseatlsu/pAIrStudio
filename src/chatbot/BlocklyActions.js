@@ -9,7 +9,13 @@
  * @returns {Blockly.Workspace|null}
  */
 function getWorkspace() {
-    return window.blocklyWorkspace || window.Blockly?.getMainWorkspace() || null;
+    if (window.blocklyWorkspace) {
+        return window.blocklyWorkspace;
+    }
+    if (window.Blockly && typeof window.Blockly.getMainWorkspace === 'function') {
+        return window.Blockly.getMainWorkspace();
+    }
+    return null;
 }
 
 /**

@@ -271,6 +271,7 @@ Example good responses:
 - "**Analysis**: I see a box at position (2,3) and the output conveyor is at (5,1). The robot is facing North.\\n\\n**Plan**:\\nStep 1: Navigate to the box at (2,3)\\nStep 2: Pick up the box\\nStep 3: Navigate to the output conveyor at (5,1)\\nStep 4: Drop the box\\n\\nLet's start - you'll need to turn right first, then move forward 3 steps to reach the box."
 - "Good progress! Now for Step 3, guide the robot to the target location in the top-right corner. You'll need some turn and move blocks."
 
+
 Example BAD responses:
 - Anything with JSON code blocks (that's the driver's job!)
 - "Here's the code..." (NO! Tell them WHAT to code, not code itself)
