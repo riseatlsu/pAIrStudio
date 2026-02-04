@@ -8,30 +8,18 @@ export const SURVEY_QUESTIONS = [
     {
         id: 'q1',
         type: 'multiple-choice',
-        question: 'How would you rate your overall experience with the programming environment?',
+        question: 'How much experience do you have with programming in any capacity?',
         options: [
-            'Excellent',
-            'Good',
-            'Fair',
-            'Poor'
+            'Less than 1 year',
+            '1-3 years',
+            '3-5 years',
+            'More than 5 years'
         ],
         required: true,
         groups: ['all'] // 'all' or specific groups like ['STANDARD_AI', 'PAIR_DRIVER']
     },
     {
         id: 'q2',
-        type: 'likert',
-        question: 'The visual programming interface was easy to use.',
-        scale: 5, // 1-5 scale
-        labels: {
-            1: 'Strongly Disagree',
-            5: 'Strongly Agree'
-        },
-        required: true,
-        groups: ['all']
-    },
-    {
-        id: 'q3',
         type: 'likert',
         question: 'I found the chatbot helpful in completing the tasks.',
         scale: 5,
@@ -43,45 +31,53 @@ export const SURVEY_QUESTIONS = [
         groups: ['STANDARD_AI', 'PAIR_DRIVER', 'PAIR_NAVIGATOR'] // Only show to groups with chatbot
     },
     {
+        id: 'q3',
+        type: 'likert',
+        question: 'How difficult was the last level you completed (level 5)?',
+        scale: 5, // 1-5 scale
+        labels: {
+            1: 'Very easy',
+            5: 'Very difficult'
+        },
+        required: true,
+        groups: ['all']
+    },
+
+    {
         id: 'q4',
         type: 'long-answer',
-        question: 'What did you find most challenging about programming the robot?',
-        placeholder: 'Please describe any challenges you faced...',
+        question: 'Explain your answer to the previous question.',
+        placeholder: 'Please give more details...',
         maxLength: 1000,
-        required: false,
+        required: true,
         groups: ['all']
     },
     {
         id: 'q5',
-        type: 'multiple-choice',
-        question: 'How effective was the pair programming experience?',
-        options: [
-            'Very Effective',
-            'Somewhat Effective',
-            'Neutral',
-            'Somewhat Ineffective',
-            'Very Ineffective'
-        ],
+        type: 'long-answer',
+        question: 'Please describe your experience serving as a DRIVER in the pair programming setup.',
+        placeholder: 'Please share your thoughts...',
+        maxLength: 1000,
+        required: true,
+        groups: ['PAIR_DRIVER', 'PAIR_NAVIGATOR'] // Only for pair programming groups
+    },
+        {
+        id: 'q6',
+        type: 'long-answer',
+        question: 'Please describe your experience serving as a NAVIGATOR in the pair programming setup.',
+        placeholder: 'Please share your thoughts...',
+        maxLength: 1000,
         required: true,
         groups: ['PAIR_DRIVER', 'PAIR_NAVIGATOR'] // Only for pair programming groups
     },
     {
-        id: 'q6',
-        type: 'long-answer',
-        question: 'Do you have any suggestions for improving this learning environment?',
-        placeholder: 'Please share your suggestions...',
-        maxLength: 1000,
-        required: false,
-        groups: ['all']
-    },
-    {
         id: 'q7',
         type: 'likert',
-        question: 'I feel confident in my ability to program the robot after this session.',
+        question: 'If you were to do another programming task, would you feel confident using the skills you learned here?',
         scale: 5,
         labels: {
-            1: 'Strongly Disagree',
-            5: 'Strongly Agree'
+            1: 'Not at all confident',
+            5: 'Very confident'
         },
         required: true,
         groups: ['all']

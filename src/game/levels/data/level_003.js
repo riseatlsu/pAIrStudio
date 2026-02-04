@@ -1,71 +1,71 @@
 // Level 3 Definition
-// Objective: Navigate around obstacles to deliver boxes
-// AI DISABLED for all groups - spatial reasoning challenge
+// Objective: Deliver boxes to different destinations based on pattern
+// Introduces basic spatial reasoning with multiple destinations
 
 import { NORTH, SOUTH, EAST, WEST } from '../../iso/DirectionConstants';
 
 export const Level3 = {
     id: "level_003",
-    title: "Obstacle Course",
-    description: "Navigate around obstacles to deliver packages to the correct locations.",
-    instructions: "The warehouse floor has obstacles blocking direct paths. You must navigate around them to pick up boxes and deliver them to their destinations. Bring each box to its respective closest conveyor belt. Think about the most efficient route!",
+    title: "Multi-Destination Delivery",
+    description: "Deliver boxes to different output conveyors efficiently.",
+    instructions: "You have two boxes to deliver to different output conveyors. Plan your route carefully to minimize the number of steps. Think about which box to deliver first to avoid backtracking.",
     
     // Experimental level settings
     isExperiment: true,
-    chatbotEnabled: false,  // NO AI for any group on this level
+    chatbotEnabled: true,
     
-    // 9x9 Grid with obstacles (0 = empty/obstacle)
+    // 8x8 Grid
     map: {
-        width: 9,
-        height: 9,
+        width: 8,
+        height: 8,
         data: [
-            [1, 1, 1, 1, 1, 1, 1, 1, 1],
-            [1, 0, 0, 1, 1, 1, 0, 0, 1],
-            [1, 0, 0, 1, 1, 1, 0, 0, 1],
-            [1, 1, 1, 1, 1, 1, 1, 1, 1],
-            [1, 1, 1, 1, 1, 1, 1, 1, 1],
-            [1, 1, 1, 1, 1, 1, 1, 1, 1],
-            [1, 0, 0, 1, 1, 1, 0, 0, 1],
-            [1, 0, 0, 1, 1, 1, 0, 0, 1],
-            [1, 1, 1, 1, 1, 1, 1, 1, 1]
+            [1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1]
         ]
     },
 
     objects: {
         stationary: [
-            // Input conveyors
-            { type: "conveyor", row: 0, col: 0, id: "input_north", attributes: { allowDrop: true } },
-            { type: "conveyor", row: 8, col: 0, id: "input_south", attributes: { allowDrop: true } },
+            // Input area (left side, center)
+            { type: "conveyor", row: 3, col: 1, id: "input_area_1", attributes: { allowDrop: true } },
+            { type: "conveyor", row: 4, col: 1, id: "input_area_2", attributes: { allowDrop: true } },
             
-            // Output conveyor (center)
-            { type: "conveyor", row: 3, col: 4, id: "output_north", attributes: { allowDrop: true } },
-
-            { type: "conveyor", row: 5, col: 4, id: "output_south", attributes: { allowDrop: true } }
+            // Output conveyor 1 (top-right)
+            { type: "conveyor", row: 1, col: 6, id: "output_belt_1", attributes: { allowDrop: true } },
+            
+            // Output conveyor 2 (bottom-right)
+            { type: "conveyor", row: 6, col: 6, id: "output_belt_2", attributes: { allowDrop: true } }
         ],
         moveable: [
-            // Box from north
-            { type: "box", id: "box_north", row: 0, col: 0, attributes: {} },
+            // Box 1 - should go to output_belt_1 (top)
+            { type: "box", id: "box_alpha", row: 3, col: 1, attributes: {} },
             
-            // Box from south
-            { type: "box", id: "box_south", row: 8, col: 0, attributes: {} }
+            // Box 2 - should go to output_belt_2 (bottom)
+            { type: "box", id: "box_beta", row: 4, col: 1, attributes: {} }
         ]
     },
 
     player: {
-        startRow: 5,
-        startCol: 0,
-        startDir: EAST, // Facing East
+        startRow: 4,
+        startCol: 3,
+        startDir: WEST, // Facing West
         scale: 1.5
     },
 
     winConditions: [
-        { type: "itemAtPos", itemId: "box_north", row: 3, col: 4 },
-        { type: "itemAtPos", itemId: "box_south", row: 5, col: 4 }
+        { type: "itemAtPos", itemId: "box_alpha", row: 1, col: 6 },
+        { type: "itemAtPos", itemId: "box_beta", row: 6, col: 6 }
     ],
 
-    maxSteps: 60,
+    maxSteps: 50,
     
-    // Available blocks - full movement and loop support
+    // Available blocks - movement and loops
     allowedBlocks: {
         actions: ['move_forward', 'turn_clockwise', 'turn_counter_clockwise', 'pick_object', 'drop_object'],
         sensing: false,
