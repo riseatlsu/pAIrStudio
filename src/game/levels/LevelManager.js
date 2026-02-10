@@ -421,8 +421,8 @@ export class LevelManager {
         
         for (let box of boxes) {
              const stat = board.getStationaryAt(box.gridRow, box.gridCol);
-             // If there is NO stationary object here, OR the stationary object is NOT a conveyor (doesn't have allowDrop)
-             if (!stat || !stat.getAttribute('allowDrop')) {
+             // If there is NO stationary object here, OR the stationary object is NOT a conveyor
+             if (!stat || stat.isoType !== 'conveyor') {
                  return { failed: true, reason: "Box dropped on the floor!" };
              }
         }

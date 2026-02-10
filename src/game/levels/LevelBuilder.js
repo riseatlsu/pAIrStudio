@@ -7,7 +7,8 @@ export class LevelBuilder {
         // Map logical strings ('floor', 'conveyor') to asset keys & frame indices
         this.textureMap = textureMap || {
             floor: { key: 'tiles', frame: 0 },
-            conveyor: { key: 'tiles', frame: 1 },
+            conveyor: { key: 'tiles1', frame: 1 },
+            zone: { key: 'zone', frame: 0 },
             robot: { key: 'robot', frameOffset: 0 }, // robot_type_1 (Row 0)
             box: { key: 'box', frame: 0 }
         };
@@ -35,12 +36,25 @@ export class LevelBuilder {
                         frame: this.textureMap.conveyor.frame,
                         collidable: true, // Cannot walk on conveyor
                         attributes: { 
-                            allowDrop: true,
+                            allowDrop: false,
                             id: obj.id, // e.g., 'input_1', 'output_1'
                             ...obj.attributes 
                         }
                     });
                     conv.isoType = 'conveyor'; // Explicit Type for Blockly
+                } else if (obj.type === 'zone') {
+                    // Zones are special Stationary Objects
+                    const zone = this.board.addStationaryObject(obj.row, obj.col, this.textureMap.zone.key, {
+                        frame: this.textureMap.zone.frame,
+                        collidable: false, // Can walk on zone
+                        // zHeight: -1, // Not working - Daniel messing with zHeight
+                        attributes: { 
+                            allowDrop: true,
+                            id: obj.id,
+                            ...obj.attributes 
+                        }
+                    });
+                    zone.isoType = 'zone'; // Explicit Type for Blockly
                 }
             });
         }

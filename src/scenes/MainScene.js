@@ -19,10 +19,22 @@ export class MainScene extends Phaser.Scene {
     const sanitizedBase = basePath.endsWith('/') ? basePath.slice(0, -1) : basePath;
     this.load.setPath(`${sanitizedBase}/assets`);
     
-    // 1. Isometric Tiles (Floor=0, Conveyor=1)
-    this.load.spritesheet('tiles', 'fixes_factory.png', { 
+    // 0. Floor Tiles (Basic Floor=0)
+    this.load.spritesheet('tiles', 'floor.png', { 
         frameWidth: 64, 
         frameHeight: 32 
+    });
+
+    // 1. Isometric Tiles (Floor=0, Conveyor=1) -> change
+    this.load.spritesheet('tiles1', 'fixes_factory.png', { 
+        frameWidth: 64, 
+        frameHeight: 32 
+    });
+
+    // Dropoff Floor
+    this.load.spritesheet('zone', 'DropOff-Floor.png', { 
+        frameWidth: 66, 
+        frameHeight: 33 
     });
 
     // 2. Robot (Rows for different types, Cols for direction)
@@ -52,7 +64,8 @@ export class MainScene extends Phaser.Scene {
     // Initialize Level Builder
     this.levelBuilder = new LevelBuilder(this, this.isoBoard, {
         floor: { key: 'tiles', frame: 0 },
-        conveyor: { key: 'tiles', frame: 1 },
+        conveyor: { key: 'tiles1', frame: 1 },
+        zone: { key: 'zone', frame: 0 },
         robot: { key: 'robot', frameOffset: 0 }, 
         box: { key: 'box', frame: 0 }
     });
@@ -129,6 +142,13 @@ export class MainScene extends Phaser.Scene {
           direction: playerConfig.startDir,
           scale: playerConfig.scale // Apply scale from config
       });
+
+    // Not working - Daniel messing with zHeight approach
+    //   // Set sprite metadata for depth sorting
+    //   this.player.sprite.isoRow = playerConfig.startRow;
+    //   this.player.sprite.isoCol = playerConfig.startCol;
+    //   this.player.sprite.isoZ = 10;
+    //   this.player.sprite.isoType = 'player';
 
       // Add player to the board's sprite list so updateDepth() sees it
       this.isoBoard.allSprites.push(this.player.sprite);

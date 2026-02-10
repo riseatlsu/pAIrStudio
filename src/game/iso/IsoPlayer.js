@@ -177,6 +177,12 @@ export class IsoPlayer extends MoveableObject {
       
       const front = this.getFrontCoordinates();
       const obj = this.board.getMoveableAt(front.row, front.col);
+
+      // NEW: Check if location allows pickup
+      const robotLocation = this.board.getStationaryAt(this.gridRow, this.gridCol);
+      if (robotLocation && !robotLocation.getAttribute('allowDrop')) {
+          return false;  // Cannot pick up from conveyor
+      }
       
       // Check if object exists, is not already carried, and is pickupable
       if (obj && !obj.isCarried) { 
@@ -228,13 +234,20 @@ export class IsoPlayer extends MoveableObject {
       // 2. Check Stationary Objects (like conveyors or walls)
       const stationary = this.board.getStationaryAt(front.row, front.col);
       if (stationary) {
-          // Check if this stationary object explicitly allows dropping items on it
-          // (e.g. Conveyor Belts)
           const allowsDrop = stationary.getAttribute('allowDrop');
           
+          // If target doesn't allow drop, check if it's a conveyor and player is on a zone
           if (!allowsDrop) {
-               // If it doesn't explicitly allow drop, checking if it's a solid obstacle
-               if (stationary.collidable) return false;
+               if (stationary.isoType === 'conveyor') {
+                   // Can drop on conveyor only if player is standing on a zone
+                   const playerLocation = this.board.getStationaryAt(this.gridRow, this.gridCol);
+                   if (!playerLocation || playerLocation.isoType !== 'zone') {
+                       return false; // Player must be on a zone to drop onto conveyor
+                   }
+                   // Player is on zone - allow drop on conveyor
+               } else if (stationary.collidable) {
+                   return false; // Other obstacles block drops
+               }
           }
           // If allowsDrop is true, we proceed regardless of collidable status
       }
