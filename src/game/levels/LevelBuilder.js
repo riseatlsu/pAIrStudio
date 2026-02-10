@@ -35,26 +35,25 @@ export class LevelBuilder {
                     const conv = this.board.addStationaryObject(obj.row, obj.col, this.textureMap.conveyor.key, {
                         frame: this.textureMap.conveyor.frame,
                         collidable: true, // Cannot walk on conveyor
+                        isConveyor: true, // Mark as conveyor for game logic (for IsoBoard and win conditions)
                         attributes: { 
                             allowDrop: false,
                             id: obj.id, // e.g., 'input_1', 'output_1'
                             ...obj.attributes 
                         }
                     });
-                    conv.isoType = 'conveyor'; // Explicit Type for Blockly
                 } else if (obj.type === 'zone') {
                     // Zones are special Stationary Objects
                     const zone = this.board.addStationaryObject(obj.row, obj.col, this.textureMap.zone.key, {
                         frame: this.textureMap.zone.frame,
                         collidable: false, // Can walk on zone
-                        // zHeight: -1, // Not working - Daniel messing with zHeight
+                        isZone: true, // Mark as zone for depth sorting (for IsoBoard) and for game logic (for win conditions)
                         attributes: { 
                             allowDrop: true,
                             id: obj.id,
                             ...obj.attributes 
                         }
                     });
-                    zone.isoType = 'zone'; // Explicit Type for Blockly
                 }
             });
         }

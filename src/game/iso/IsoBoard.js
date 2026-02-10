@@ -79,7 +79,14 @@ export class IsoBoard {
     obj.sprite.isoRow = row;
     obj.sprite.isoCol = col;
     obj.sprite.isoZ = config.zHeight || 0; // Usually 0 or low
-    obj.sprite.isoType = 'stationary';
+    
+    // Determine type
+    let objType = 'stationary';
+    if (config.isZone) objType = 'zone';
+    if (config.isConveyor) objType = 'conveyor';
+    
+    obj.sprite.isoType = objType;
+    obj.isoType = objType; // Also set on wrapper for game logic (for LevelBuilder to check)
     
     this.stationaryObjects.push(obj);
     this.allSprites.push(obj.sprite);
@@ -142,7 +149,7 @@ export class IsoBoard {
     this.allSprites.sort((a, b) => {
         // 1. Z layer priority (Strong Separation between Floors and Objects)
         // Floors must ALWAYS render before objects to prevent clipping when objects overlap tiles
-        const typePriority = { 'floor': 0, 'floor_border': 0, 'stationary': 1, 'moveable': 1, 'player': 1 };
+        const typePriority = { 'floor': 0, 'floor_border': 0, 'zone': 0, 'conveyor': 1, 'stationary': 1, 'moveable': 1, 'player': 1 };
         const typeA = typePriority[a.isoType] !== undefined ? typePriority[a.isoType] : 1;
         const typeB = typePriority[b.isoType] !== undefined ? typePriority[b.isoType] : 1;
         
