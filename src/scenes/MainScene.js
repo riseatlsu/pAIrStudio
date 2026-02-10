@@ -143,13 +143,6 @@ export class MainScene extends Phaser.Scene {
           scale: playerConfig.scale // Apply scale from config
       });
 
-    // Not working - Daniel messing with zHeight approach
-    //   // Set sprite metadata for depth sorting
-    //   this.player.sprite.isoRow = playerConfig.startRow;
-    //   this.player.sprite.isoCol = playerConfig.startCol;
-    //   this.player.sprite.isoZ = 10;
-    //   this.player.sprite.isoType = 'player';
-
       // Add player to the board's sprite list so updateDepth() sees it
       this.isoBoard.allSprites.push(this.player.sprite);
       this.isoBoard.moveableObjects.push(this.player);
