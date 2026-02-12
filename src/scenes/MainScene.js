@@ -25,10 +25,11 @@ export class MainScene extends Phaser.Scene {
         frameHeight: 32 
     });
 
-    // 1. Isometric Tiles (Floor=0, Conveyor=1) -> change
-    this.load.spritesheet('tiles1', 'fixes_factory.png', { 
-        frameWidth: 64, 
-        frameHeight: 32 
+    // 1. Conveyor Belt (6 frames, conveyor piece oriented vertically)
+    this.load.spritesheet('conveyor', 'ConveyorBelt-Blue.png', { 
+        frameWidth: 69, 
+        frameHeight: 57,
+        gap: 2
     });
 
     // Dropoff Floor
@@ -64,7 +65,9 @@ export class MainScene extends Phaser.Scene {
     // Initialize Level Builder
     this.levelBuilder = new LevelBuilder(this, this.isoBoard, {
         floor: { key: 'tiles', frame: 0 },
-        conveyor: { key: 'tiles1', frame: 1 },
+        conveyor: { key: 'conveyor', frame: 0 },
+        conveyor: { key: 'conveyor', frame: 1 },
+        conveyor: { key: 'conveyor', frame: 2 },
         zone: { key: 'zone', frame: 0 },
         robot: { key: 'robot', frameOffset: 0 }, 
         box: { key: 'box', frame: 0 }

@@ -32,7 +32,9 @@ export const TutorialC = {
     objects: {
         stationary: [
             // Input conveyor with box
-            { type: "conveyor", row: 0, col: 2, id: "input_conveyor", attributes: { allowDrop: false } },
+            { type: "conveyor", row: 0, col: 0, id: "input_conveyor", attributes: { allowDrop: false, frame: 0 } },
+            { type: "conveyor", row: 0, col: 1, id: "input_conveyor", attributes: { allowDrop: false, frame: 1 } },
+            { type: "conveyor", row: 0, col: 2, id: "input_conveyor", attributes: { allowDrop: false, frame: 2 } },
             { type: "zone", row: 0, col: 3, id: "input_zone", attributes: { allowDrop: true } },
             // Output conveyor
             { type: "conveyor", row: 4, col: 2, id: "output_conveyor", attributes: { allowDrop: false } },

@@ -7,7 +7,9 @@ export class LevelBuilder {
         // Map logical strings ('floor', 'conveyor') to asset keys & frame indices
         this.textureMap = textureMap || {
             floor: { key: 'tiles', frame: 0 },
-            conveyor: { key: 'tiles1', frame: 1 },
+            conveyor: { key: 'conveyor', frame: 0 },
+            conveyor: { key: 'conveyor', frame: 1 },
+            conveyor: { key: 'conveyor', frame: 2 },
             zone: { key: 'zone', frame: 0 },
             robot: { key: 'robot', frameOffset: 0 }, // robot_type_1 (Row 0)
             box: { key: 'box', frame: 0 }
@@ -32,8 +34,10 @@ export class LevelBuilder {
             levelConfig.objects.stationary.forEach(obj => {
                 if (obj.type === 'conveyor') {
                     // Conveyors are special Stationary Objects
+                    // Use object's frame if specified, otherwise use default from textureMap
+                    const conveyorFrame = obj.attributes?.frame !== undefined ? obj.attributes.frame : this.textureMap.conveyor.frame;
                     const conv = this.board.addStationaryObject(obj.row, obj.col, this.textureMap.conveyor.key, {
-                        frame: this.textureMap.conveyor.frame,
+                        frame: conveyorFrame,
                         collidable: true, // Cannot walk on conveyor
                         isConveyor: true, // Mark as conveyor for game logic (for IsoBoard and win conditions)
                         attributes: { 
