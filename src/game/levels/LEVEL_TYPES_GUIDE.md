@@ -174,8 +174,9 @@ For each level:
   
   2. Check user's experimental group
      → CONTROL group: HIDE chatbot
-     → STANDARD_AI group: SHOW chatbot (standard mode)
-     → PAIR_DRIVER/PAIR_NAVIGATOR: SHOW chatbot (pair programming mode)
+     → STANDARD_AI group: SHOW chatbot (assistant mode)
+
+Note: Pair programming modes (PAIR_DRIVER/PAIR_NAVIGATOR) have been removed from the current experimental design.
 ```
 
 ### Data Collection

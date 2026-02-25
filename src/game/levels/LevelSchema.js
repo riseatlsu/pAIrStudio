@@ -1,14 +1,5 @@
 // Level Configuration JSON Structure Definitions and Validation
 
-export class LevelConfigValidator {
-    static validate(config) {
-        if (!config.id) throw new Error("Level ID is required");
-        if (!config.map || !config.map.data) throw new Error("Map data is required");
-        if (!config.winConditions) throw new Error("Win conditions are required");
-        return true;
-    }
-}
-
 /*
     Level Config Schema Example:
     {

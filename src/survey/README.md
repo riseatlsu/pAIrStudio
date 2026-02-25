@@ -57,7 +57,7 @@ The survey system provides a modular, maintainable way to collect participant fe
 Questions can be shown to specific experimental groups:
 
 - `groups: ['all']` - Show to all participants
-- `groups: ['STANDARD_AI', 'PAIR_DRIVER']` - Show only to these groups
+- `groups: ['STANDARD_AI']` - Show only to this group
 - Useful for asking about chatbot effectiveness only to groups that had chatbots
 
 ## Adding Questions
@@ -96,11 +96,7 @@ Submission data includes:
             timestamp: ISO string
         }
     },
-    submittedAt: ISO string,
-    sessionData: {
-        userAgent: string,
-        screenResolution: string
-    }
+    submittedAt: ISO string
 }
 ```
 

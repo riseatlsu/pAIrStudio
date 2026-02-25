@@ -7,6 +7,9 @@ yarn-error.log*
 firebase-debug.log*
 firebase-debug.*.log*
 
+# Archive folder (unused code)
+archive/
+
 # Firebase cache
 .firebase/
 

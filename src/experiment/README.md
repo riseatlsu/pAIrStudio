@@ -17,21 +17,17 @@ Defines experimental groups and their features.
 ```javascript
 export const GROUPS = {
     CONTROL: 'control',
-    STANDARD_AI: 'standard_ai',
-    PAIR_DRIVER: 'pair_driver',
-    PAIR_NAVIGATOR: 'pair_navigator'
+    STANDARD_AI: 'standard_ai'
 };
 
 export const GROUP_FEATURES = {
     [GROUPS.CONTROL]: {
-        chatbot: false,
-        roleSwitching: false
+        chatbot: false
     },
     [GROUPS.STANDARD_AI]: {
         chatbot: true,
         chatbotMode: 'assistant'
     }
-    // ... etc
 };
 ```
 
@@ -74,8 +70,8 @@ if (experimentManager.hasFeature('chatbot')) {
 
 // Get specific feature value
 const chatbotMode = experimentManager.getFeature('chatbotMode');
-if (chatbotMode === 'driver_navigator') {
-    // Initialize pair programming mode
+if (chatbotMode === 'assistant') {
+    // Initialize standard AI mode
 }
 
 // Check current group
@@ -141,38 +137,27 @@ location.reload();
 
 2. **Standard AI** (`standard_ai`)
    - AI chatbot available
-   - "Helper" mode (passive assistance)
+   - "Assistant" mode (passive assistance)
    - No role switching
 
-3. **Pair Programming - Driver Start** (`pair_driver`)
-   - AI chatbot in driver/navigator mode
-   - Human starts as Driver
-   - Role switching enabled per level
-
-4. **Pair Programming - Navigator Start** (`pair_navigator`)
-   - AI chatbot in driver/navigator mode
-   - Human starts as Navigator
-   - Role switching enabled per level
+**Note**: Pair programming groups (PAIR_DRIVER, PAIR_NAVIGATOR) have been removed from the current experimental design.
 
 ### Assignment Weights
-Currently equal probability (25% each):
+Currently equal probability (50% each):
 ```javascript
 [
     { id: 'control', weight: 1 },
-    { id: 'standard_ai', weight: 1 },
-    { id: 'pair_driver', weight: 1 },
-    { id: 'pair_navigator', weight: 1 }
+    { id: 'standard_ai', weight: 1 }
 ]
+```
 ```
 
 To change probabilities, adjust weights:
 ```javascript
-// Example: 50% control, 25% each for others
+// Example: 75% control, 25% standard_ai
 [
-    { id: 'control', weight: 2 },
-    { id: 'standard_ai', weight: 1 },
-    { id: 'pair_driver', weight: 1 },
-    { id: 'pair_navigator', weight: 1 }
+    { id: 'control', weight: 3 },
+    { id: 'standard_ai', weight: 1 }
 ]
 ```
 
@@ -260,9 +245,7 @@ Groups now receive different tutorial sequences based on their assigned experime
 ```javascript
 export const TUTORIAL_PROGRESSION = {
     [GROUPS.CONTROL]: ['tutorial_A', 'tutorial_B'],
-    [GROUPS.STANDARD_AI]: ['tutorial_A', 'tutorial_B', 'tutorial_C'],
-    [GROUPS.PAIR_DRIVER]: ['tutorial_A', 'tutorial_B', 'tutorial_C'],
-    [GROUPS.PAIR_NAVIGATOR]: ['tutorial_A', 'tutorial_B', 'tutorial_C']
+    [GROUPS.STANDARD_AI]: ['tutorial_A', 'tutorial_B', 'tutorial_C']
 };
 ```
 

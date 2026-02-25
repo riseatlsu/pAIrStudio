@@ -169,7 +169,7 @@
                                     <small>Visual programming interface</small>
                                 </div>
                             </div>
-                            <!-- Lock overlay (shown when AI is driving in pair programming mode) -->
+                            <!-- Lock overlay (deprecated - was used for pair programming mode) -->
                             <div class="blockly-lock-overlay" id="blockly-lock-overlay" style="display: none;">
                                 <div class="lock-message">
                                     <i class="fas fa-lock"></i>
@@ -202,9 +202,9 @@
         </div>
     </div>
 
-    <!-- Role Badge (for pair programming groups) -->
+    <!-- Role Badge (deprecated - was used for pair programming groups) -->
     <div id="role-badge" style="display: none;">
-        <!-- Content will be dynamically inserted by RoleManager -->
+        <!-- Role badge placeholder (if needed in future) -->
     </div>
 
     <!-- Draggable Chatbot -->
@@ -253,9 +253,8 @@
     <script type="module">
         import { experimentManager } from '/src/experiment/ExperimentManager.js';
         import { chatbotManager } from '/src/chatbot/ChatbotManager.js';
-        import { roleManager } from '/src/chatbot/RoleManager.js';
         
-        // Function to initialize chatbot and role managers
+        // Function to initialize chatbot system
         function initializeChatbotSystem() {
             if (!experimentManager.groupId) {
                 console.log('⚠️ No group assigned - skipping chatbot initialization');
@@ -264,16 +263,8 @@
             
             console.log(`📊 Initializing for group: ${experimentManager.groupId}`);
             
-            // Initialize Role Manager (for pair programming)
-            roleManager.initialize(experimentManager);
-            
             // Initialize Chatbot Manager
-            chatbotManager.initialize(experimentManager, roleManager);
-            
-            // Connect RoleManager to ChatbotManager for role switch notifications
-            roleManager.onRoleChange((newRole) => {
-                chatbotManager.onRoleChange(newRole);
-            });
+            chatbotManager.initialize(experimentManager, null);
             
             console.log('✅ Chatbot system initialized');
         }
@@ -370,8 +361,7 @@
                     
                     // Initialize chatbot system if needed for this group
                     if (experimentManager.hasFeature('chatbot')) {
-                        roleManager.initialize(experimentManager);
-                        chatbotManager.initialize(experimentManager, roleManager);
+                        chatbotManager.initialize(experimentManager, null);
                         console.log('✅ Chatbot system initialized for group with chatbot support');
                     }
                     

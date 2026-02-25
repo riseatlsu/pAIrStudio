@@ -1,7 +1,35 @@
+/**
+ * @fileoverview IsoBoard - Isometric game board manager with depth sorting.
+ * Handles floor tile rendering, object placement, and collision detection.
+ * @module game/iso/IsoBoard
+ */
+
 import { gridToScreen } from './IsoUtils';
 import { StationaryObject, MoveableObject } from './IsoObjects';
 
+/**
+ * IsoBoard - Manages the isometric game board and all objects on it.
+ * 
+ * Responsible for:
+ * - Rendering floor tiles from 2D array map data
+ * - Managing stationary objects (conveyors, stations)
+ * - Managing moveable objects (boxes, NPCs)
+ * - Depth sorting for proper visual layering
+ * - Collision detection and walkability checks
+ * 
+ * @class IsoBoard
+ */
 export class IsoBoard {
+  /**
+   * Create an IsoBoard instance.
+   * 
+   * @param {Phaser.Scene} scene - The Phaser scene this board belongs to
+   * @param {Object} config - Board configuration
+   * @param {number} [config.tileWidth=64] - Width of isometric tiles in pixels
+   * @param {number} [config.tileHeight=32] - Height of isometric tiles in pixels
+   * @param {number} [config.width=10] - Board width in grid units
+   * @param {number} [config.height=10] - Board height in grid units
+   */
   constructor(scene, config) {
     this.scene = scene;
     this.tileWidth = config.tileWidth || 64;
@@ -18,8 +46,12 @@ export class IsoBoard {
 
   /**
    * Create the floor from a 2D array of frame indices.
+   * 
+   * Renders all floor tiles and their diamond outlines. Each tile is a sprite
+   * with metadata for depth sorting (isoRow, isoCol, isoZ, isoType).
+   * 
    * @param {number[][]} mapData - 2D array [row][col] of frame indices
-   * @param {string} textureKey - The tileset texture key
+   * @param {string} textureKey - The tileset texture key (e.g., 'tiles')
    */
   createFloor(mapData, textureKey) {
     this.mapHeight = mapData.length;
@@ -71,7 +103,19 @@ export class IsoBoard {
   }
 
   /**
-   * Add a stationary object (e.g. Conveyor).
+   * Add a stationary object (e.g., conveyor belt, delivery station).
+   * 
+   * Stationary objects cannot be moved by the player but may have
+   * interactive properties (e.g., win condition targets).
+   * 
+   * @param {number} row - Grid row position
+   * @param {number} col - Grid column position
+   * @param {string} texture - Phaser texture key
+   * @param {Object} [config={}] - Object configuration
+   * @param {number} [config.zHeight=0] - Vertical offset for depth sorting
+   * @param {number} [config.frame=0] - Sprite frame index
+   * @param {string} [config.id] - Unique identifier for this object
+   * @returns {StationaryObject} The created stationary object
    */
   addStationaryObject(row, col, texture, config = {}) {
     const obj = new StationaryObject(this.scene, this, row, col, texture, config);
@@ -87,7 +131,20 @@ export class IsoBoard {
   }
 
   /**
-   * Add a moveable object (e.g. Box, NPC).
+   * Add a moveable object (e.g., box, NPC).
+   * 
+   * Moveable objects can be pushed, picked up, or otherwise manipulated
+   * by the player or game logic.
+   * 
+   * @param {number} row - Grid row position
+   * @param {number} col - Grid column position
+   * @param {string} texture - Phaser texture key
+   * @param {Object} [config={}] - Object configuration
+   * @param {number} [config.zHeight=10] - Vertical offset for depth sorting
+   * @param {number} [config.frame=0] - Sprite frame index
+   * @param {string} [config.id] - Unique identifier for this object
+   * @param {boolean} [config.collidable=false] - Whether object blocks movement
+   * @returns {MoveableObject} The created moveable object
    */
   addMoveableObject(row, col, texture, config = {}) {
     const obj = new MoveableObject(this.scene, this, row, col, texture, config);
@@ -132,6 +189,50 @@ export class IsoBoard {
     if (mov && mov.collidable) return false;
 
     return true;
+  }
+
+  /**
+   * Get detailed collision information for a tile.
+   * Used for logging collision events.
+   * 
+   * @param {number} row - Grid row to check
+   * @param {number} col - Grid column to check
+   * @returns {{collides: boolean, type: string, objectId: string|null, objectType: string|null}} Collision details
+   */
+  getCollisionInfo(row, col) {
+    // 1. Check bounds
+    if (row < 0 || row >= this.mapWidth || col < 0 || col >= this.mapHeight) {
+      return { 
+        collides: true, 
+        type: 'boundary', 
+        objectId: null,
+        objectType: 'edge_of_map'
+      };
+    }
+
+    // 2. Check Stationary Collisions
+    const stat = this.getStationaryAt(row, col);
+    if (stat && stat.collidable) {
+      return { 
+        collides: true, 
+        type: stat.isoType || 'stationary_object',
+        objectId: stat.attributes?.id || null,
+        objectType: stat.isoType || 'stationary'
+      };
+    }
+
+    // 3. Check Moveable Collisions (that are not carried)
+    const mov = this.getMoveableAt(row, col);
+    if (mov && mov.collidable) {
+      return { 
+        collides: true, 
+        type: mov.isoType || 'moveable_object',
+        objectId: mov.attributes?.id || null,
+        objectType: mov.isoType || 'moveable'
+      };
+    }
+
+    return { collides: false, type: 'walkable', objectId: null, objectType: null };
   }
 
   /**
