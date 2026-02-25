@@ -236,14 +236,13 @@ See `src/README.md` for complete data mapping table and API reference.
 
 ## Experimental Groups
 
-| Group ID | Description | Chatbot | Role Switching |
-|----------|-------------|---------|----------------|
-| `control` | No AI assistance | ❌ | ❌ |
-| `standard_ai` | AI helper (passive) | ✅ | ❌ |
+| Group ID | Description | Chatbot |
+|----------|-------------|---------|
+| `control` | No AI assistance | ❌ |
+| `standard_ai` | AI helper (passive) | ✅ |
 
 **Default Assignment**: Equal probability (50% each)
 
-**Note**: Pair programming modes (driver/navigator) have been removed. The experiment focuses on comparing control (no AI) vs. standard AI assistance.
 
 ## Testing & Sandbox Mode
 
