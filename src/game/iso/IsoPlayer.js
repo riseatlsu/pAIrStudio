@@ -1,8 +1,46 @@
+/**
+ * @fileoverview IsoPlayer - Player-controlled robot entity in the isometric environment.
+ * Handles movement, rotation, object interaction, and carrying mechanics.
+ * @module game/iso/IsoPlayer
+ */
+
 import { MoveableObject } from './IsoObjects';
 import { gridToScreen } from './IsoUtils';
 import { directionToNumber, directionToString } from './DirectionConstants';
 
+/**
+ * IsoPlayer - Player-controlled robot with movement and interaction capabilities.
+ * 
+ * Extends MoveableObject to add:
+ * - Directional facing (NORTH, SOUTH, EAST, WEST)
+ * - Forward movement with collision detection
+ * - Object pickup and drop mechanics
+ * - Smooth tween-based animations
+ * - API methods for Blockly code execution
+ * 
+ * Direction Mapping (Isometric Grid):
+ * - NORTH (3): Grid Row decreases (move towards top-right)
+ * - EAST (1): Grid Col increases (move towards bottom-right)
+ * - SOUTH (0): Grid Row increases (move towards bottom-left)
+ * - WEST (2): Grid Col decreases (move towards top-left)
+ * 
+ * @class IsoPlayer
+ * @extends MoveableObject
+ */
 export class IsoPlayer extends MoveableObject {
+  /**
+   * Create an IsoPlayer instance.
+   * 
+   * @param {Phaser.Scene} scene - The Phaser scene this player belongs to
+   * @param {IsoBoard} board - The isometric board
+   * @param {number} gridRow - Starting grid row position
+   * @param {number} gridCol - Starting grid column position
+   * @param {string} texture - Phaser texture key for robot sprite
+   * @param {Object} [config={}] - Player configuration
+   * @param {number|string} [config.direction=0] - Initial direction (0-3 or 'NORTH'/'SOUTH'/'EAST'/'WEST')
+   * @param {number} [config.zHeight=10] - Vertical offset for depth sorting
+   * @param {boolean} [config.collidable=true] - Whether player blocks movement
+   */
   constructor(scene, board, gridRow, gridCol, texture, config = {}) {
     super(scene, board, gridRow, gridCol, texture, {
         ...config,
@@ -40,7 +78,15 @@ export class IsoPlayer extends MoveableObject {
   }
 
   /**
-   * Helper to get target coordinates from direction.
+   * Get the grid coordinates directly in front of the player.
+   * 
+   * Calculates target coordinates based on current direction:
+   * - NORTH: Row - 1
+   * - EAST: Col + 1
+   * - SOUTH: Row + 1
+   * - WEST: Col - 1
+   * 
+   * @returns {{row: number, col: number}} Grid coordinates in front of player
    */
   getFrontCoordinates() {
     let dRow = 0;
@@ -55,7 +101,8 @@ export class IsoPlayer extends MoveableObject {
   }
 
   /**
-   * Get the current direction as a string name
+   * Get the current direction as a string name.
+   * 
    * @returns {string} Cardinal direction ('NORTH', 'SOUTH', 'EAST', 'WEST')
    */
   getDirectionName() {
@@ -64,6 +111,18 @@ export class IsoPlayer extends MoveableObject {
 
   // --- API for Blockly / Executor ---
 
+  /**
+   * Move the player forward one grid space.
+   * 
+   * Checks walkability (collision detection) before moving. If blocked,
+   * returns false. If successful, animates movement and returns true.
+   * 
+   * Used by Blockly code generation - this is the runtime implementation
+   * of the "move_forward" block.
+   * 
+   * @async
+   * @returns {Promise<boolean>} True if movement successful, false if blocked
+   */
   async moveForward() {
     if (this.isMoving) return false;
     
@@ -117,6 +176,26 @@ export class IsoPlayer extends MoveableObject {
             }
         });
     } else {
+        // Collision occurred - log it
+        const collisionInfo = this.board.getCollisionInfo(target.row, target.col);
+        
+        // Log collision event if DataLogger is available
+        if (window.dataLogger && window.LevelManager) {
+            window.dataLogger.logCollision(
+                window.LevelManager.currentLevelId,
+                collisionInfo.type,
+                {
+                    playerRow: this.gridRow,
+                    playerCol: this.gridCol,
+                    playerDirection: this.getDirectionName(),
+                    targetRow: target.row,
+                    targetCol: target.col,
+                    objectId: collisionInfo.objectId,
+                    objectType: collisionInfo.objectType
+                }
+            );
+        }
+        
         return false; // Collision or OOB
     }
   }
@@ -227,6 +306,8 @@ export class IsoPlayer extends MoveableObject {
       
       // 2. Check Stationary Objects (like conveyors or walls)
       const stationary = this.board.getStationaryAt(front.row, front.col);
+      const onConveyor = stationary && stationary.getAttribute('allowDrop');
+      
       if (stationary) {
           // Check if this stationary object explicitly allows dropping items on it
           // (e.g. Conveyor Belts)
@@ -239,8 +320,28 @@ export class IsoPlayer extends MoveableObject {
           // If allowsDrop is true, we proceed regardless of collidable status
       }
       
+      // Get details about what's being dropped
+      const droppedItem = this.carriedItem;
+      const objectId = droppedItem.attributes?.id || null;
+      const objectType = droppedItem.type || 'object';
+      
       this.carriedItem.drop(front.row, front.col);
       this.carriedItem = null;
+      
+      // Log the drop action
+      if (window.dataLogger && this.scene.levelManager?.currentLevelId) {
+          window.dataLogger.logDrop(this.scene.levelManager.currentLevelId, {
+              dropRow: front.row,
+              dropCol: front.col,
+              onConveyor: onConveyor,
+              objectId: objectId,
+              objectType: objectType,
+              conveyorId: onConveyor ? stationary.attributes?.id : null,
+              playerRow: this.gridRow,
+              playerCol: this.gridCol,
+              playerDirection: this.direction
+          });
+      }
       
       // Check win/fail conditions after dropping
       this.checkLevelConditions();

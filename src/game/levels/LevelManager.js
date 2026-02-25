@@ -1,7 +1,27 @@
+/**
+ * @fileoverview LevelManager - Manages level progression, state, and UI updates.
+ * Handles level registration, loading, completion tracking, and progression control.
+ * @module game/levels/LevelManager
+ */
+
 // Level Manager - Handles State, Progression, and Persistence
 import { getLevel } from './index';
 import { getLevelProgression } from '../../experiment/GroupConfig.js';
 
+/**
+ * LevelManager - Manages level progression and user interface updates.
+ * 
+ * Responsibilities:
+ * - Registering level definitions
+ * - Loading and initializing levels
+ * - Tracking completed levels
+ * - Managing level progression UI (progress circles)
+ * - Updating instruction banners
+ * - Persisting progress to localStorage
+ * - Group-specific level sequences
+ * 
+ * @class LevelManager
+ */
 export class LevelManager {
     constructor() {
         this.currentLevelId = null;

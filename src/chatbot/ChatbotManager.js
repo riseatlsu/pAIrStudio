@@ -1,4 +1,10 @@
 /**
+ * @fileoverview ChatbotManager - Controls AI chatbot behavior and experimental modes.
+ * Manages chatbot visibility, message handling, and mode-specific behaviors.
+ * @module chatbot/ChatbotManager
+ */
+
+/**
  * ChatbotManager.js
  * Manages chatbot visibility, initialization, and message handling based on experimental groups
  * Modular design for easy adaptation to future studies
@@ -11,6 +17,23 @@ import { directionToString } from '../game/iso/DirectionConstants.js';
 
 const CHAT_FUNCTION_URL = "https://us-central1-pair-studio-v1.cloudfunctions.net/getChatResponse";
 
+/**
+ * ChatbotManager - Manages AI chatbot functionality and experimental modes.
+ * 
+ * Modes:
+ * - **Standard**: Passive AI assistant (for 'standard_ai' group)
+ * - **Pair Programming**: Driver/Navigator mode with role switching
+ * 
+ * Features:
+ * - Automatic initialization based on experimental group
+ * - Context-aware AI responses with game state
+ * - Message history management per level
+ * - Integration with RoleManager for pair programming
+ * - Workspace locking based on current role
+ * - Firebase logging of all interactions
+ * 
+ * @class ChatbotManager
+ */
 class ChatbotManager {
     constructor() {
         this.experimentManager = null;

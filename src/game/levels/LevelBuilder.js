@@ -1,6 +1,33 @@
-// Level Builder - Constructs the IsoBoard from a Level Config
+/**
+ * @fileoverview LevelBuilder - Constructs game levels from configuration objects.
+ * Translates level definitions into IsoBoard entities (floor, objects, player).
+ * @module game/levels/LevelBuilder
+ */
 
+/**
+ * LevelBuilder - Instantiates levels from configuration data.
+ * 
+ * Responsible for:
+ * - Creating floor tiles from 2D map data
+ * - Placing stationary objects (conveyors, stations)
+ * - Placing moveable objects (boxes)
+ * - Validating win conditions
+ * - Checking level completion criteria
+ * 
+ * @class LevelBuilder
+ */
 export class LevelBuilder {
+    /**
+     * Create a LevelBuilder instance.
+     * 
+     * @param {Phaser.Scene} scene - The Phaser scene
+     * @param {IsoBoard} board - The isometric board to build on
+     * @param {Object} [textureMap] - Mapping of logical names to texture keys
+     * @param {Object} textureMap.floor - Floor tile config {key, frame}
+     * @param {Object} textureMap.conveyor - Conveyor config {key, frame}
+     * @param {Object} textureMap.robot - Robot config {key, frameOffset}
+     * @param {Object} textureMap.box - Box config {key, frame}
+     */
     constructor(scene, board, textureMap) {
         this.scene = scene;
         this.board = board;

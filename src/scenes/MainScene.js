@@ -1,3 +1,9 @@
+/**
+ * @fileoverview MainScene - Primary Phaser game scene for pAIrStudio.
+ * Handles game initialization, asset loading, level rendering, and player control.
+ * @module scenes/MainScene
+ */
+
 import Phaser from 'phaser';
 
 import { IsoBoard } from '../game/iso/IsoBoard';
@@ -7,12 +13,37 @@ import { LevelManager } from '../game/levels/LevelManager';
 import { getLevel } from '../game/levels/index';
 import { gridToScreen } from '../game/iso/IsoUtils';
 
+/**
+ * MainScene - Primary game scene for the warehouse robot simulation.
+ * 
+ * Manages the lifecycle of game levels, including asset loading, level building,
+ * player initialization, and camera setup for the isometric environment.
+ * 
+ * @class MainScene
+ * @extends Phaser.Scene
+ */
 export class MainScene extends Phaser.Scene {
+  /**
+   * Create a MainScene instance.
+   * 
+   * Initializes the Phaser scene with key 'MainScene' and creates the
+   * LevelManager for handling level progression.
+   */
   constructor() {
     super({ key: 'MainScene' });
     this.levelManager = new LevelManager();
   }
 
+  /**
+   * Phaser preload lifecycle method.
+   * 
+   * Loads all sprite sheets and assets required for the game:
+   * - Isometric floor tiles
+   * - Robot sprite sheet (animated by direction)
+   * - Box sprite sheet
+   * 
+   * Resolves base path for deployment compatibility (GitHub Pages, etc.).
+   */
   preload() {
     // Load Assets - resolve base path for GitHub Pages compatibility
     const basePath = import.meta.env?.BASE_URL || '/';
@@ -40,6 +71,18 @@ export class MainScene extends Phaser.Scene {
     });
   }
 
+  /**
+   * Phaser create lifecycle method.
+   * 
+   * Initializes the isometric board, exposes global API references,
+   * and triggers the first level load via LevelManager.
+   * 
+   * Sets up:
+   * - IsoBoard instance
+   * - Global window.IsoBoard reference for GameAPI
+   * - Camera bounds and zoom
+   * - Initial level loading
+   */
   create() {
     // Initialize Board System
     this.isoBoard = new IsoBoard(this, {

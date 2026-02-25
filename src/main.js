@@ -1,3 +1,9 @@
+/**
+ * @fileoverview main.js - Application entry point for pAIrStudio.
+ * Initializes Phaser game engine, Blockly workspace, and global managers.
+ * @module main
+ */
+
 import Phaser from 'phaser';
 import { MainScene } from './scenes/MainScene';
 import { BlocklyManager } from './game/blockly/BlocklyManager';

@@ -8,8 +8,8 @@ This directory contains the modular chatbot system for pAIrStudio experiments. T
 chatbot/
 ├── ChatbotManager.js    # Main controller for chatbot functionality
 ├── ChatbotUI.js         # UI rendering and DOM manipulation
-├── RoleManager.js       # Pair programming role switching
-├── PromptConfig.js      # System prompts for different modes
+├── RoleManager.js       # Role management (currently unused)
+├── PromptConfig.js      # System prompts for AI assistant
 └── README.md           # This file
 ```
 
@@ -21,7 +21,6 @@ chatbot/
 **Key Methods**:
 - `initialize(experimentManager, roleManager)` - Initialize chatbot based on experimental group
 - `handleUserMessage(message)` - Process user input
-- `onRoleChange(newRole)` - Handle role switching in pair programming mode
 - `show()` / `hide()` - Control visibility
 - `clearHistory()` - Reset conversation
 
@@ -55,73 +54,51 @@ chatbotManager.hide();
 - Touch support for mobile
 
 ### RoleManager.js
-**Purpose**: Manages driver/navigator role switching for pair programming experiments.
+**Purpose**: Manages experimental roles (currently unused - pair programming modes removed).
 
-**Key Methods**:
-- `initialize(experimentManager)` - Set up based on group (PAIR_DRIVER or PAIR_NAVIGATOR)
-- `getCurrentRole()` - Returns 'driver' or 'navigator'
-- `switchRole()` - Toggle between driver and navigator
+**Status**: This module is retained for backwards compatibility but is not actively used in the current experimental design.
+
+**Key Methods** (deprecated):
+- `initialize(experimentManager)` - Set up based on group
+- `getCurrentRole()` - Returns current role
+- `switchRole()` - Toggle between roles
 - `advanceToLevel(levelNumber)` - Switch roles when advancing levels
 - `isDriver()` / `isNavigator()` - Check current role
 
-**Role Switching Logic**:
-- **PAIR_DRIVER group**: Starts as driver → Level 1: driver, Level 2: navigator, Level 3: driver...
-- **PAIR_NAVIGATOR group**: Starts as navigator → Level 1: navigator, Level 2: driver, Level 3: navigator...
-
-**Example Usage**:
-```javascript
-import { roleManager } from './chatbot/RoleManager.js';
-
-// Initialize
-roleManager.initialize(experimentManager);
-
-// Check current role
-if (roleManager.isDriver()) {
-    console.log('User is driving - can write code');
-} else {
-    console.log('AI is driving - workspace locked');
-}
-
-// Switch role when advancing level
-roleManager.advanceToLevel(2); // Automatically switches role
-```
+**Note**: Pair programming functionality has been removed from the current 2-group experimental design (control vs. standard_ai).
 
 ### PromptConfig.js
 **Purpose**: Configuration file for all chatbot system prompts and behaviors.
 
-**Modes**:
-1. **Standard Mode** (`CHATBOT_PROMPTS.standard`): 
-   - For `STANDARD_AI` experimental group
-   - General programming assistant
-   - Provides hints without giving direct solutions
+**Mode**:
+- **Standard Mode** (`CHATBOT_PROMPTS.standard`): 
+  - For `STANDARD_AI` experimental group
+  - General programming assistant
+  - Provides hints without giving direct solutions
 
-2. **Pair Programming Mode** (`CHATBOT_PROMPTS.pairProgramming`):
-   - For `PAIR_DRIVER` and `PAIR_NAVIGATOR` groups
-   - Separate prompts for driver vs navigator roles
-   - Driver: Implements code based on navigator's guidance
-   - Navigator: Provides strategic direction and code suggestions
+**Note**: Pair programming modes have been removed from the current experimental design.
 
 **Example Usage**:
 ```javascript
 import { getSystemPrompt, getInitialGreeting } from './chatbot/PromptConfig.js';
 
 // Get system prompt for API calls
-const systemPrompt = getSystemPrompt('pairProgramming', 'driver');
+const systemPrompt = getSystemPrompt();
 
 // Get initial greeting
-const greeting = getInitialGreeting('standard');
+const greeting = getInitialGreeting();
 ```
 
 ## Experimental Group Integration
 
 The chatbot automatically adapts to experimental groups:
 
-| Group | Chatbot Visible? | Mode | Role |
-|-------|-----------------|------|------|
-| `CONTROL` | ❌ No | N/A | N/A |
-| `STANDARD_AI` | ✅ Yes | Standard | N/A |
-| `PAIR_DRIVER` | ✅ Yes | Pair Programming | Driver → Navigator → ... |
-| `PAIR_NAVIGATOR` | ✅ Yes | Pair Programming | Navigator → Driver → ... |
+| Group | Chatbot Visible? | Mode |
+|-------|-----------------|------|
+| `CONTROL` | ❌ No | N/A |
+| `STANDARD_AI` | ✅ Yes | Standard |
+
+**Note**: Pair programming groups (PAIR_DRIVER, PAIR_NAVIGATOR) have been removed from the current experimental design.
 
 ## Adding New Experimental Groups
 
@@ -157,31 +134,9 @@ if (chatbotMode === 'yourMode') {
 }
 ```
 
-## Role Badge UI
+## Role Badge UI (Deprecated)
 
-The role badge appears in the top-right when in pair programming mode:
-
-**Driver Badge**: 🚗 Blue
-- "You are the Driver"
-- "You write the code. The AI will guide you."
-
-**Navigator Badge**: 🧭 Orange
-- "You are the Navigator"
-- "You guide the strategy. The AI will write the code."
-
-## Blockly Lock Overlay
-
-When the AI is the driver (user is navigator), the Blockly workspace is locked with an overlay:
-
-```
-┌─────────────────────────┐
-│    🔒 AI is Driving     │
-│                         │
-│ The AI will write the   │
-│ code. You can chat to   │
-│ provide guidance.       │
-└─────────────────────────┘
-```
+**Note**: Role badge and Blockly lock overlay features were part of the pair programming modes, which have been removed from the current experimental design.
 
 ## API Integration (Future)
 
@@ -236,13 +191,9 @@ Use browser console to test different groups:
 ExperimentManager.groupId = 'STANDARD_AI';
 ChatbotManager.initialize(ExperimentManager, RoleManager);
 
-// Test pair programming
-ExperimentManager.groupId = 'PAIR_DRIVER';
-RoleManager.initialize(ExperimentManager);
+// Test control group (no chatbot)
+ExperimentManager.groupId = 'CONTROL';
 ChatbotManager.initialize(ExperimentManager, RoleManager);
-
-// Switch role manually
-RoleManager.switchRole();
 ```
 
 ## Styling Customization
@@ -279,10 +230,9 @@ The chatbot system logs events for research data collection:
 - Check feature flag: `console.log(ExperimentManager.hasFeature('chatbot'))`
 - Verify initialization: `console.log(ChatbotManager.isInitialized)`
 
-**Role not switching**:
-- Check group: `console.log(RoleManager.isPairProgrammingMode)`
-- Verify role: `console.log(RoleManager.getCurrentRole())`
-- Call `advanceToLevel()` when changing levels
+**Experimental group issues**:
+- Check group: `console.log(ExperimentManager.getCurrentGroup())`
+- Verify features: `console.log(ExperimentManager.hasFeature('chatbot'))`
 
 **Dragging not working**:
 - Check if clicking on interactive elements (input, buttons)
