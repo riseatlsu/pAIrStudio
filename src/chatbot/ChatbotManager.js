@@ -10,7 +10,7 @@
  * Modular design for easy adaptation to future studies
  */
 
-import { CHATBOT_PROMPTS } from './PromptConfig.js';
+import { getSystemPrompt, getInitialGreeting } from './PromptConfig.js';
 import { ChatbotUI } from './ChatbotUI.js';
 import * as BlocklyActions from './BlocklyActions.js';
 import { directionToString } from '../game/iso/DirectionConstants.js';
@@ -22,14 +22,11 @@ const CHAT_FUNCTION_URL = "https://us-central1-pair-studio-v1.cloudfunctions.net
  * 
  * Modes:
  * - **Standard**: Passive AI assistant (for 'standard_ai' group)
- * - **Pair Programming**: Driver/Navigator mode with role switching
  * 
  * Features:
  * - Automatic initialization based on experimental group
  * - Context-aware AI responses with game state
  * - Message history management per level
- * - Integration with RoleManager for pair programming
- * - Workspace locking based on current role
  * - Firebase logging of all interactions
  * 
  * @class ChatbotManager
@@ -37,21 +34,18 @@ const CHAT_FUNCTION_URL = "https://us-central1-pair-studio-v1.cloudfunctions.net
 class ChatbotManager {
     constructor() {
         this.experimentManager = null;
-        this.roleManager = null;
         this.ui = null;
         this.chatHistory = [];
         this.isInitialized = false;
-        this.currentMode = null; // 'standard' or 'pairProgramming'
+        this.currentMode = null; // 'standard'
     }
 
     /**
      * Initialize the chatbot manager
      * @param {Object} experimentManager - Reference to ExperimentManager
-     * @param {Object} roleManager - Reference to RoleManager (for pair programming)
      */
-    initialize(experimentManager, roleManager = null) {
+    initialize(experimentManager) {
         this.experimentManager = experimentManager;
-        this.roleManager = roleManager;
 
         // Determine if chatbot should be available based on experimental group
         const hasChatbot = this.experimentManager.hasFeature('chatbot');
@@ -66,11 +60,10 @@ class ChatbotManager {
         this.ui = new ChatbotUI();
         this.ui.initialize();
 
-        // Determine chatbot mode
-        const chatbotMode = this.experimentManager.getFeature('chatbotMode');
-        this.currentMode = (chatbotMode === 'driver_navigator') ? 'pairProgramming' : 'standard';
+        // Set chatbot mode to standard
+        this.currentMode = 'standard';
         
-        console.log(`ChatbotManager: Mode set to '${this.currentMode}' (chatbotMode: ${chatbotMode})`);
+        console.log(`ChatbotManager: Mode set to 'standard'`);
 
         // Set up event listeners
         this.setupEventListeners();
@@ -78,34 +71,10 @@ class ChatbotManager {
         // Check if current level has chatbot disabled
         const currentLevel = window.LevelManager ? window.LevelManager.levels[window.LevelManager.currentLevelId] : null;
         const isChatbotDisabledForLevel = currentLevel?.chatbotEnabled === false;
-        const isTutorialChatbotTraining = currentLevel?.id === 'tutorial_C';
         const shouldShowNow = !isChatbotDisabledForLevel;
         
-        // Handle workspace blocking for Pair Programming mode
-        if (this.currentMode === 'pairProgramming' && this.roleManager) {
-            if (isTutorialChatbotTraining) {
-                BlocklyActions.enableWorkspace();
-                console.log('ChatbotManager: Workspace enabled - Tutorial C chatbot training');
-            } else if (isChatbotDisabledForLevel) {
-                // Tutorials/Baseline: chatbot disabled means user must drive
-                BlocklyActions.enableWorkspace();
-                console.log('ChatbotManager: Workspace enabled - Chatbot disabled for this level');
-            } else {
-                const userRole = this.roleManager.getCurrentRole();
-                if (userRole === 'navigator') {
-                    // User is navigator - AI is driver - disable user's workspace interaction
-                    BlocklyActions.disableWorkspace();
-                    console.log('ChatbotManager: Workspace disabled - User is navigator, AI is the driver');
-                } else {
-                    // User is driver - AI is navigator - enable workspace for user
-                    BlocklyActions.enableWorkspace();
-                    console.log('ChatbotManager: Workspace enabled - User is the driver, AI is navigator');
-                }
-            }
-        } else {
-            // Standard mode - workspace always enabled
-            BlocklyActions.enableWorkspace();
-        }
+        // Standard mode - workspace always enabled
+        BlocklyActions.enableWorkspace();
         
         if (shouldShowNow) {
             // Load conversation history for current level
@@ -139,27 +108,10 @@ class ChatbotManager {
     }
 
     /**
-     * Send initial greeting based on mode
+     * Send initial greeting
      */
     sendInitialGreeting() {
-        let greeting = '';
-        
-        // Check if current level is a tutorial - always use standard mode for tutorials
-        const currentLevel = window.LevelManager?.currentLevelId || '';
-        const isTutorial = currentLevel.startsWith('tutorial_');
-        
-        console.log(`ChatbotManager: sendInitialGreeting - Level: ${currentLevel}, IsTutorial: ${isTutorial}, Mode: ${this.currentMode}`);
-        
-        if (this.currentMode === 'pairProgramming' && !isTutorial) {
-            const userRole = this.roleManager ? this.roleManager.getCurrentRole() : 'driver';
-            // AI role is OPPOSITE of user role
-            const aiRole = userRole === 'driver' ? 'navigator' : 'driver';
-            console.log(`ChatbotManager: Pair programming - UserRole: ${userRole}, AIRole: ${aiRole}`);
-            greeting = CHATBOT_PROMPTS.pairProgramming.initialGreeting[aiRole];
-        } else {
-            console.log(`ChatbotManager: Using standard greeting`);
-            greeting = CHATBOT_PROMPTS.standard.initialGreeting;
-        }
+        const greeting = getInitialGreeting();
 
         // Add to history
         this.chatHistory.push({
@@ -305,22 +257,11 @@ class ChatbotManager {
     }
 
     /**
-     * Get system prompt based on current mode and role
-     * @returns {string} System prompt
+     * Get system prompt for the chatbot
+     * @returns {string} System prompt text
      */
     getSystemPrompt() {
-        // Check if current level is a tutorial - always use standard mode for tutorials
-        const currentLevel = window.LevelManager?.currentLevelId || '';
-        const isTutorial = currentLevel.startsWith('tutorial_');
-        
-        if (this.currentMode === 'pairProgramming' && !isTutorial) {
-            const userRole = this.roleManager ? this.roleManager.getCurrentRole() : 'driver';
-            // AI role is OPPOSITE of user role
-            const aiRole = userRole === 'driver' ? 'navigator' : 'driver';
-            return CHATBOT_PROMPTS.pairProgramming.systemPrompt[aiRole];
-        } else {
-            return CHATBOT_PROMPTS.standard.systemPrompt;
-        }
+        return getSystemPrompt();
     }
 
     /**
@@ -372,16 +313,8 @@ class ChatbotManager {
 
             const data = await response.json();
             
-            // Get AI role for parse-time filtering
-            let aiRole = null;
-            if (this.currentMode === 'pairProgramming' && this.roleManager) {
-                const userRole = this.roleManager.getCurrentRole();
-                // AI role is opposite of user role
-                aiRole = userRole === 'driver' ? 'navigator' : 'driver';
-            }
-            
             // Try to parse JSON code blocks from response
-            return this.parseAIResponse(data.response, aiRole);
+            return this.parseAIResponse(data.response, null);
         } catch (error) {
             console.error("ChatbotManager: Error calling the chatbot:", error);
             return { message: "Sorry, I'm having trouble connecting to the brain right now." };
@@ -480,19 +413,6 @@ class ChatbotManager {
      */
     handleCodeGeneration(blocks) {
         try {
-            // In Pair Programming mode, check if AI is navigator (user is driver)
-            if (this.currentMode === 'pairProgramming') {
-                const userRole = this.roleManager ? this.roleManager.getCurrentRole() : 'driver';
-                const aiRole = userRole === 'driver' ? 'navigator' : 'driver';
-                
-                if (aiRole === 'navigator') {
-                    // AI is navigator, user is driver - bot should NEVER modify code
-                    console.log('ChatbotManager: Navigator mode - bot cannot modify code (user is driver)');
-                    this.ui.addBotMessage('💡 As your navigator, I can only guide you - you have control of the code!');
-                    return;
-                }
-            }
-            
             // Check if AI wants to clear workspace only (look for special 'clear' command)
             const shouldClear = blocks.some(b => b.type === 'clear_workspace');
             if (shouldClear) {
@@ -514,30 +434,12 @@ class ChatbotManager {
                 BlocklyActions.clearWorkspace();
             }
             
-            // For standard AI mode, add complete solution
-            if (this.currentMode === 'standard') {
-                const count = BlocklyActions.addBlocks(blocks, false);
-                if (count === 0 && blocks.length > 0) {
-                    this.ui.addBotMessage('⚠️ I tried to add blocks but encountered errors. Please check the console.');
-                }
-                console.log(`ChatbotManager: Added ${count} blocks from AI (complete solution)`);
-                return;
+            // Add blocks from AI
+            const count = BlocklyActions.addBlocks(blocks, false);
+            if (count === 0 && blocks.length > 0) {
+                this.ui.addBotMessage('⚠️ I tried to add blocks but encountered errors. Please check the console.');
             }
-            
-            // For pair programming Driver mode, AI writes all code
-            if (this.currentMode === 'pairProgramming') {
-                const userRole = this.roleManager ? this.roleManager.getCurrentRole() : 'driver';
-                const aiRole = userRole === 'driver' ? 'navigator' : 'driver';
-                
-                if (aiRole === 'driver') {
-                    // AI is driver - add blocks and keep workspace disabled
-                    const count = BlocklyActions.addBlocks(blocks, false);
-                    if (count === 0 && blocks.length > 0) {
-                        this.ui.addBotMessage('⚠️ I tried to add blocks but encountered errors. Please check the console.');
-                    }
-                    console.log(`ChatbotManager: Driver AI added ${count} blocks (complete solution)`);
-                }
-            }
+            console.log(`ChatbotManager: Added ${count} blocks from AI`);
         } catch (error) {
             console.error('ChatbotManager: Error handling code generation:', error);
             this.ui.addBotMessage('❌ Sorry, I encountered an error while adding blocks.');
@@ -615,22 +517,8 @@ class ChatbotManager {
         // Show chatbot if it was hidden
         this.show();
 
-        // Ensure workspace permissions match current role in pair programming
-        if (this.currentMode === 'pairProgramming' && this.roleManager) {
-            if (levelId === 'tutorial_C') {
-                BlocklyActions.enableWorkspace();
-                console.log('ChatbotManager: Workspace enabled - Tutorial C chatbot training');
-            } else {
-                const userRole = this.roleManager.getCurrentRole();
-                if (userRole === 'navigator') {
-                    BlocklyActions.disableWorkspace();
-                    console.log('ChatbotManager: Workspace disabled - User is navigator, AI is the driver');
-                } else {
-                    BlocklyActions.enableWorkspace();
-                    console.log('ChatbotManager: Workspace enabled - User is the driver, AI is navigator');
-                }
-            }
-        }
+        // Standard mode - workspace always enabled
+        BlocklyActions.enableWorkspace();
         
         // Clear UI
         if (this.ui) {
@@ -640,58 +528,19 @@ class ChatbotManager {
         // Load history for new level
         this.loadHistory();
         
-        // For pair programming mode, ALWAYS send a fresh greeting when switching levels
-        // because the role may have changed (don't rely on cached history)
-        const isPairProgramming = this.currentMode === 'pairProgramming';
-        const isTutorial = levelId.startsWith('tutorial_');
-        
-        if (isPairProgramming && !isTutorial) {
-            // Clear history and send fresh greeting based on current role
-            this.chatHistory = [];
-            this.sendInitialGreeting();
-        } else if (this.chatHistory.length === 0) {
-            // Standard mode or tutorials: only send greeting if no history
+        // Send greeting if no history exists
+        if (this.chatHistory.length === 0) {
             this.sendInitialGreeting();
         }
     }
 
     /**
-     * Update chatbot when role changes (for pair programming)
-     * @param {string} newRole - New role ('driver' or 'navigator')
+     * Update chatbot when role changes (deprecated - kept for backwards compatibility)
+     * @param {string} newRole - New role (deprecated)
      */
     onRoleChange(newRole) {
-        if (this.currentMode !== 'pairProgramming') return;
-
-        console.log(`ChatbotManager: User role changed to ${newRole}`);
-        
-        // Update workspace permissions based on USER's role
-        if (newRole === 'navigator') {
-            // User is navigator - AI is driver - disable user's workspace
-            BlocklyActions.disableWorkspace();
-            console.log('ChatbotManager: Workspace disabled - User is navigator, AI is driver');
-        } else {
-            // User is driver - AI is navigator - enable user's workspace
-            BlocklyActions.enableWorkspace();
-            console.log('ChatbotManager: Workspace enabled - User is driver, AI is navigator');
-        }
-        
-        // Update chatbot title based on AI's role (opposite of user's role)
-        // newRole is the USER's role, so AI role is the opposite
-        const aiRole = newRole === 'driver' ? 'navigator' : 'driver';
-        const title = aiRole === 'driver' 
-            ? '🚗 Mike AI - Driver'
-            : '🧭 Mike AI - Navigator';
-        
-        if (this.ui) {
-            this.ui.updateTitle(title);
-        }
-
-        // Send role change notification based on AI's role
-        const roleChangeMessage = aiRole === 'driver'
-            ? "🔄 Role switched! I'm now the **driver** - I'll write the code based on your navigation guidance."
-            : "🔄 Role switched! I'm now the **navigator** - I'll guide you on what code to write.";
-        
-        this.ui.addBotMessage(roleChangeMessage);
+        // Pair programming has been removed - this method is a no-op
+        console.log('ChatbotManager: onRoleChange called but pair programming is deprecated');
     }
 
     /**

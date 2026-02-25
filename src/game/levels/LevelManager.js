@@ -110,20 +110,8 @@ export class LevelManager {
             
             let instructions = config.instructions || config.description || 'Complete the level objectives.';
             
-            // Append role information if in pair programming mode AND this is an experimental level
-            // EXCEPTION: Do not show role info if chatbot is explicitly disabled for this level (like Baseline Level 3)
-            const chatbotEnabled = config.chatbotEnabled !== false; // Correctly handle undefined (default true) vs false
-            
-            if (config.isExperiment !== false 
-                && window.RoleManager && window.RoleManager.isPairProgrammingMode
-                && chatbotEnabled) {
-                
-                const role = window.RoleManager.getCurrentRole();
-                const roleInfo = role === 'driver' 
-                    ? '\n\n🚗 Your Role: Driver - You write the code. The AI will guide you.'
-                    : '\n\n🧭 Your Role: Navigator - You guide the strategy. The AI will write the code.';
-                instructions += roleInfo;
-            }
+            // Instructions are now uniform for all groups
+            // Role-specific instructions removed since pair programming mode is archived
             
             textElement.textContent = instructions;
         }
@@ -227,7 +215,7 @@ export class LevelManager {
                 console.error(`Level not found: ${levelId}`);
                 return;
             }
-            // REGISTER IT NOW so other managers (like RoleManager) can see it
+            // REGISTER IT NOW so other managers can see it
             this.levels[levelId] = config;
         }
         
@@ -276,12 +264,7 @@ export class LevelManager {
             window.blocklyManager.updateToolboxForLevel(config);
         }
         
-        // Update role for pair programming groups FIRST (before chatbot greeting)
-        if (window.roleManager && window.roleManager.isPairProgrammingMode) {
-            window.roleManager.advanceToLevel(levelId);
-        }
-        
-        // Update chatbot visibility and state for this level (AFTER role update)
+        // Update chatbot visibility and state for this level
         if (window.chatbotManager && window.chatbotManager.isInitialized) {
             window.chatbotManager.switchLevel(levelId, config);
         }

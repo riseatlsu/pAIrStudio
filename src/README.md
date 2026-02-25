@@ -11,7 +11,6 @@ src/
 ├── chatbot/                   # AI Assistant Module
 │   ├── ChatbotManager.js      # Main chatbot controller
 │   ├── ChatbotUI.js           # UI rendering and DOM manipulation
-│   ├── RoleManager.js         # Role management (currently unused)
 │   ├── PromptConfig.js        # System prompts for AI modes
 │   ├── BlocklyActions.js      # Workspace lock/unlock utilities
 │   ├── README.md              # Chatbot module documentation
@@ -83,7 +82,6 @@ main.js
   │     ├─→ PromptConfig
   │     ├─→ BlocklyActions
   │     └─→ DirectionConstants
-  ├─→ RoleManager
   └─→ DataLogger (Firebase)
         └─→ Firebase SDK
 ```
@@ -363,24 +361,12 @@ events/{eventId} (subcollection)
 - **Standard**: AI assistant for the `standard_ai` experimental group
 
 **Core Methods**:
-- `initialize(experimentManager, roleManager)`: Setup based on group
+- `initialize(experimentManager)`: Setup based on group
 - `handleUserMessage(message)`: Process user input
 - `sendInitialGreeting()`: Send greeting message
 - `show()` / `hide()`: Control visibility
 
 **Note**: Pair programming modes (driver/navigator) have been removed from the current experimental design.
-
-### RoleManager (chatbot/RoleManager.js)
-
-**Purpose**: Manage experimental roles (currently unused - pair programming modes removed)
-
-**Status**: This module is retained for backwards compatibility but is not actively used in the current 2-group experimental design (control vs. standard_ai).
-
-**Core Methods** (deprecated):
-- `initialize(experimentManager)`: Setup initial role
-- `getCurrentRole()`: Get current role
-- `switchRole()`: Toggle between roles
-- `advanceToLevel(levelNum)`: Role switching on level progression
 
 ### LevelManager (game/levels/LevelManager.js)
 

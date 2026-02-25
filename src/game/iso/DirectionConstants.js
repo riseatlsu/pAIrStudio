@@ -71,11 +71,3 @@ export function directionToString(direction) {
     console.warn(`Unknown direction number: ${direction}, defaulting to SOUTH`);
     return SOUTH;
 }
-
-/**
- * Get all valid direction strings
- * @returns {Array<string>} Array of valid direction names
- */
-export function getValidDirections() {
-    return [NORTH, SOUTH, EAST, WEST];
-}

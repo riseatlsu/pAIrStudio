@@ -8,7 +8,6 @@ This directory contains the modular chatbot system for pAIrStudio experiments. T
 chatbot/
 ├── ChatbotManager.js    # Main controller for chatbot functionality
 ├── ChatbotUI.js         # UI rendering and DOM manipulation
-├── RoleManager.js       # Role management (currently unused)
 ├── PromptConfig.js      # System prompts for AI assistant
 └── README.md           # This file
 ```
@@ -19,7 +18,7 @@ chatbot/
 **Purpose**: Main controller for chatbot visibility, message handling, and experimental group integration.
 
 **Key Methods**:
-- `initialize(experimentManager, roleManager)` - Initialize chatbot based on experimental group
+- `initialize(experimentManager)` - Initialize chatbot based on experimental group
 - `handleUserMessage(message)` - Process user input
 - `show()` / `hide()` - Control visibility
 - `clearHistory()` - Reset conversation
@@ -29,7 +28,7 @@ chatbot/
 import { chatbotManager } from './chatbot/ChatbotManager.js';
 
 // Initialize with experiment manager
-chatbotManager.initialize(experimentManager, roleManager);
+chatbotManager.initialize(experimentManager);
 
 // Manually show/hide
 chatbotManager.show();
@@ -53,25 +52,11 @@ chatbotManager.hide();
 - Loading state for send button
 - Touch support for mobile
 
-### RoleManager.js
-**Purpose**: Manages experimental roles (currently unused - pair programming modes removed).
-
-**Status**: This module is retained for backwards compatibility but is not actively used in the current experimental design.
-
-**Key Methods** (deprecated):
-- `initialize(experimentManager)` - Set up based on group
-- `getCurrentRole()` - Returns current role
-- `switchRole()` - Toggle between roles
-- `advanceToLevel(levelNumber)` - Switch roles when advancing levels
-- `isDriver()` / `isNavigator()` - Check current role
-
-**Note**: Pair programming functionality has been removed from the current 2-group experimental design (control vs. standard_ai).
-
 ### PromptConfig.js
 **Purpose**: Configuration file for all chatbot system prompts and behaviors.
 
 **Mode**:
-- **Standard Mode** (`CHATBOT_PROMPTS.standard`): 
+- **Standard Mode**: 
   - For `STANDARD_AI` experimental group
   - General programming assistant
   - Provides hints without giving direct solutions
@@ -109,21 +94,17 @@ To add a new group with chatbot support:
 export const GROUP_FEATURES = {
     YOUR_NEW_GROUP: {
         chatbot: true,
-        chatbotMode: 'yourMode', // or 'standard'
+        chatbotMode: 'standard',
         roleSwitching: false,
         // ... other features
     }
 };
 ```
 
-2. **Add prompts to PromptConfig.js** (if using new mode):
+2. **Update PromptConfig.js** (if custom prompt needed):
 ```javascript
-export const CHATBOT_PROMPTS = {
-    yourMode: {
-        systemPrompt: `Your system prompt here...`,
-        initialGreeting: `Your greeting here...`
-    }
-};
+// Modify getSystemPrompt() or getInitialGreeting() to return custom prompts
+// based on additional parameters as needed
 ```
 
 3. **Update ChatbotManager.js** (if special logic needed):
@@ -189,11 +170,11 @@ Use browser console to test different groups:
 ```javascript
 // Force assign to specific group
 ExperimentManager.groupId = 'STANDARD_AI';
-ChatbotManager.initialize(ExperimentManager, RoleManager);
+ChatbotManager.initialize(ExperimentManager);
 
 // Test control group (no chatbot)
 ExperimentManager.groupId = 'CONTROL';
-ChatbotManager.initialize(ExperimentManager, RoleManager);
+ChatbotManager.initialize(ExperimentManager);
 ```
 
 ## Styling Customization

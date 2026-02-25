@@ -9,7 +9,6 @@ import { MainScene } from './scenes/MainScene';
 import { BlocklyManager } from './game/blockly/BlocklyManager';
 import { experimentManager } from './experiment/ExperimentManager.js';
 import { chatbotManager } from './chatbot/ChatbotManager.js';
-import { roleManager } from './chatbot/RoleManager.js';
 import dataLogger from './utils/DataLogger.js';
 
 const config = {
@@ -44,7 +43,7 @@ function initializeUI() {
     // Expose DataLogger globally (but don't initialize until consent)
     window.dataLogger = dataLogger;
     
-    // Note: DataLogger, Chatbot, and RoleManager are initialized in index.html after consent
+    // Note: DataLogger and Chatbot are initialized in index.html after consent
     // to ensure they initialize after group assignment and user has accepted terms
     
     // Init Blockly Workspace
@@ -79,11 +78,9 @@ if (document.readyState === 'loading') {
 
 // Export managers for global access
 window.ChatbotManager = chatbotManager;
-window.RoleManager = roleManager;
 window.ExperimentManager = experimentManager;
 window.blocklyManager = blocklyManager;
 
 // Also export lowercase for consistency
 window.chatbotManager = chatbotManager;
-window.roleManager = roleManager;
 window.experimentManager = experimentManager;
