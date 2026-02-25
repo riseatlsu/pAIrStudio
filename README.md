@@ -15,7 +15,7 @@ pAIrStudio is a research platform designed to study the effectiveness of AI-assi
 
 - **Visual Block Programming**: Drag-and-drop Blockly interface for creating robot control logic
 - **Isometric Game Environment**: Phaser 3-based warehouse simulation with real-time robot movement
-- **AI Chatbot Integration**: Context-aware AI assistant powered by OpenAI GPT-4
+- **AI Chatbot Integration**: Context-aware AI assistant powered by [gpt-oss-120b](https://huggingface.co/openai/gpt-oss-120b)
 - **Comprehensive Data Logging**: Firebase-backed event tracking for research analysis (48+ data points including collision tracking)
 - **Offline-First Design**: Robust queueing system ensures zero data loss during connectivity issues
 - **Modular Experimental Framework**: Easy configuration of groups, features, and level progressions
@@ -32,8 +32,7 @@ pAIrStudio is a research platform designed to study the effectiveness of AI-assi
 - **Firebase** (v12.8.0)
   - Firestore - NoSQL database for participant data and events
   - Authentication - Anonymous user tracking
-  - Cloud Functions - OpenAI API proxy for chatbot
-- **OpenAI API** (GPT-4o-mini) - AI chatbot responses
+  - Cloud Functions - API proxy for chatbot
 
 ### Development Tools
 - **Node.js** (v24) - Runtime environment
