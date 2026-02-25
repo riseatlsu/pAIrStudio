@@ -78,7 +78,7 @@ pAIrStudio is a research platform designed to study the effectiveness of AI-assi
 2. **Event Processing** → DataLogger queues/logs to Firebase
 3. **State Management** → Managers coordinate feature availability
 4. **AI Integration** → ChatbotManager sends context to Cloud Function
-5. **API Request** → Cloud Function proxies to OpenAI
+5. **API Request** → Cloud Function proxies to locally hosted LLM
 6. **Response Delivery** → Assistant message displayed and logged
 
 ### Directory Structure
@@ -90,7 +90,7 @@ pAIrStudio/
 ├── vite.config.js                # Build configuration
 ├── firebase.json                 # Firebase deployment config
 ├── functions/                    # Firebase Cloud Functions
-│   ├── index.js                  # OpenAI chatbot proxy
+│   ├── index.js                  # Locally hosted model chatbot proxy
 │   └── package.json              # Functions dependencies
 ├── public/                       # Static assets
 │   └── assets/                   # Images, sprites
@@ -115,7 +115,7 @@ See [src/README.md](src/README.md) for detailed source code documentation.
 - **Node.js** v18 or higher
 - **npm** v9 or higher
 - **Firebase account** (for deployment)
-- **OpenAI API key** (for chatbot functionality)
+- Your choice of AI model. 
 
 ### Local Development
 
@@ -280,7 +280,7 @@ ISC License - See LICENSE file for details
 ## Acknowledgments
 
 - **Research Team**: LSU RISE Lab
-- **Technologies**: Phaser, Blockly, Firebase, OpenAI
+- **Technologies**: Phaser, Blockly, Firebase, OpenAI gpt-oss-120b
 - **Participants**: Thank you to all study participants
 
 ---
