@@ -1,7 +1,6 @@
 import { experimentManager } from '../experiment/ExperimentManager.js';
 import { GROUPS, GROUP_FEATURES } from '../experiment/GroupConfig.js';
 import { chatbotManager } from '../chatbot/ChatbotManager.js';
-import { roleManager } from '../chatbot/RoleManager.js';
 import { LEVELS } from '../game/levels/index.js';
 
 const DEFAULT_MODE = GROUPS.CONTROL;
@@ -187,12 +186,9 @@ async function initializeSandbox() {
         
         levelManager.setSandboxMode(true);
         levelManager.setCustomProgression(allLevelIds);
-        
-        roleManager.initialize(experimentManager);
 
         if (experimentManager.hasFeature('chatbot')) {
-            chatbotManager.initialize(experimentManager, roleManager);
-            roleManager.onRoleChange((newRole) => chatbotManager.onRoleChange(newRole));
+            chatbotManager.initialize(experimentManager, null);
         } else if (chatbotManager.isInitialized) {
             chatbotManager.hide();
         }

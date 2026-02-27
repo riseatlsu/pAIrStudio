@@ -90,31 +90,6 @@ export function clearWorkspace() {
 }
 
 /**
- * Delete the last N blocks from the program
- * @param {number} count - Number of blocks to delete
- */
-export function deleteLastBlocks(count = 1) {
-    const workspace = getWorkspace();
-    if (!workspace) {
-        console.error('BlocklyActions: Workspace not found');
-        return;
-    }
-    
-    let lastBlock = getLastBlock();
-    let deleted = 0;
-    
-    while (lastBlock && lastBlock.type !== 'custom_start' && deleted < count) {
-        const previousBlock = lastBlock.previousConnection?.targetBlock();
-        lastBlock.dispose();
-        lastBlock = previousBlock;
-        deleted++;
-    }
-    
-    console.log(`BlocklyActions: Deleted ${deleted} block(s)`);
-    return deleted;
-}
-
-/**
  * Create a single block and add it to the workspace
  * @param {Object} blockSpec - Block specification {type, fields, children}
  * @returns {Blockly.Block|null} Created block
@@ -292,8 +267,8 @@ export function getWorkspaceState() {
 }
 
 /**
- * Disable workspace interaction (for Pair Programming Driver mode)
- * When AI is the driver, user shouldn't modify the workspace
+ * Disable workspace interaction
+ * (Deprecated - was used for Pair Programming Driver mode)
  */
 export function disableWorkspace() {
     const workspace = getWorkspace();
@@ -350,19 +325,4 @@ export function enableWorkspace() {
     }
     
     console.log('BlocklyActions: Workspace interaction enabled');
-}
-
-/**
- * Check if workspace is currently disabled
- * @returns {boolean}
- */
-export function isWorkspaceDisabled() {
-    const workspace = getWorkspace();
-    if (!workspace) return false;
-    
-    const blocks = workspace.getAllBlocks(false);
-    if (blocks.length === 0) return false;
-    
-    // Check if any non-start block is editable
-    return !blocks.some(block => block.type !== 'custom_start' && block.isEditable());
 }

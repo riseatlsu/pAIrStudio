@@ -1,5 +1,9 @@
-// src/utils/DataLogger.js
-//
+/**
+ * @fileoverview DataLogger - Singleton Firebase data collection service.
+ * Handles participant registration, event logging, offline queueing, and network resilience.
+ * @module utils/DataLogger
+ */
+
 // Firebase Data Logger for pAIrStudio
 // 
 // CONFIGURING COLLECTION NAMES:
@@ -34,7 +38,42 @@ const firebaseConfig = {
 // Singleton instance
 let instance = null;
 
+/**
+ * DataLogger - Singleton service for Firebase data collection.
+ * 
+ * Features:
+ * - Anonymous Firebase Authentication
+ * - Participant registration with experimental group tracking
+ * - Event logging with automatic timestamping
+ * - Offline event queueing with localStorage persistence
+ * - Network status monitoring with auto-reconnect
+ * - Exponential backoff retry logic
+ * - Zero data loss guarantee through robust queueing
+ * 
+ * Usage:
+ * ```javascript
+ * import dataLogger from './utils/DataLogger.js';
+ * 
+ * // Initialize after user consent
+ * await dataLogger.initExperiment();
+ * dataLogger.setParticipantId('cnt_abc123', 'standard_ai');
+ * 
+ * // Log events
+ * await dataLogger.logLevelStart('level_001');
+ * await dataLogger.logRun('level_001', workspaceXML);
+ * await dataLogger.logLevelComplete('level_001', true);
+ * ```
+ * 
+ * @class DataLogger
+ */
 class DataLogger {
+    /**
+     * Create the DataLogger singleton instance.
+     * 
+     * Private constructor - use the exported singleton instance instead.
+     * Initializes Firebase, sets up event queue, and restores queued
+     * events from localStorage if present.
+     */
     constructor() {
         if (instance) return instance;
         instance = this;
@@ -282,8 +321,6 @@ class DataLogger {
                 participantId: participantId,
                 firebaseUserId: this.currentUserId,
                 experimentalGroup: group,
-                userAgent: navigator.userAgent,
-                screenResolution: `${window.screen.width}x${window.screen.height}`,
                 lastUpdated: serverTimestamp()
             };
 
@@ -530,6 +567,26 @@ class DataLogger {
     }
     
     /**
+     * Log collision events when player attempts to move into an obstacle
+     * @param {string} levelId - Current level ID
+     * @param {string} collisionType - Type of collision: 'boundary', 'conveyor', 'box', 'wall', 'object'
+     * @param {Object} details - Additional collision details
+     * @param {number} details.playerRow - Player's current row
+     * @param {number} details.playerCol - Player's current column
+     * @param {string} details.playerDirection - Player's current direction
+     * @param {number} details.targetRow - Attempted target row
+     * @param {number} details.targetCol - Attempted target column
+     * @param {string} [details.objectId] - ID of object collided with (if applicable)
+     */
+    async logCollision(levelId, collisionType, details = {}) {
+        await this.logEvent('collision', {
+            levelId,
+            collisionType,
+            ...details
+        });
+    }
+    
+    /**
      * Log workspace changes (for detailed interaction analysis)
      */
     async logWorkspaceChange(levelId, changeType, blockType = null) {
@@ -559,6 +616,24 @@ class DataLogger {
             errorType,
             message,
             ...context
+        });
+    }
+    
+    /**
+     * Log drop actions (placing objects on conveyor or floor)
+     * @param {string} levelId - Current level ID
+     * @param {Object} details - Drop details
+     * @param {number} details.dropRow - Row where item was dropped
+     * @param {number} details.dropCol - Column where item was dropped
+     * @param {boolean} details.onConveyor - Whether dropped on conveyor (true) or floor (false)
+     * @param {string} [details.objectId] - ID of dropped object
+     * @param {string} [details.objectType] - Type of dropped object
+     * @param {string} [details.conveyorId] - ID of conveyor if dropped on one
+     */
+    async logDrop(levelId, details = {}) {
+        await this.logEvent('drop_action', {
+            levelId,
+            ...details
         });
     }
     

@@ -1,9 +1,42 @@
+/**
+ * @fileoverview IsoObjects - Base classes for interactive isometric objects.
+ * Defines IsoObject, StationaryObject, and MoveableObject hierarchies.
+ * @module game/iso/IsoObjects
+ */
+
 import { gridToScreen } from './IsoUtils';
 
 /**
- * Base class for any object on the isometric board (except floor tiles).
+ * IsoObject - Base class for all non-floor objects on the isometric board.
+ * 
+ * Provides:
+ * - Grid position tracking
+ * - Phaser sprite management
+ * - Collision detection flags
+ * - Attribute system for custom properties
+ * - Visual offset support
+ * - Z-height for depth sorting
+ * 
+ * @class IsoObject
  */
 export class IsoObject {
+  /**
+   * Create an IsoObject instance.
+   * 
+   * @param {Phaser.Scene} scene - The Phaser scene
+   * @param {IsoBoard} board - The isometric board this object belongs to
+   * @param {number} gridRow - Grid row position
+   * @param {number} gridCol - Grid column position
+   * @param {string} texture - Phaser texture key
+   * @param {Object} [config={}] - Object configuration
+   * @param {Object} [config.attributes={}] - Custom attributes for game logic
+   * @param {boolean} [config.collidable=true] - Whether object blocks movement
+   * @param {number} [config.zHeight=0] - Vertical offset for depth sorting
+   * @param {number} [config.visualOffsetX=0] - Horizontal sprite offset
+   * @param {number} [config.visualOffsetY=0] - Vertical sprite offset
+   * @param {number} [config.frame=0] - Initial sprite frame
+   * @param {number} [config.scale] - Sprite scale multiplier
+   */
   constructor(scene, board, gridRow, gridCol, texture, config = {}) {
     this.scene = scene;
     this.board = board;

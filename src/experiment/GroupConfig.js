@@ -2,9 +2,7 @@
 
 export const GROUPS = {
     CONTROL: 'control',         // No AI
-    STANDARD_AI: 'standard_ai', // AI Chatbot available (passive)
-    PAIR_DRIVER: 'pair_driver', // AI/Human Pair, Human starts as Driver
-    PAIR_NAVIGATOR: 'pair_navigator' // AI/Human Pair, Human starts as Navigator
+    STANDARD_AI: 'standard_ai'  // AI Chatbot available (passive)
 };
 
 // Features enabled for each group
@@ -21,31 +19,13 @@ export const GROUP_FEATURES = {
         chatbot: true,
         chatbotMode: 'assistant', // "Help me" mode
         roleSwitching: false
-    },
-    [GROUPS.PAIR_DRIVER]: {
-        id: GROUPS.PAIR_DRIVER,
-        name: 'Pair Programming (Driver Start)',
-        chatbot: true,
-        chatbotMode: 'driver_navigator',
-        initialRole: 'driver',
-        roleSwitching: true
-    },
-    [GROUPS.PAIR_NAVIGATOR]: {
-        id: GROUPS.PAIR_NAVIGATOR,
-        name: 'Pair Programming (Navigator Start)',
-        chatbot: true,
-        chatbotMode: 'driver_navigator',
-        initialRole: 'navigator',
-        roleSwitching: true
     }
 };
 
 // Probability Weights (Sum does not need to be 1, but easier if normalized mentally)
 export const ASSIGNMENT_WEIGHTS = [
     { id: GROUPS.CONTROL, weight: 1 },
-    { id: GROUPS.STANDARD_AI, weight: 1 },
-    { id: GROUPS.PAIR_DRIVER, weight: 1 },
-    { id: GROUPS.PAIR_NAVIGATOR, weight: 1 }
+    { id: GROUPS.STANDARD_AI, weight: 1 }
 ];
 
 /**
@@ -66,16 +46,6 @@ export const TUTORIAL_PROGRESSION = {
         'tutorial_A',    // Basic movement
         'tutorial_B',    // Advanced blocks
         'tutorial_C'     // Chatbot practice (for groups with AI support)
-    ],
-    [GROUPS.PAIR_DRIVER]: [
-        'tutorial_A',    // Basic movement
-        'tutorial_B',    // Advanced blocks
-        'tutorial_C'     // Chatbot practice (for pair programming)
-    ],
-    [GROUPS.PAIR_NAVIGATOR]: [
-        'tutorial_A',    // Basic movement
-        'tutorial_B',    // Advanced blocks
-        'tutorial_C'     // Chatbot practice (for pair programming)
     ]
 };
 

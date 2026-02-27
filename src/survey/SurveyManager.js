@@ -1,4 +1,10 @@
 /**
+ * @fileoverview SurveyManager - Manages post-study survey state and submission.
+ * Handles question loading, answer persistence, and Firebase logging.
+ * @module survey/SurveyManager
+ */
+
+/**
  * SurveyManager.js
  * Manages survey state, persistence, and submission
  * Modular design for easy adaptation
@@ -6,6 +12,18 @@
 
 import { getQuestionsForGroup } from './SurveyConfig.js';
 
+/**
+ * SurveyManager - Manages survey questions, responses, and submission.
+ * 
+ * Features:
+ * - Group-specific question filtering
+ * - localStorage persistence of answers
+ * - Required question validation
+ * - Integration with DataLogger
+ * - Support for multiple question types (text, radio, checkbox, scale)
+ * 
+ * @class SurveyManager
+ */
 class SurveyManager {
     constructor() {
         this.experimentManager = null;
@@ -120,12 +138,7 @@ class SurveyManager {
             participantId: this.experimentManager?.participantId || 'anonymous',
             groupId: this.experimentManager?.groupId || 'CONTROL',
             answers: this.answers,
-            submittedAt: new Date().toISOString(),
-            sessionData: {
-                // Could include session metadata
-                userAgent: navigator.userAgent,
-                screenResolution: `${window.screen.width}x${window.screen.height}`
-            }
+            submittedAt: new Date().toISOString()
         };
 
         console.log('SurveyManager: Survey submitted', submissionData);

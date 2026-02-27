@@ -1,7 +1,38 @@
+/**
+ * @fileoverview ExperimentManager - Manages experimental group assignment and feature flags.
+ * Handles random group assignment, cookie persistence, and feature queries.
+ * @module experiment/ExperimentManager
+ */
+
 import { GROUPS, GROUP_FEATURES, ASSIGNMENT_WEIGHTS } from './GroupConfig.js';
 
 /**
- * Manages experimental group assignment, persistence, and feature flags.
+ * ExperimentManager - Singleton for experimental group management.
+ * 
+ * Features:
+ * - Weighted random group assignment
+ * - Cookie-based persistence (30-day expiry)
+ * - Feature flag system for conditional functionality
+ * - Participant ID generation and tracking
+ * - Integration with DataLogger for consent-first initialization
+ * 
+ * Usage:
+ * ```javascript
+ * import { experimentManager } from './experiment/ExperimentManager.js';
+ * 
+ * // Initialize (loads cookies)
+ * experimentManager.initialize();
+ * 
+ * // Assign group after consent
+ * const group = experimentManager.assignGroup();
+ * 
+ * // Query features
+ * if (experimentManager.hasFeature('chatbot')) {
+ *   // Enable chatbot UI
+ * }
+ * ```
+ * 
+ * @class ExperimentManager
  */
 export class ExperimentManager {
     constructor() {
