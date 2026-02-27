@@ -60,13 +60,27 @@ export class MainScene extends Phaser.Scene {
     this.load.spritesheet('conveyor', 'ConveyorBelt-Blue.png', { 
         frameWidth: 69, 
         frameHeight: 57,
-        gap: 2
     });
 
     // Dropoff Floor
     this.load.spritesheet('zone', 'DropOff-Floor.png', { 
         frameWidth: 66, 
         frameHeight: 33 
+    });
+
+    this.load.spritesheet('pillars', 'Pillars.png', { 
+        frameWidth: 540 / 2, // 135
+        frameHeight: 431
+    });
+
+    this.load.spritesheet('walls', 'Walls.png', {
+        frameWidth: 196 / 2,
+        frameHeight: 177 
+    });
+
+    this.load.spritesheet('shelves', 'Shelves.png', {
+        frameWidth: 527 / 8, // 65.875
+        frameHeight: 69 
     });
 
     // 2. Robot (Rows for different types, Cols for direction)
@@ -108,12 +122,13 @@ export class MainScene extends Phaser.Scene {
     // Initialize Level Builder
     this.levelBuilder = new LevelBuilder(this, this.isoBoard, {
         floor: { key: 'tiles', frame: 0 },
-        conveyor: { key: 'conveyor', frame: 0 },
-        conveyor: { key: 'conveyor', frame: 1 },
-        conveyor: { key: 'conveyor', frame: 2 },
+        conveyor: [0, 1, 2].map(frame => ({ key: 'conveyor', frame })),
         zone: { key: 'zone', frame: 0 },
         robot: { key: 'robot', frameOffset: 0 }, 
-        box: { key: 'box', frame: 0 }
+        box: { key: 'box', frame: 0 },
+        pillars: [0, 1, 2, 3].map(frame => ({ key: 'pillars', frame })),
+        walls: [0, 1].map(frame => ({ key: 'walls', frame })),
+        shelves: Array.from({ length: 8 }, (_, frame) => ({ key: 'shelves', frame })),
     });
 
     // Make LevelManager globally available

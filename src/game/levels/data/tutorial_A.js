@@ -30,11 +30,18 @@ export const TutorialA = {
 
     objects: {
         stationary: [
-            // Input conveyor with box (directly in front of robot)
-            // Note: coordinates are (row, col) where row increases South, col increases East
-            { type: "conveyor", row: 0, col: 2, id: "input_conveyor", attributes: { allowDrop: true } },
-            // Output conveyor one space further south
-            { type: "conveyor", row: 3, col: 2, id: "output_conveyor", attributes: { allowDrop: true } }
+            // Input conveyor with box
+            // { type: "conveyor", row: 0, col: 0, id: "input_conveyor", attributes: { allowDrop: false, frame: 0 } },
+            // { type: "conveyor", row: 0, col: 1, id: "input_conveyor", attributes: { allowDrop: false, frame: 1 } },
+            // { type: "conveyor", row: 0, col: 2, id: "input_conveyor", attributes: { allowDrop: false, frame: 2 } },
+            ...[0, 1, 2].map(frame => ({ type: "conveyor", row: 0, col: frame, id: "input_conveyor", attributes: { allowDrop: false, frame } })), // shorten the code from above
+            { type: "zone", row: 0, col: 3, id: "input_zone", attributes: { allowDrop: true } },
+            { type: "walls", row: 0, col: 0, id: "walls", attributes: { allowDrop: false, frame: 0 } }, // testing wall
+            { type: "shelves", row: 2, col: 3, id: "shelf", attributes: { allowDrop: false, frame: 0 } }, // testing shelf
+            { type: "pillars", row: 0, col: 0, id: "pillar", attributes: { allowDrop: false, frame: 0 } }, // testing pillar
+            // Output conveyor
+            { type: "conveyor", row: 4, col: 2, id: "output_conveyor", attributes: { allowDrop: false } },
+            { type: "zone", row: 4, col: 3, id: "output_zone", attributes: { allowDrop: true } }
         ],
         moveable: [
             // Box on the input conveyor
@@ -43,8 +50,8 @@ export const TutorialA = {
     },
 
     player: {
-        startRow: 1,  // Row 1
-        startCol: 2,  // Column 2
+        startRow: 0, // Row 1
+        startCol: 0,  // Column 2
         startDir: NORTH, // Facing North (towards row 0)
         scale: 1.5
     },
