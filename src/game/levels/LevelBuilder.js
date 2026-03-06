@@ -115,6 +115,8 @@ export class LevelBuilder {
                         frame: wallConfig.frame,
                         collidable: false,
                         isWall: true,
+                        visualOffsetX: -15, // Center the wider wall sprite horizontally
+                        visualOffsetY: 18, // Offset tall wall sprite upward (base class adds tileHeight/2)
                         attributes: {
                             allowDrop: false,
                             id: obj.id,
@@ -128,6 +130,19 @@ export class LevelBuilder {
                         frame: shelfConfig.frame,
                         collidable: true,
                         isShelf: true,
+                        attributes: {
+                            allowDrop: false,
+                            id: obj.id,
+                            ...obj.attributes
+                        }
+                    });
+                }
+                else if (obj.type === 'drums') {
+                    const drumConfig = this.textureMap.drums[obj.attributes.frame % this.textureMap.drums.length];
+                    this.board.addStationaryObject(obj.row, obj.col, drumConfig.key, {
+                        frame: drumConfig.frame,
+                        collidable: true,
+                        isDrum: true,
                         attributes: {
                             allowDrop: false,
                             id: obj.id,

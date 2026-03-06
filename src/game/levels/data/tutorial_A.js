@@ -36,11 +36,12 @@ export const TutorialA = {
             // { type: "conveyor", row: 0, col: 2, id: "input_conveyor", attributes: { allowDrop: false, frame: 2 } },
             ...[0, 1, 2].map(frame => ({ type: "conveyor", row: 0, col: frame, id: "input_conveyor", attributes: { allowDrop: false, frame } })), // shorten the code from above
             { type: "zone", row: 0, col: 3, id: "input_zone", attributes: { allowDrop: true } },
-            { type: "walls", row: 0, col: 0, id: "walls", attributes: { allowDrop: false, frame: 0 } }, // testing wall
+            { type: "walls", row: 2, col: 0, id: "walls", attributes: { allowDrop: false, frame: 0 } }, // testing wall
             { type: "shelves", row: 2, col: 3, id: "shelf", attributes: { allowDrop: false, frame: 0 } }, // testing shelf
-            { type: "pillars", row: 0, col: 0, id: "pillar", attributes: { allowDrop: false, frame: 0 } }, // testing pillar
+            { type: "pillars", row: 0, col: 4, id: "pillar", attributes: { allowDrop: false, frame: 0 } }, // testing pillar
+            { type: "drums", row: 4, col: 0, id: "drum", attributes: { allowDrop: false, frame: 0 } }, // testing drum
             // Output conveyor
-            { type: "conveyor", row: 4, col: 2, id: "output_conveyor", attributes: { allowDrop: false } },
+            ...[0, 1, 2].map(frame => ({ type: "conveyor", row: 4, col: frame, id: "output_conveyor", attributes: { allowDrop: false, frame } })), // shorten the code from above
             { type: "zone", row: 4, col: 3, id: "output_zone", attributes: { allowDrop: true } }
         ],
         moveable: [
@@ -50,15 +51,15 @@ export const TutorialA = {
     },
 
     player: {
-        startRow: 0, // Row 1
-        startCol: 0,  // Column 2
+        startRow: 1, // Row 1
+        startCol: 2,  // Column 2
         startDir: NORTH, // Facing North (towards row 0)
         scale: 1.5
     },
 
     winConditions: [
         // Win when box is on the output conveyor
-        { type: "itemAtPos", itemId: "tutorial_box", row: 3, col: 2 }
+        { type: "itemAtPos", itemId: "tutorial_box", row: 4, col: 2 }
     ],
 
     maxSteps: 10,

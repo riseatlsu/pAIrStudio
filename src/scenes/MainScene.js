@@ -58,8 +58,8 @@ export class MainScene extends Phaser.Scene {
 
     // 1. Conveyor Belt (6 frames, conveyor piece oriented vertically)
     this.load.spritesheet('conveyor', 'ConveyorBelt-Blue.png', { 
-        frameWidth: 69, 
-        frameHeight: 57,
+        frameWidth: 66, 
+        frameHeight: 50,
     });
 
     // Dropoff Floor
@@ -69,18 +69,23 @@ export class MainScene extends Phaser.Scene {
     });
 
     this.load.spritesheet('pillars', 'Pillars.png', { 
-        frameWidth: 540 / 2, // 135
-        frameHeight: 431
+        frameWidth: 66,
+        frameHeight: 156
     });
 
     this.load.spritesheet('walls', 'Walls.png', {
-        frameWidth: 196 / 2,
+        frameWidth: 98,
         frameHeight: 177 
     });
 
     this.load.spritesheet('shelves', 'Shelves.png', {
-        frameWidth: 527 / 8, // 65.875
-        frameHeight: 69 
+        frameWidth: 66,
+        frameHeight: 70 
+    });
+
+    this.load.spritesheet('drums', 'OilDrums.png', {
+        frameWidth: 66,
+        frameHeight: 54
     });
 
     // 2. Robot (Rows for different types, Cols for direction)
@@ -122,13 +127,14 @@ export class MainScene extends Phaser.Scene {
     // Initialize Level Builder
     this.levelBuilder = new LevelBuilder(this, this.isoBoard, {
         floor: { key: 'tiles', frame: 0 },
-        conveyor: [0, 1, 2].map(frame => ({ key: 'conveyor', frame })),
+        conveyor: Array.from({ length: 6 }, (_, frame) => ({ key: 'conveyor', frame })), // conveyor frames 0-5
         zone: { key: 'zone', frame: 0 },
         robot: { key: 'robot', frameOffset: 0 }, 
         box: { key: 'box', frame: 0 },
-        pillars: [0, 1, 2, 3].map(frame => ({ key: 'pillars', frame })),
-        walls: [0, 1].map(frame => ({ key: 'walls', frame })),
+        pillars: Array.from({ length: 4 }, (_, frame) => ({ key: 'pillars', frame })),
+        walls: Array.from({ length: 2 }, (_, frame) => ({ key: 'walls', frame })),
         shelves: Array.from({ length: 8 }, (_, frame) => ({ key: 'shelves', frame })),
+        drums: Array.from({ length: 4 }, (_, frame) => ({ key: 'drums', frame }))
     });
 
     // Make LevelManager globally available

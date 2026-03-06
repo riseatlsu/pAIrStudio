@@ -67,7 +67,7 @@ export class IsoBoard {
           const pos = gridToScreen(row, col, this.tileWidth, this.tileHeight, 0);
           
           const tile = this.scene.add.sprite(pos.x, pos.y, textureKey, frameIndex);
-          tile.setOrigin(0.5, 0.5);
+          tile.setOrigin(0.5, 0.5); // Center alignment for grid continuity
           
           // Store metadata for sorting
           tile.isoRow = row;
@@ -131,6 +131,7 @@ export class IsoBoard {
     if (config.isWall) objType = 'walls';
     if (config.isShelf) objType = 'shelves';
     if (config.isPillar) objType = 'pillars';
+    if (config.isDrum) objType = 'drums';
     
     obj.sprite.isoType = objType;
     obj.isoType = objType; // Also set on wrapper for game logic (for LevelBuilder to check)
