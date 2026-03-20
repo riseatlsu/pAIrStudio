@@ -134,7 +134,7 @@ export class MainScene extends Phaser.Scene {
         pillars: Array.from({ length: 4 }, (_, frame) => ({ key: 'pillars', frame })),
         walls: Array.from({ length: 2 }, (_, frame) => ({ key: 'walls', frame })),
         shelves: Array.from({ length: 8 }, (_, frame) => ({ key: 'shelves', frame })),
-        drums: Array.from({ length: 4 }, (_, frame) => ({ key: 'drums', frame }))
+        oilDrums: Array.from({ length: 4 }, (_, frame) => ({ key: 'drums', frame }))
     });
 
     // Make LevelManager globally available

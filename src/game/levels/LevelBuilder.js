@@ -110,13 +110,16 @@ export class LevelBuilder {
                     });
                 }
                 else if (obj.type === 'walls') {
-                    const wallConfig = this.textureMap.walls[obj.attributes.frame % this.textureMap.walls.length];
+                    const wallConfig = this.textureMap.walls[obj.attributes.frame % this.textureMap.walls.length];                    const wallFrame = wallConfig.frame;
+                    // Frame-specific Y offset to align both wall types
+                    const wallYOffset = wallFrame === 0 ? 18 : wallFrame === 1 ? 0 : 18;
+                    
                     this.board.addStationaryObject(obj.row, obj.col, wallConfig.key, {
-                        frame: wallConfig.frame,
+                        frame: wallFrame,
                         collidable: false,
                         isWall: true,
                         visualOffsetX: -15, // Center the wider wall sprite horizontally
-                        visualOffsetY: 18, // Offset tall wall sprite upward (base class adds tileHeight/2)
+                        visualOffsetY: wallYOffset, // Frame-specific offset
                         attributes: {
                             allowDrop: false,
                             id: obj.id,
@@ -137,12 +140,12 @@ export class LevelBuilder {
                         }
                     });
                 }
-                else if (obj.type === 'drums') {
-                    const drumConfig = this.textureMap.drums[obj.attributes.frame % this.textureMap.drums.length];
+                else if (obj.type === 'OilDrums') {
+                    const drumConfig = this.textureMap.oilDrums[obj.attributes.frame % this.textureMap.oilDrums.length];
                     this.board.addStationaryObject(obj.row, obj.col, drumConfig.key, {
                         frame: drumConfig.frame,
                         collidable: true,
-                        isDrum: true,
+                        isOilDrum: true,
                         attributes: {
                             allowDrop: false,
                             id: obj.id,
