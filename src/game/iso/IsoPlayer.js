@@ -47,13 +47,13 @@ export class IsoPlayer extends MoveableObject {
         zHeight: config.zHeight || 10,
         collidable: true, // Player is collidable by default
         visualOffsetX: -2, // Move visual offsets here so they apply during sprite creation
-        visualOffsetY: 8
+        visualOffsetY: 4 // Adjusted: position player on tile
     });
     
     // Explicitly set these on the instance too in case super doesn't assign 
     // them to this (MoveableObject usually does if it puts them in config, but IsoObject reads from config)
     this.visualOffsetX = -2;
-    this.visualOffsetY = 8;
+    this.visualOffsetY = 4;
     
     this.type = 'player';
     this.sprite.isoType = 'player';
@@ -139,7 +139,7 @@ export class IsoPlayer extends MoveableObject {
             this.scene.tweens.add({
                 targets: this.sprite,
                 x: pos.x + this.visualOffsetX,
-                y: pos.y + this.visualOffsetY,
+                y: pos.y + this.board.tileHeight / 2 + this.visualOffsetY,
                 duration: 400,
                 ease: 'Power1',
                 onComplete: () => {
@@ -162,7 +162,7 @@ export class IsoPlayer extends MoveableObject {
                this.scene.tweens.add({
                    targets: this.carriedItem.sprite,
                    x: itemPos.x + this.visualOffsetX,
-                   y: itemPos.y + this.visualOffsetY + this.carriedItemYOffset,
+                   y: itemPos.y + this.board.tileHeight / 2 + this.visualOffsetY + this.carriedItemYOffset,
                    duration: 400,
                    ease: 'Power1',
                    onComplete: () => {
@@ -256,6 +256,12 @@ export class IsoPlayer extends MoveableObject {
       
       const front = this.getFrontCoordinates();
       const obj = this.board.getMoveableAt(front.row, front.col);
+
+      // NEW: Check if location allows pickup
+      const robotLocation = this.board.getStationaryAt(this.gridRow, this.gridCol);
+      if (robotLocation && !robotLocation.getAttribute('allowDrop')) {
+          return false;  // Cannot pick up from conveyor
+      }
       
       // Check if object exists, is not already carried, and is pickupable
       if (obj && !obj.isCarried) { 
@@ -277,7 +283,7 @@ export class IsoPlayer extends MoveableObject {
               this.scene.tweens.add({
                   targets: obj.sprite,
                   x: itemPos.x + this.visualOffsetX, // Use robot's X offset
-                  y: itemPos.y + this.visualOffsetY + this.carriedItemYOffset, // Use robot's Y offset + extra south adjustment
+                  y: itemPos.y + this.board.tileHeight / 2 + this.visualOffsetY + this.carriedItemYOffset, // Use robot's Y offset + extra south adjustment
                   duration: 300,
                   ease: 'Back.easeOut',
                   onComplete: () => {
@@ -309,13 +315,20 @@ export class IsoPlayer extends MoveableObject {
       const onConveyor = stationary && stationary.getAttribute('allowDrop');
       
       if (stationary) {
-          // Check if this stationary object explicitly allows dropping items on it
-          // (e.g. Conveyor Belts)
           const allowsDrop = stationary.getAttribute('allowDrop');
           
+          // If target doesn't allow drop, check if it's a conveyor and player is on a zone
           if (!allowsDrop) {
-               // If it doesn't explicitly allow drop, checking if it's a solid obstacle
-               if (stationary.collidable) return false;
+               if (stationary.isoType === 'conveyor') {
+                   // Can drop on conveyor only if player is standing on a zone
+                   const playerLocation = this.board.getStationaryAt(this.gridRow, this.gridCol);
+                   if (!playerLocation || playerLocation.isoType !== 'zone') {
+                       return false; // Player must be on a zone to drop onto conveyor
+                   }
+                   // Player is on zone - allow drop on conveyor
+               } else if (stationary.collidable) {
+                   return false; // Other obstacles block drops
+               }
           }
           // If allowsDrop is true, we proceed regardless of collidable status
       }

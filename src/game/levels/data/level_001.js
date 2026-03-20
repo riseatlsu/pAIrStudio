@@ -34,9 +34,11 @@ export const Level1 = {
         stationary: [
             // Input Conveyor (Where box starts) - Top-Left ish (0,2)
             { type: "conveyor", row: 0, col: 2, id: "input_belt", attributes: { allowDrop: true } },
+            { type: "zone", row: 0, col: 2, id: "input_zone", attributes: { allowDrop: true } },
             
             // Output Conveyor (Goal) - Bottom-Right ish (7,2)
-            { type: "conveyor", row: 7, col: 2, id: "output_belt_1", attributes: { allowDrop: true } }
+            { type: "conveyor", row: 7, col: 2, id: "output_belt_1", attributes: { allowDrop: true } },
+            { type: "zone", row: 7, col: 2, id: "output_zone_1", attributes: { allowDrop: true } }
         ],
         moveable: [
             // The Box - Starts on Input Conveyor
