@@ -35,11 +35,11 @@ export const TutorialA = {
             // { type: "conveyor", row: 0, col: 1, id: "input_conveyor", attributes: { allowDrop: false, frame: 1 } },
             // { type: "conveyor", row: 0, col: 2, id: "input_conveyor", attributes: { allowDrop: false, frame: 2 } },
             ...[0, 1, 2].map(frame => ({ type: "conveyor", row: 0, col: frame, id: "input_conveyor", attributes: { allowDrop: false, frame } })), // shorten the code from above
-            { type: "zone", row: 0, col: 3, id: "input_zone", attributes: { allowDrop: true } },
-            { type: "walls", row: 2, col: 0, id: "walls", attributes: { allowDrop: false, frame: 0 } }, // testing wall
-            { type: "shelves", row: 2, col: 3, id: "shelf", attributes: { allowDrop: false, frame: 0 } }, // testing shelf
-            { type: "pillars", row: 0, col: 4, id: "pillar", attributes: { allowDrop: false, frame: 0 } }, // testing pillar
-            { type: "drums", row: 4, col: 0, id: "drum", attributes: { allowDrop: false, frame: 0 } }, // testing drum
+            // { type: "zone", row: 0, col: 3, id: "input_zone", attributes: { allowDrop: true } },
+            // { type: "walls", row: 2, col: 0, id: "walls", attributes: { allowDrop: false, frame: 0 } }, // testing wall
+            // { type: "shelves", row: 2, col: 3, id: "shelf", attributes: { allowDrop: false, frame: 0 } }, // testing shelf
+            // { type: "pillars", row: 0, col: 4, id: "pillar", attributes: { allowDrop: false, frame: 0 } }, // testing pillar
+            // { type: "drums", row: 4, col: 0, id: "drum", attributes: { allowDrop: false, frame: 0 } }, // testing drum
             // Output conveyor
             ...[0, 1, 2].map(frame => ({ type: "conveyor", row: 4, col: frame, id: "output_conveyor", attributes: { allowDrop: false, frame } })), // shorten the code from above
             { type: "zone", row: 4, col: 3, id: "output_zone", attributes: { allowDrop: true } }

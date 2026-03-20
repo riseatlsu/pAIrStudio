@@ -162,7 +162,7 @@ export class LevelBuilder {
                         frame: this.textureMap.box.frame,
                         scale: 1.25,
                         visualOffsetX: 3,
-                        visualOffsetY: -4,
+                        visualOffsetY: -12, // Adjusted: was -4, minus 8 for partial base tileHeight/2 offset
                         zHeight: 12, // Ensure it clears the conveyor
                         pickupable: true, // Explicitly mark as pickupable
                         attributes: { 
