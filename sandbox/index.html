@@ -26,7 +26,7 @@
             
             <div class="sandbox-mode-body">
                 <div class="sandbox-mode-description">
-                    <h3>Choose Your Experience</h3>
+                    <h2>Choose Your Experience</h2>
                     <p>Select which experimental mode you'd like to explore. You can switch modes at any time using the "Change Mode" button.</p>
                 </div>
                 
@@ -69,6 +69,7 @@
 
     <div class="main-container main-container-inline">
         <div class="container-fluid page-container">
+            <h1 class="visually-hidden">pAIrStudio Sandbox - Warehouse Robot Simulation</h1>
             <div class="instructions-banner" id="instructions-banner">
                 <div class="instructions-title">
                     <i class="fas fa-info-circle"></i>
@@ -82,7 +83,7 @@
             <div class="workspace-container">
                 <div class="panel game-panel">
                     <div class="panel-header">
-                        <span><i class="fas fa-gamepad icon"></i>Simulation Viewer</span>
+                        <h2 class="panel-section-heading"><i class="fas fa-gamepad icon"></i>Simulation Viewer</h2>
                         <button class="action-btn reset-btn btn-compact" id="reset-btn">
                             <i class="fas fa-redo"></i>
                             Reset Level
@@ -95,7 +96,7 @@
 
                 <div class="panel blockly-panel">
                     <div class="panel-header">
-                        <span><i class="fas fa-puzzle-piece icon"></i>Visual Programming</span>
+                        <h2 class="panel-section-heading"><i class="fas fa-puzzle-piece icon"></i>Visual Programming</h2>
                         <button class="action-btn run-btn btn-compact" id="run-code-btn">
                             <i class="fas fa-play"></i>
                             Run Code
@@ -113,7 +114,7 @@
                             <div class="blockly-lock-overlay" id="blockly-lock-overlay" style="display: none;">
                                 <div class="lock-message">
                                     <i class="fas fa-lock"></i>
-                                    <h3>AI is Driving</h3>
+                                    <h2>AI is Driving</h2>
                                     <p>The AI will write the code. You can chat to provide guidance.</p>
                                 </div>
                             </div>
@@ -243,5 +244,11 @@
     </script>
     
     <script type="module" src="/src/sandbox/sandbox.js"></script>
+
+    <!-- Site Footer -->
+    <footer class="site-footer">
+        <a href="https://www.lsu.edu/feedback">Provide Website Feedback</a>
+        <a href="https://www.lsu.edu/accessibility">Accessibility Statement</a>
+    </footer>
 </body>
 </html>

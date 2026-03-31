@@ -35,34 +35,34 @@
             
             <div class="consent-body">
                 <div class="consent-section">
-                    <h3>Study Purpose</h3>
+                    <h2>Study Purpose</h2>
                     <p>This experiment evaluates educational programming tools and their effectiveness in teaching computational thinking skills through robot control.</p>
                 </div>
                 
                 <div class="consent-section">
-                    <h3>What You'll Do</h3>
+                    <h2>What You'll Do</h2>
                     <p>You will complete programming challenges using visual block-based coding to control a warehouse robot. This typically takes 15-25 minutes.</p>
                 </div>
                 
                 <div class="consent-section">
-                    <h3>Experimental Groups</h3>
+                    <h2>Experimental Groups</h2>
                     <p>You may be randomly assigned to one of several groups with different features (such as AI assistance). Group assignment is automatic and anonymous.</p>
                 </div>
                 
                 <div class="consent-section">
-                    <h3>Data Collection & Privacy</h3>
+                    <h2>Data Collection & Privacy</h2>
                     <p>We collect anonymous interaction data including: code blocks used, completion times, and performance metrics. Your data is identified only by a randomly generated participant ID. No personally identifiable information is collected.</p>
                 </div>
                 
                 <div class="consent-section">
-                    <h3>Voluntary Participation</h3>
+                    <h2>Voluntary Participation</h2>
                     <p>Participation is voluntary. You may close the browser at any time to withdraw.</p>
                 </div>
                 
                 <div class="consent-section" style="background: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; border-radius: 4px; margin-bottom: 20px;">
-                    <h3 style="color: #856404; font-size: 16px; margin-bottom: 8px;">
+                    <h2 style="color: #856404; font-size: 16px; margin-bottom: 8px;">
                         <i class="fas fa-info-circle"></i> Technical Requirements
-                    </h3>
+                    </h2>
                     <p style="color: #856404; margin: 0; font-size: 14px;">
                         <strong>Internet Connection:</strong> A stable internet connection is required throughout the study to save your progress and data.<br>
                         <strong>Cookies & Local Storage:</strong> By clicking "Accept and Continue," you consent to this site using cookies and browser local storage to enhance your experience and preserve your session data.
@@ -120,6 +120,7 @@
     <!-- Main Content -->
     <div class="main-container main-container-inline">
         <div class="container-fluid page-container">
+            <h1 class="visually-hidden">pAIrStudio - Warehouse Robot Simulation</h1>
             <!-- Instructions Banner -->
             <div class="instructions-banner" id="instructions-banner">
                 <div class="instructions-title">
@@ -136,7 +137,7 @@
                 <!-- Game Panel -->
                 <div class="panel game-panel">
                     <div class="panel-header">
-                        <span><i class="fas fa-gamepad icon"></i>Simulation Viewer</span>
+                        <h2 class="panel-section-heading"><i class="fas fa-gamepad icon"></i>Simulation Viewer</h2>
                         <button class="action-btn reset-btn btn-compact" id="reset-btn">
                             <i class="fas fa-redo"></i>
                             Reset Level
@@ -153,7 +154,7 @@
                 <!-- Blockly Panel -->
                 <div class="panel blockly-panel">
                     <div class="panel-header">
-                        <span><i class="fas fa-puzzle-piece icon"></i>Visual Programming</span>
+                        <h2 class="panel-section-heading"><i class="fas fa-puzzle-piece icon"></i>Visual Programming</h2>
                         <button class="action-btn run-btn btn-compact" id="run-code-btn">
                             <i class="fas fa-play"></i>
                             Run Code
@@ -173,7 +174,7 @@
                             <div class="blockly-lock-overlay" id="blockly-lock-overlay" style="display: none;">
                                 <div class="lock-message">
                                     <i class="fas fa-lock"></i>
-                                    <h3>AI is Driving</h3>
+                                    <h2>AI is Driving</h2>
                                     <p>The AI will write the code. You can chat to provide guidance.</p>
                                 </div>
                             </div>
@@ -201,6 +202,12 @@
             </div>
         </div>
     </div>
+
+    <!-- Site Footer -->
+    <footer class="site-footer">
+        <a href="https://www.lsu.edu/feedback">Provide Website Feedback</a>
+        <a href="https://www.lsu.edu/accessibility">Accessibility Statement</a>
+    </footer>
 
     <!-- Role Badge (deprecated - was used for pair programming groups) -->
     <div id="role-badge" style="display: none;">
