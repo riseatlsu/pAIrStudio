@@ -397,6 +397,15 @@ body.offline-mode .main-container {
     justify-content: space-between;
 }
 
+.panel-header h2.panel-section-heading {
+    font-size: inherit;
+    font-weight: inherit;
+    color: inherit;
+    margin: 0;
+    padding: 0;
+    line-height: inherit;
+}
+
 .panel-header .icon {
     font-size: 1.3rem;
     margin-right: 0.5rem;
@@ -883,7 +892,7 @@ body.offline-mode .main-container {
 }
 
 .main-container-inline {
-    padding: 0.5rem 0;
+    padding: 0.5rem 0 2rem;
 }
 
 .btn-compact {
@@ -1886,4 +1895,32 @@ body.sandbox-page .game-canvas {
     .likert-option {
         min-width: 60px;
     }
+}
+
+/* ===== SITE FOOTER ===== */
+.site-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: var(--lsu-purple);
+    color: var(--text-light);
+    text-align: center;
+    padding: 0.4rem 1rem;
+    font-size: 0.8rem;
+    display: flex;
+    gap: 2rem;
+    justify-content: center;
+    align-items: center;
+    z-index: 998;
+    border-top: 2px solid var(--lsu-gold);
+}
+
+.site-footer a {
+    color: var(--lsu-gold);
+    text-decoration: underline;
+}
+
+.site-footer a:hover {
+    color: #ffffff;
 }
