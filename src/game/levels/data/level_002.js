@@ -1,78 +1,69 @@
-// Level 2 Definition
-// Objective: Sort boxes to different conveyor belts based on a simple pattern
-// AI DISABLED for all groups - independent problem solving
+import { NORTH } from '../../iso/DirectionConstants';
+import {
+    createEdgeWalls,
+    createFullFloor,
+    createVerticalConveyor
+} from './layoutHelpers';
 
-import { NORTH, SOUTH, EAST, WEST } from '../../iso/DirectionConstants';
+const walls = createEdgeWalls([0, 2, 4, 6], [1, 3, 5, 7]);
 
 export const Level2 = {
     id: "level_002",
-    title: "Sorting Challenge",
-    description: "Move two boxes from the input area to their designated output conveyors.",
-    instructions: "You have two boxes to deliver. Pick up each box from the input area and place them on their respective output conveyors. Plan your route carefully to avoid unnecessary movements.",
-    
-    // Experimental level settings
+    title: "Level 2: Medium Code Development",
+    description: "Write a longer route from scratch around warehouse obstacles.",
+    instructions: "This Code Development level still starts with an empty Blockly workspace. Pick up the box from the left conveyor, navigate around the center obstacles, and place it on the right conveyor.",
     isExperiment: true,
-    chatbotEnabled: true,  // NO AI for any group on this level
-    
-    // 8x8 Grid
+    chatbotEnabled: true,
+
     map: {
         width: 8,
         height: 8,
-        data: [
-            [1, 1, 1, 1, 1, 1, 1, 1],
-            [1, 1, 1, 1, 1, 1, 1, 1],
-            [1, 1, 1, 1, 1, 1, 1, 1],
-            [1, 1, 1, 1, 1, 1, 1, 1],
-            [1, 1, 1, 1, 1, 1, 1, 1],
-            [1, 1, 1, 1, 1, 1, 1, 1],
-            [1, 1, 1, 1, 1, 1, 1, 1],
-            [1, 1, 1, 1, 1, 1, 1, 1]
-        ]
+        data: createFullFloor(8)
     },
 
     objects: {
         stationary: [
-            // Input area (center-left)
-            { type: "conveyor", row: 3, col: 1, id: "input_area", attributes: { allowDrop: true } },
-            
-            // { type: "conveyor", row: 1, col: 1, id: "input_area", attributes: { allowDrop: true } },
-            
-            // Output conveyor 1 (top-right)
-            { type: "conveyor", row: 1, col: 6, id: "output_belt_1", attributes: { allowDrop: true } },
-            
-            // Output conveyor 2 (bottom-right)
-            // { type: "conveyor", row: 6, col: 6, id: "output_belt_2", attributes: { allowDrop: true } }
+            ...createVerticalConveyor(2, 1, "level2_input"),
+            { type: "zone", row: 3, col: 2, id: "level2_input_zone", attributes: { allowDrop: true, frame: 1 } },
+
+            ...createVerticalConveyor(1, 6, "level2_output"),
+            { type: "zone", row: 2, col: 5, id: "level2_output_zone", attributes: { allowDrop: true, frame: 0 } },
+
+            ...walls,
+
+            { type: "pillars", row: 1, col: 4, id: "level2_pillar_a", attributes: { allowDrop: false, frame: 0 } },
+            { type: "pillars", row: 4, col: 4, id: "level2_pillar_a", attributes: { allowDrop: false, frame: 0 } },
+            { type: "pillars", row: 2, col: 4, id: "level2_pillar_b", attributes: { allowDrop: false, frame: 1 } },
+            { type: "pillars", row: 3, col: 4, id: "level2_pillar_c", attributes: { allowDrop: false, frame: 2 } },
+            { type: "OilDrums", row: 5, col: 3, id: "level2_drum_a", attributes: { allowDrop: false, frame: 0 } },
+            { type: "OilDrums", row: 5, col: 5, id: "level2_drum_b", attributes: { allowDrop: false, frame: 3 } },
+            { type: "shelves", row: 6, col: 6, id: "level2_shelf_a", attributes: { allowDrop: false, frame: 4 } },
+            { type: "shelves", row: 6, col: 7, id: "level2_shelf_b", attributes: { allowDrop: false, frame: 7 } }
         ],
         moveable: [
-            // Box 1 - should go to output_belt_1
-            { type: "box", id: "box_alpha", row: 3, col: 1, attributes: {} },
-            
-            // Box 2 - should go to output_belt_2
-            // { type: "box", id: "box_beta", row: 1, col: 1, attributes: {} }
+            { type: "box", id: "level2_box", row: 3, col: 1, attributes: {} }
         ]
     },
 
     player: {
-        startRow: 3,
-        startCol: 3,
-        startDir: WEST, // Facing West
+        startRow: 5,
+        startCol: 2,
+        startDir: NORTH,
         scale: 1.5
     },
 
     winConditions: [
-        { type: "itemAtPos", itemId: "box_alpha", row: 1, col: 6 }
-        // { type: "itemAtPos", itemId: "box_beta", row: 6, col: 6 }
+        { type: "itemAtPos", itemId: "level2_box", row: 2, col: 6 }
     ],
 
-    maxSteps: 40,
-    
-    // Available blocks - introduce loops for efficiency
+    maxSteps: 28,
+
     allowedBlocks: {
         actions: ['move_forward', 'turn_clockwise', 'turn_counter_clockwise', 'pick_object', 'drop_object'],
         sensing: false,
         logic: false,
         math: false,
         text: false,
-        loops: true  // Students can use loops to optimize their solution
+        loops: true
     }
 };

@@ -18,6 +18,7 @@ export class BlocklyManager {
     constructor() {
         this.workspace = null;
         this.currentLevelId = null;
+        this.currentLevelConfig = null;
         this.autoSaveEnabled = true;
         this.isRunning = false; // Track if code is currently executing
         this.pendingLevelConfig = null; // Store config if update requested before init
@@ -93,6 +94,7 @@ export class BlocklyManager {
 
         // Update current level ID and load saved state
         this.currentLevelId = levelConfig.id;
+        this.currentLevelConfig = levelConfig;
         
         if (!levelConfig || !levelConfig.allowedBlocks) {
             // No restrictions - use default toolbox
@@ -171,13 +173,8 @@ export class BlocklyManager {
                 
                 console.log(`BlocklyManager: Workspace loaded for ${this.currentLevelId}`);
             } else {
-                // No saved state - create fresh workspace with start block
-                const startBlock = this.workspace.newBlock('custom_start');
-                startBlock.initSvg();
-                startBlock.render();
-                startBlock.moveBy(20, 20);
-                
-                console.log(`BlocklyManager: No saved workspace for ${this.currentLevelId}, created fresh start block`);
+                this.createDefaultWorkspace();
+                console.log(`BlocklyManager: No saved workspace for ${this.currentLevelId}, created default workspace`);
             }
             
             // Re-enable auto-save
@@ -186,6 +183,39 @@ export class BlocklyManager {
             console.error('BlocklyManager: Failed to load workspace', e);
             this.autoSaveEnabled = true;
         }
+    }
+
+    createDefaultWorkspace() {
+        const startBlock = this.workspace.newBlock('custom_start');
+        startBlock.initSvg();
+        startBlock.render();
+        startBlock.setDeletable(false);
+        startBlock.moveBy(20, 20);
+
+        const starterBlocks = this.currentLevelConfig?.starterBlocks;
+        if (!Array.isArray(starterBlocks) || starterBlocks.length === 0) {
+            return;
+        }
+
+        let previousBlock = startBlock;
+
+        starterBlocks.forEach((blockSpec) => {
+            const block = this.workspace.newBlock(blockSpec.type);
+            block.initSvg();
+            block.render();
+
+            if (blockSpec.fields) {
+                Object.entries(blockSpec.fields).forEach(([fieldName, value]) => {
+                    block.setFieldValue(value, fieldName);
+                });
+            }
+
+            if (previousBlock.nextConnection && block.previousConnection) {
+                previousBlock.nextConnection.connect(block.previousConnection);
+            }
+
+            previousBlock = block;
+        });
     }
 
     /**

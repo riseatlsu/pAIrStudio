@@ -1,30 +1,29 @@
-// Level 3 Definition
-// Objective: Deliver boxes to different destinations based on pattern
-// Introduces basic spatial reasoning with multiple destinations
+import { NORTH } from '../../iso/DirectionConstants';
+import {
+    createEdgeWalls,
+    createVerticalConveyor
+} from './layoutHelpers';
 
-import { NORTH, SOUTH, EAST, WEST } from '../../iso/DirectionConstants';
+const walls = createEdgeWalls([0, 2, 4, 6], [1, 3, 5, 7]);
 
 export const Level3 = {
     id: "level_003",
-    title: "Multi-Destination Delivery",
-    description: "Deliver boxes to different output conveyors efficiently.",
-    instructions: "You have two boxes to deliver to different output conveyors. Plan your route carefully to minimize the number of steps. Think about which box to deliver first to avoid backtracking.",
-    
-    // Experimental level settings
+    title: "Level 3: Hard Code Development",
+    description: "Build a full solution from scratch through a tighter warehouse layout.",
+    instructions: "This hard Code Development level uses floor gaps and decorations to shape the route. Start with an empty Blockly workspace, pick up the box from the left conveyor, and carry it through the open path to the right conveyor.",
     isExperiment: true,
     chatbotEnabled: true,
-    
-    // 8x8 Grid
+
     map: {
         width: 8,
         height: 8,
         data: [
             [1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 1, 1, 0, 0, 1, 1, 1],
+            [1, 1, 1, 0, 0, 1, 1, 1],
             [1, 1, 1, 1, 1, 1, 1, 1],
-            [1, 1, 1, 1, 1, 1, 1, 1],
-            [1, 1, 1, 1, 1, 1, 1, 1],
-            [1, 1, 1, 1, 1, 1, 1, 1],
-            [1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 0, 0, 1, 1, 1, 1, 1],
+            [1, 0, 0, 1, 1, 1, 1, 1],
             [1, 1, 1, 1, 1, 1, 1, 1],
             [1, 1, 1, 1, 1, 1, 1, 1]
         ]
@@ -32,40 +31,40 @@ export const Level3 = {
 
     objects: {
         stationary: [
-            // Input area (left side, center)
-            { type: "conveyor", row: 3, col: 1, id: "input_area_1", attributes: { allowDrop: true } },
-            { type: "conveyor", row: 4, col: 1, id: "input_area_2", attributes: { allowDrop: true } },
-            
-            // Output conveyor 1 (top-right)
-            { type: "conveyor", row: 1, col: 6, id: "output_belt_1", attributes: { allowDrop: true } },
-            
-            // Output conveyor 2 (bottom-right)
-            { type: "conveyor", row: 6, col: 6, id: "output_belt_2", attributes: { allowDrop: true } }
+            ...createVerticalConveyor(1, 1, "level3_input"),
+            { type: "zone", row: 2, col: 2, id: "level3_input_zone", attributes: { allowDrop: true, frame: 1 } },
+
+            ...createVerticalConveyor(4, 6, "level3_output"),
+            { type: "zone", row: 5, col: 5, id: "level3_output_zone", attributes: { allowDrop: true, frame: 0 } },
+
+            ...walls,
+
+            { type: "pillars", row: 1, col: 6, id: "level3_pillar_a", attributes: { allowDrop: false, frame: 0 } },
+            { type: "pillars", row: 6, col: 3, id: "level3_pillar_b", attributes: { allowDrop: false, frame: 2 } },
+            { type: "OilDrums", row: 3, col: 3, id: "level3_drum_a", attributes: { allowDrop: false, frame: 3 } },
+            { type: "OilDrums", row: 6, col: 1, id: "level3_drum_a", attributes: { allowDrop: false, frame: 2 } },
+            { type: "OilDrums", row: 6, col: 6, id: "level3_drum_b", attributes: { allowDrop: false, frame: 1 } },
+            { type: "shelves", row: 0, col: 6, id: "level3_shelf_a", attributes: { allowDrop: false, frame: 0 } },
+            { type: "shelves", row: 0, col: 7, id: "level3_shelf_b", attributes: { allowDrop: false, frame: 3 } }
         ],
         moveable: [
-            // Box 1 - should go to output_belt_1 (top)
-            { type: "box", id: "box_alpha", row: 3, col: 1, attributes: {} },
-            
-            // Box 2 - should go to output_belt_2 (bottom)
-            { type: "box", id: "box_beta", row: 4, col: 1, attributes: {} }
+            { type: "box", id: "level3_box", row: 2, col: 1, attributes: {} }
         ]
     },
 
     player: {
-        startRow: 4,
-        startCol: 3,
-        startDir: WEST, // Facing West
+        startRow: 6,
+        startCol: 2,
+        startDir: NORTH,
         scale: 1.5
     },
 
     winConditions: [
-        { type: "itemAtPos", itemId: "box_alpha", row: 1, col: 6 },
-        { type: "itemAtPos", itemId: "box_beta", row: 6, col: 6 }
+        { type: "itemAtPos", itemId: "level3_box", row: 5, col: 6 }
     ],
 
-    maxSteps: 50,
-    
-    // Available blocks - movement and loops
+    maxSteps: 40,
+
     allowedBlocks: {
         actions: ['move_forward', 'turn_clockwise', 'turn_counter_clockwise', 'pick_object', 'drop_object'],
         sensing: false,

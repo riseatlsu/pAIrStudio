@@ -259,7 +259,7 @@ export class IsoPlayer extends MoveableObject {
 
       // NEW: Check if location allows pickup
       const robotLocation = this.board.getStationaryAt(this.gridRow, this.gridCol);
-      if (robotLocation && !robotLocation.getAttribute('allowDrop')) {
+      if (!robotLocation || robotLocation.isoType !== 'zone') {
           return false;  // Cannot pick up from conveyor
       }
       
@@ -306,6 +306,8 @@ export class IsoPlayer extends MoveableObject {
   drop() {
       if (!this.carriedItem) return false;
       const front = this.getFrontCoordinates();
+
+      if (!this.board.hasFloorAt(front.row, front.col)) return false;
       
       // 1. Cannot drop if another moveable object is already there
       if (this.board.getMoveableAt(front.row, front.col)) return false; 

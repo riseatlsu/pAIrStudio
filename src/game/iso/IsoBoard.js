@@ -123,7 +123,7 @@ export class IsoBoard {
     obj.sprite.isoRow = row;
     obj.sprite.isoCol = col;
     obj.sprite.isoZ = config.zHeight || 0; // Usually 0 or low
-    
+
     // Determine type
     let objType = 'stationary';
     if (config.isZone) objType = 'zone';
@@ -132,10 +132,11 @@ export class IsoBoard {
     if (config.isShelf) objType = 'shelves';
     if (config.isPillar) objType = 'pillars';
     if (config.isOilDrum) objType = 'oilDrums';
-    
-    obj.sprite.isoType = objType;
-    obj.isoType = objType; // Also set on wrapper for game logic (for LevelBuilder to check)
-    
+
+    // Always set isoType on both wrapper and sprite
+    obj.isoType = objType;
+    if (obj.sprite) obj.sprite.isoType = objType;
+
     this.stationaryObjects.push(obj);
     this.allSprites.push(obj.sprite);
     return obj;
@@ -177,11 +178,19 @@ export class IsoBoard {
    * @returns {IsoObject|null}
    */
   getStationaryAt(row, col) {
-    return this.stationaryObjects.find(o => o.gridRow === row && o.gridCol === col) || null;
+    // Prioritize returning a zone if present on the tile
+    const objs = this.stationaryObjects.filter(o => o.gridRow === row && o.gridCol === col);
+    if (!objs.length) return null;
+    const zone = objs.find(o => o.isoType === 'zone');
+    return zone || objs[0];
   }
 
   getMoveableAt(row, col) {
     return this.moveableObjects.find(o => o.gridRow === row && o.gridCol === col && !o.isCarried) || null;
+  }
+
+  hasFloorAt(row, col) {
+    return Boolean(this.floorLayer[row] && this.floorLayer[row][col]);
   }
 
   /**
@@ -189,13 +198,16 @@ export class IsoBoard {
    */
   isWalkable(row, col) {
     // 1. Check bounds
-    if (row < 0 || row >= this.mapWidth || col < 0 || col >= this.mapHeight) return false;
+    if (row < 0 || row >= this.mapHeight || col < 0 || col >= this.mapWidth) return false;
 
-    // 2. Check Stationary Collisions
+    // 2. Tile must exist on the floor map
+    if (!this.hasFloorAt(row, col)) return false;
+
+    // 3. Check Stationary Collisions
     const stat = this.getStationaryAt(row, col);
     if (stat && stat.collidable) return false;
 
-    // 3. Check Moveable Collisions (that are not carried)
+    // 4. Check Moveable Collisions (that are not carried)
     const mov = this.getMoveableAt(row, col);
     if (mov && mov.collidable) return false;
 
@@ -212,12 +224,21 @@ export class IsoBoard {
    */
   getCollisionInfo(row, col) {
     // 1. Check bounds
-    if (row < 0 || row >= this.mapWidth || col < 0 || col >= this.mapHeight) {
+    if (row < 0 || row >= this.mapHeight || col < 0 || col >= this.mapWidth) {
       return { 
         collides: true, 
         type: 'boundary', 
         objectId: null,
         objectType: 'edge_of_map'
+      };
+    }
+
+    if (!this.hasFloorAt(row, col)) {
+      return {
+        collides: true,
+        type: 'void',
+        objectId: null,
+        objectType: 'missing_floor'
       };
     }
 

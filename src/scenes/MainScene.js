@@ -79,7 +79,7 @@ export class MainScene extends Phaser.Scene {
     });
 
     this.load.spritesheet('shelves', 'Shelves.png', {
-        frameWidth: 66,
+        frameWidth: 65.875,
         frameHeight: 70 
     });
 
@@ -127,14 +127,14 @@ export class MainScene extends Phaser.Scene {
     // Initialize Level Builder
     this.levelBuilder = new LevelBuilder(this, this.isoBoard, {
         floor: { key: 'tiles', frame: 0 },
-        conveyor: Array.from({ length: 6 }, (_, frame) => ({ key: 'conveyor', frame })), // conveyor frames 0-5
-        zone: { key: 'zone', frame: 0 },
         robot: { key: 'robot', frameOffset: 0 }, 
         box: { key: 'box', frame: 0 },
-        pillars: Array.from({ length: 4 }, (_, frame) => ({ key: 'pillars', frame })),
-        walls: Array.from({ length: 2 }, (_, frame) => ({ key: 'walls', frame })),
-        shelves: Array.from({ length: 8 }, (_, frame) => ({ key: 'shelves', frame })),
-        oilDrums: Array.from({ length: 4 }, (_, frame) => ({ key: 'drums', frame }))
+        conveyor: Array.from({ length: 6 }, (_, frame) => ({ key: 'conveyor', frame })), // conveyor frames 0-5
+        zone: Array.from({ length: 4 }, (_, frame) => ({ key: 'zone', frame })), // zone frames 0-3
+        pillars: Array.from({ length: 4 }, (_, frame) => ({ key: 'pillars', frame })), // pillars frames 0-3
+        walls: Array.from({ length: 2 }, (_, frame) => ({ key: 'walls', frame })), // walls frames 0-1
+        shelves: Array.from({ length: 8 }, (_, frame) => ({ key: 'shelves', frame })), // shelves frames 0-7
+        oilDrums: Array.from({ length: 4 }, (_, frame) => ({ key: 'drums', frame })) // oil drum frames 0-3
     });
 
     // Make LevelManager globally available
