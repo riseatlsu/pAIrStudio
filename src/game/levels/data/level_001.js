@@ -1,69 +1,75 @@
-// Level 1 Definition
-// Objective: Move the box from the input conveyor (Left) to the output conveyor (Right).
+import { NORTH } from '../../iso/DirectionConstants';
+import {
+    createEdgeWalls,
+    createFullFloor,
+    createHorizontalConveyor
+} from './layoutHelpers';
 
-import { NORTH, SOUTH, EAST, WEST } from '../../iso/DirectionConstants';
+const walls = createEdgeWalls([0, 2, 4, 6], [1, 3, 5, 7]);
 
 export const Level1 = {
     id: "level_001",
-    title: "First Steps",
-    description: "Program the robot to pick up the package from the input belt and place it on the output belt.",
-    instructions: "Welcome to your first challenge! Move the robot to pick up the box from the input conveyor belt on the left, then deliver it to the output conveyor belt on the right. Use the movement, turn, and pickup/drop blocks to program the robot.",
-    
-    // Experimental level settings
-    isExperiment: true,      // This level is part of the experiment
-    chatbotEnabled: true,    // Chatbot available based on group assignment
-    
-    // 8x8 Grid
-    // 1 = Floor, 0 = Empty (if any)
+    title: "Level 1: Easy Code Development",
+    description: "Build a simple robot program from scratch.",
+    instructions: "This is the first Code Development level. Start with an empty Blockly workspace, pick up the box from the top conveyor while standing on the dropoff floor, then deliver it to the bottom conveyor.",
+    isExperiment: true,
+    chatbotEnabled: true,
+
     map: {
         width: 8,
         height: 8,
-        data: [
-            [1, 1, 1, 1, 1, 1, 1, 1],
-            [1, 1, 1, 1, 1, 1, 1, 1],
-            [1, 1, 1, 1, 1, 1, 1, 1],
-            [1, 1, 1, 1, 1, 1, 1, 1],
-            [1, 1, 1, 1, 1, 1, 1, 1],
-            [1, 1, 1, 1, 1, 1, 1, 1],
-            [1, 1, 1, 1, 1, 1, 1, 1],
-            [1, 1, 1, 1, 1, 1, 1, 1]
-        ]
+        data: createFullFloor(8)
     },
 
     objects: {
         stationary: [
-            // Input Conveyor (Where box starts) - Top-Left ish (0,2)
-            { type: "conveyor", row: 0, col: 2, id: "input_belt", attributes: { allowDrop: true } },
+            ...createHorizontalConveyor(0, 2, "level1_input"),
+            { type: "zone", row: 0 , col: 1, id: "level1_input_zone", attributes: { allowDrop: true, frame: 2 } },
+
+            ...createHorizontalConveyor(7, 3, "level1_output"),
+            { type: "zone", row: 7, col: 6, id: "level1_output_zone", attributes: { allowDrop: true, frame: 0 } },
+
+            ...walls,
+
+            { type: "shelves", row: 2, col: 6, id: "level1_shelf_a", attributes: { allowDrop: false, frame: 0 } },
+            { type: "shelves", row: 2, col: 7, id: "level1_shelf_b", attributes: { allowDrop: false, frame: 3 } },
+            { type: "shelves", row: 5, col: 6, id: "level1_shelf_c", attributes: { allowDrop: false, frame: 5 } },
+            { type: "shelves", row: 5, col: 7, id: "level1_shelf_d", attributes: { allowDrop: false, frame: 7 } },
             
-            // Output Conveyor (Goal) - Bottom-Right ish (7,2)
-            { type: "conveyor", row: 7, col: 2, id: "output_belt_1", attributes: { allowDrop: true } }
+            { type: "OilDrums", row: 1, col: 6, id: "level1_drum_a", attributes: { allowDrop: false, frame: 1 } },
+            { type: "OilDrums", row: 6, col: 3, id: "level1_drum_b", attributes: { allowDrop: false, frame: 2 } },
+            { type: "OilDrums", row: 2, col: 1, id: "level1_drum_c", attributes: { allowDrop: false, frame: 0 } },
+            { type: "OilDrums", row: 5, col: 1, id: "level1_drum_d", attributes: { allowDrop: false, frame: 3 } },
+            { type: "OilDrums", row: 1, col: 7, id: "level1_drum_e", attributes: { allowDrop: false, frame: 1 } },
+            
+            { type: "pillars", row: 4, col: 3, id: "level1_pillar_a", attributes: { allowDrop: false, frame: 0 } },
+            { type: "pillars", row: 3, col: 1, id: "level1_pillar_b", attributes: { allowDrop: false, frame: 1 } },
+            { type: "pillars", row: 1, col: 3, id: "level1_pillar_c", attributes: { allowDrop: false, frame: 2 } }
         ],
         moveable: [
-            // The Box - Starts on Input Conveyor
-            { type: "box", id: "package_001", row: 0, col: 2, attributes: {} }
+            { type: "box", id: "level1_box", row: 0, col: 2, attributes: {} }
         ]
     },
 
     player: {
-        startRow: 2,
-        startCol: 2,
-        startDir: NORTH, // Facing North (NE)
-        scale: 1.5 // Slightly smaller than 2.1
+        startRow: 3,
+        startCol: 3,
+        startDir: NORTH,
+        scale: 1.5
     },
 
     winConditions: [
-         { type: "itemAtPos", itemId: "package_001", row: 7, col: 2 }
+         { type: "itemAtPos", itemId: "level1_box", row: 7, col: 5 }
     ],
 
-    maxSteps: 20,
-    
-    // Available blocks for this level - teaching basics
+    maxSteps: 18,
+
     allowedBlocks: {
         actions: ['move_forward', 'turn_clockwise', 'turn_counter_clockwise', 'pick_object', 'drop_object'],
-        sensing: false,  // No sensing blocks in first level
-        logic: false,    // No logic blocks yet
-        math: false,     // No math blocks yet
-        text: false,     // No text blocks
-        loops: true     // No loops in first level - teach sequential thinking
+        sensing: false,
+        logic: false,
+        math: false,
+        text: false,
+        loops: false
     }
 };

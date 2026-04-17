@@ -1,77 +1,73 @@
-// Level 3 Definition
-// Objective: Use loops to efficiently deliver multiple boxes
-// Introduces loops for optimization
+import { NORTH } from '../../iso/DirectionConstants';
+import {
+    createEdgeWalls,
+    createFullFloor,
+    createHorizontalConveyor
+} from './layoutHelpers';
 
-import { NORTH, SOUTH, EAST, WEST } from '../../iso/DirectionConstants';
+const walls = createEdgeWalls([0, 2, 4, 6], [1, 3, 5, 7]);
 
 export const Level4 = {
     id: "level_004",
-    title: "Efficient Delivery",
-    description: "Deliver multiple boxes using loops to optimize your solution.",
-    instructions: "You have three boxes to deliver to the same output conveyor. Instead of repeating the same actions, try using loops to make your program more efficient. Pick up each box from the input area and place each of them on the adjacent output conveyors.",
-    
-    // Experimental level settings
+    title: "Level 4: Easy Code Maintenance / Completion",
+    description: "Fix or extend a partial Blockly program for a simple delivery route.",
+    instructions: "This merged Maintenance / Completion level starts with partial Blockly. The starter code helps the robot reach and pick up the box, but it does not finish the task correctly. Debug or extend it without completing the whole program for the player.",
     isExperiment: true,
     chatbotEnabled: true,
-    
-    // 8x8 Grid
+
     map: {
         width: 8,
         height: 8,
-        data: [
-            [1, 1, 1, 1, 1, 1, 1, 1],
-            [1, 1, 1, 1, 1, 1, 1, 1],
-            [1, 1, 1, 1, 1, 1, 1, 1],
-            [1, 1, 1, 1, 1, 1, 1, 1],
-            [1, 1, 1, 1, 1, 1, 1, 1],
-            [1, 1, 1, 1, 1, 1, 1, 1],
-            [1, 1, 1, 1, 1, 1, 1, 1],
-            [1, 1, 1, 1, 1, 1, 1, 1]
-        ]
+        data: createFullFloor(8)
     },
 
     objects: {
         stationary: [
-            // Input area (left side)
-            { type: "conveyor", row: 2, col: 1, id: "input_area_1", attributes: { allowDrop: true } },
-            { type: "conveyor", row: 4, col: 1, id: "input_area_2", attributes: { allowDrop: true } },
-            { type: "conveyor", row: 6, col: 1, id: "input_area_3", attributes: { allowDrop: true } },
-            
-            // Output conveyor (right side)
-            { type: "conveyor", row: 2, col: 6, id: "output_belt_1", attributes: { allowDrop: true } },
-            { type: "conveyor", row: 4, col: 6, id: "output_belt_2", attributes: { allowDrop: true } },
-            { type: "conveyor", row: 6, col: 6, id: "output_belt_3", attributes: { allowDrop: true } }
+            ...createHorizontalConveyor(0, 1, "level4_input"),
+            { type: "zone", row: 1, col: 2, id: "level4_input_zone", attributes: { allowDrop: true, frame: 2 } },
+
+            ...createHorizontalConveyor(7, 4, "level4_output"),
+            { type: "zone", row: 6, col: 5, id: "level4_output_zone", attributes: { allowDrop: true, frame: 1 } },
+
+            ...walls,
+
+            { type: "shelves", row: 2, col: 6, id: "level4_shelf_a", attributes: { allowDrop: false, frame: 0 } },
+            { type: "shelves", row: 2, col: 7, id: "level4_shelf_b", attributes: { allowDrop: false, frame: 3 } },
+            { type: "OilDrums", row: 5, col: 1, id: "level4_drum_a", attributes: { allowDrop: false, frame: 0 } },
+            { type: "pillars", row: 5, col: 6, id: "level4_pillar_a", attributes: { allowDrop: false, frame: 1 } }
         ],
         moveable: [
-            // Three boxes to deliver
-            { type: "box", id: "box_1", row: 2, col: 1, attributes: {} },
-            { type: "box", id: "box_2", row: 4, col: 1, attributes: {} },
-            { type: "box", id: "box_3", row: 6, col: 1, attributes: {} }
+            { type: "box", id: "level4_box", row: 0, col: 2, attributes: {} }
         ]
     },
 
     player: {
-        startRow: 1,
+        startRow: 3,
         startCol: 2,
-        startDir: SOUTH, // Facing South
+        startDir: NORTH,
         scale: 1.5
     },
 
-    winConditions: [
-        { type: "itemAtPos", itemId: "box_1", row: 2, col: 6 },
-        { type: "itemAtPos", itemId: "box_2", row: 4, col: 6 },
-        { type: "itemAtPos", itemId: "box_3", row: 6, col: 6 }
+    starterBlocks: [
+        { type: "move_forward" },
+        { type: "move_forward" },
+        { type: "pick_object" },
+        { type: "turn_clockwise" },
+        { type: "move_forward" }
     ],
 
-    maxSteps: 70,
-    
-    // Available blocks - emphasize loops
+    winConditions: [
+        { type: "itemAtPos", itemId: "level4_box", row: 7, col: 5 }
+    ],
+
+    maxSteps: 18,
+
     allowedBlocks: {
         actions: ['move_forward', 'turn_clockwise', 'turn_counter_clockwise', 'pick_object', 'drop_object'],
         sensing: false,
         logic: false,
         math: false,
         text: false,
-        loops: true  // Students should use loops to optimize
+        loops: false
     }
 };

@@ -58,12 +58,12 @@ export class IsoObject {
     
     this.sprite = scene.add.sprite(
       pos.x + this.visualOffsetX, 
-      pos.y + this.visualOffsetY, 
+      pos.y + board.tileHeight / 2 + this.visualOffsetY, 
       texture,
       config.frame
     );
     
-    this.sprite.setOrigin(0.5, 0.5); // Standard efficient handling
+    this.sprite.setOrigin(0.5, 1.0); // Bottom-center aligns with floor tile bottom edge
     
     // Scaling support
     if (config.scale) {
@@ -78,7 +78,7 @@ export class IsoObject {
     const pos = gridToScreen(this.gridRow, this.gridCol, this.board.tileWidth, this.board.tileHeight, this.zHeight);
     this.sprite.setPosition(
         pos.x + this.visualOffsetX, 
-        pos.y + this.visualOffsetY
+        pos.y + this.board.tileHeight / 2 + this.visualOffsetY
     );
   }
 

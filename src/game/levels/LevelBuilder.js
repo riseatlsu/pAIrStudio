@@ -34,9 +34,13 @@ export class LevelBuilder {
         // Map logical strings ('floor', 'conveyor') to asset keys & frame indices
         this.textureMap = textureMap || {
             floor: { key: 'tiles', frame: 0 },
-            conveyor: { key: 'tiles', frame: 1 },
             robot: { key: 'robot', frameOffset: 0 }, // robot_type_1 (Row 0)
-            box: { key: 'box', frame: 0 }
+            box: { key: 'box', frame: 0 },
+            conveyor: Array.from({ length: 6 }, (_, frame) => ({ key: 'conveyor', frame })), // conveyor frames 0-5
+            zone: Array.from({ length: 4 }, (_, frame) => ({ key: 'zone', frame })), // zone frames 0-3
+            pillars: Array.from({ length: 4 }, (_, frame) => ({ key: 'pillars', frame })), // pillars frames 0-3
+            walls: Array.from({ length: 2 }, (_, frame) => ({ key: 'walls', frame })), // walls frames 0-1
+            shelves: Array.from({ length: 8 }, (_, frame) => ({ key: 'shelves', frame })), // shelves frames 0-7
         };
     }
 
@@ -58,16 +62,98 @@ export class LevelBuilder {
             levelConfig.objects.stationary.forEach(obj => {
                 if (obj.type === 'conveyor') {
                     // Conveyors are special Stationary Objects
-                    const conv = this.board.addStationaryObject(obj.row, obj.col, this.textureMap.conveyor.key, {
-                        frame: this.textureMap.conveyor.frame,
+                    // Use object's frame if specified, otherwise use default from textureMap
+                    // Support conveyor as array
+                    let conveyorKey, conveyorFrame;
+                    if (Array.isArray(this.textureMap.conveyor)) {
+                        conveyorKey = this.textureMap.conveyor[0].key;
+                        conveyorFrame = obj.attributes?.frame !== undefined ? obj.attributes.frame : this.textureMap.conveyor[0].frame;
+                    } else {
+                        conveyorKey = this.textureMap.conveyor.key;
+                        conveyorFrame = obj.attributes?.frame !== undefined ? obj.attributes.frame : this.textureMap.conveyor.frame;
+                    }
+                    const conv = this.board.addStationaryObject(obj.row, obj.col, conveyorKey, {
+                        frame: conveyorFrame,
                         collidable: true, // Cannot walk on conveyor
+                        isConveyor: true, // Mark as conveyor for game logic (for IsoBoard and win conditions)
                         attributes: { 
-                            allowDrop: true,
+                            allowDrop: false,
                             id: obj.id, // e.g., 'input_1', 'output_1'
                             ...obj.attributes 
                         }
                     });
-                    conv.isoType = 'conveyor'; // Explicit Type for Blockly
+                } 
+                else if (obj.type === 'zone') {
+                    // Zones are special Stationary Objects
+                    const zoneConfig = this.textureMap.zone[obj.attributes.frame % this.textureMap.zone.length]; // Support zone as array with frame selection
+                    this.board.addStationaryObject(obj.row, obj.col, zoneConfig.key, {
+                        frame: zoneConfig.frame,
+                        collidable: false, // Can walk on zone
+                        isZone: true, // Mark as zone for game logic (for IsoBoard and win conditions)
+                        attributes: {
+                            allowDrop: false,
+                            id: obj.id, // e.g., 'input_zone', 'output_zone_1'
+                            ...obj.attributes
+                        }
+                    });
+                }
+                else if (obj.type === 'pillars') {
+                    const pillarConfig = this.textureMap.pillars[obj.attributes.frame % this.textureMap.pillars.length]; // Support pillars as array with frame selection
+                    this.board.addStationaryObject(obj.row, obj.col, pillarConfig.key, {
+                        frame: pillarConfig.frame,
+                        collidable: true,
+                        isPillar: true,
+                        attributes: {
+                            allowDrop: false,
+                            id: obj.id,
+                            ...obj.attributes
+                        }
+                    });
+                }
+                else if (obj.type === 'walls') {
+                    const wallConfig = this.textureMap.walls[obj.attributes.frame % this.textureMap.walls.length];                    
+                    const wallFrame = wallConfig.frame;
+                    // Frame-specific Y offset to align both wall types
+                    const wallYOffset = wallFrame === 0 ? 18 : wallFrame === 1 ? 0 : 18;
+                    
+                    this.board.addStationaryObject(obj.row, obj.col, wallConfig.key, {
+                        frame: wallFrame,
+                        collidable: false,
+                        isWall: true,
+                        visualOffsetX: -15, // Center the wider wall sprite horizontally
+                        visualOffsetY: wallYOffset, // Frame-specific offset
+                        attributes: {
+                            allowDrop: false,
+                            id: obj.id,
+                            ...obj.attributes
+                        }
+                    });
+                }
+                else if (obj.type === 'shelves') {
+                    const shelfConfig = this.textureMap.shelves[obj.attributes.frame % this.textureMap.shelves.length];
+                    this.board.addStationaryObject(obj.row, obj.col, shelfConfig.key, {
+                        frame: shelfConfig.frame,
+                        collidable: true,
+                        isShelf: true,
+                        attributes: {
+                            allowDrop: false,
+                            id: obj.id,
+                            ...obj.attributes
+                        }
+                    });
+                }
+                else if (obj.type === 'OilDrums') {
+                    const drumConfig = this.textureMap.oilDrums[obj.attributes.frame % this.textureMap.oilDrums.length];
+                    this.board.addStationaryObject(obj.row, obj.col, drumConfig.key, {
+                        frame: drumConfig.frame,
+                        collidable: true,
+                        isOilDrum: true,
+                        attributes: {
+                            allowDrop: false,
+                            id: obj.id,
+                            ...obj.attributes
+                        }
+                    });
                 }
             });
         }
@@ -81,7 +167,7 @@ export class LevelBuilder {
                         frame: this.textureMap.box.frame,
                         scale: 1.25,
                         visualOffsetX: 3,
-                        visualOffsetY: -4,
+                        visualOffsetY: -12, // Adjusted: was -4, minus 8 for partial base tileHeight/2 offset
                         zHeight: 12, // Ensure it clears the conveyor
                         pickupable: true, // Explicitly mark as pickupable
                         attributes: { 

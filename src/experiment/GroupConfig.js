@@ -35,17 +35,15 @@ export const ASSIGNMENT_WEIGHTS = [
  * Tutorial Types:
  * - tutorial_A: Basic movement and object manipulation (all groups)
  * - tutorial_B: Advanced block usage and logic (all groups)
- * - tutorial_C: Chatbot interaction and assistance (only groups with chatbot)
  */
 export const TUTORIAL_PROGRESSION = {
     [GROUPS.CONTROL]: [
-        'tutorial_A',    // Basic movement
-        'tutorial_B'     // Advanced blocks
+        'tutorial_A',
+        'tutorial_B'
     ],
     [GROUPS.STANDARD_AI]: [
-        'tutorial_A',    // Basic movement
-        'tutorial_B',    // Advanced blocks
-        'tutorial_C'     // Chatbot practice (for groups with AI support)
+        'tutorial_A',
+        'tutorial_B'
     ]
 };
 
@@ -58,8 +56,8 @@ export const EXPERIMENTAL_LEVELS = [
     'level_002',  // No AI for any group
     'level_003',  // Loop optimization (3 boxes)
     'level_004',  // Multi-destination delivery (2 boxes, different locations)
-    'level_005'   // Obstacle navigation (2 boxes with obstacles)
-    // Add more levels here as needed
+    'level_005',   // Obstacle navigation (2 boxes with obstacles)
+    'level_006',  // 
 ];
 
 /**

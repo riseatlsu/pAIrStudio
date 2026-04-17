@@ -67,7 +67,7 @@ export class IsoBoard {
           const pos = gridToScreen(row, col, this.tileWidth, this.tileHeight, 0);
           
           const tile = this.scene.add.sprite(pos.x, pos.y, textureKey, frameIndex);
-          tile.setOrigin(0.5, 0.5);
+          tile.setOrigin(0.5, 0.5); // Center alignment for grid continuity
           
           // Store metadata for sorting
           tile.isoRow = row;
@@ -123,8 +123,20 @@ export class IsoBoard {
     obj.sprite.isoRow = row;
     obj.sprite.isoCol = col;
     obj.sprite.isoZ = config.zHeight || 0; // Usually 0 or low
-    obj.sprite.isoType = 'stationary';
-    
+
+    // Determine type
+    let objType = 'stationary';
+    if (config.isZone) objType = 'zone';
+    if (config.isConveyor) objType = 'conveyor';
+    if (config.isWall) objType = 'walls';
+    if (config.isShelf) objType = 'shelves';
+    if (config.isPillar) objType = 'pillars';
+    if (config.isOilDrum) objType = 'oilDrums';
+
+    // Always set isoType on both wrapper and sprite
+    obj.isoType = objType;
+    if (obj.sprite) obj.sprite.isoType = objType;
+
     this.stationaryObjects.push(obj);
     this.allSprites.push(obj.sprite);
     return obj;
@@ -166,11 +178,19 @@ export class IsoBoard {
    * @returns {IsoObject|null}
    */
   getStationaryAt(row, col) {
-    return this.stationaryObjects.find(o => o.gridRow === row && o.gridCol === col) || null;
+    // Prioritize returning a zone if present on the tile
+    const objs = this.stationaryObjects.filter(o => o.gridRow === row && o.gridCol === col);
+    if (!objs.length) return null;
+    const zone = objs.find(o => o.isoType === 'zone');
+    return zone || objs[0];
   }
 
   getMoveableAt(row, col) {
     return this.moveableObjects.find(o => o.gridRow === row && o.gridCol === col && !o.isCarried) || null;
+  }
+
+  hasFloorAt(row, col) {
+    return Boolean(this.floorLayer[row] && this.floorLayer[row][col]);
   }
 
   /**
@@ -178,13 +198,16 @@ export class IsoBoard {
    */
   isWalkable(row, col) {
     // 1. Check bounds
-    if (row < 0 || row >= this.mapWidth || col < 0 || col >= this.mapHeight) return false;
+    if (row < 0 || row >= this.mapHeight || col < 0 || col >= this.mapWidth) return false;
 
-    // 2. Check Stationary Collisions
+    // 2. Tile must exist on the floor map
+    if (!this.hasFloorAt(row, col)) return false;
+
+    // 3. Check Stationary Collisions
     const stat = this.getStationaryAt(row, col);
     if (stat && stat.collidable) return false;
 
-    // 3. Check Moveable Collisions (that are not carried)
+    // 4. Check Moveable Collisions (that are not carried)
     const mov = this.getMoveableAt(row, col);
     if (mov && mov.collidable) return false;
 
@@ -201,12 +224,21 @@ export class IsoBoard {
    */
   getCollisionInfo(row, col) {
     // 1. Check bounds
-    if (row < 0 || row >= this.mapWidth || col < 0 || col >= this.mapHeight) {
+    if (row < 0 || row >= this.mapHeight || col < 0 || col >= this.mapWidth) {
       return { 
         collides: true, 
         type: 'boundary', 
         objectId: null,
         objectType: 'edge_of_map'
+      };
+    }
+
+    if (!this.hasFloorAt(row, col)) {
+      return {
+        collides: true,
+        type: 'void',
+        objectId: null,
+        objectType: 'missing_floor'
       };
     }
 
@@ -243,7 +275,7 @@ export class IsoBoard {
     this.allSprites.sort((a, b) => {
         // 1. Z layer priority (Strong Separation between Floors and Objects)
         // Floors must ALWAYS render before objects to prevent clipping when objects overlap tiles
-        const typePriority = { 'floor': 0, 'floor_border': 0, 'stationary': 1, 'moveable': 1, 'player': 1 };
+        const typePriority = { 'floor': 0, 'floor_border': 0, 'zone': 0, 'walls': -1, 'shelves': 1, 'pillars': 1, 'oilDrums': 1, 'conveyor': 1, 'stationary': 1, 'moveable': 1, 'player': 1 };
         const typeA = typePriority[a.isoType] !== undefined ? typePriority[a.isoType] : 1;
         const typeB = typePriority[b.isoType] !== undefined ? typePriority[b.isoType] : 1;
         
