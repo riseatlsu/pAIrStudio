@@ -364,7 +364,7 @@ class DataLogger {
             const update = { lastUpdated: serverTimestamp() };
             if (prolificId) update.prolificId = prolificId;
             if (qualtricsResponseId) update.qualtricsResponseId = qualtricsResponseId;
-            await updateDoc(userRef, update);
+            await setDoc(userRef, update, { merge: true });
             console.log('DataLogger: Prolific/Qualtrics IDs saved to database');
         } catch (error) {
             console.error('DataLogger: Error saving prolific data:', error);
