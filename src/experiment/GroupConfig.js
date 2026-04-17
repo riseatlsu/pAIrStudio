@@ -52,12 +52,12 @@ export const TUTORIAL_PROGRESSION = {
  * Levels that all groups will complete (after tutorials)
  */
 export const EXPERIMENTAL_LEVELS = [
-    'level_001',  // AI support varies by group
-    'level_002',  // No AI for any group
-    'level_003',  // Loop optimization (3 boxes)
-    'level_004',  // Multi-destination delivery (2 boxes, different locations)
-    'level_005',   // Obstacle navigation (2 boxes with obstacles)
-    'level_006',  // 
+    // 'level_001',  // AI support varies by group
+    // 'level_002',  // No AI for any group
+    // 'level_003',  // Loop optimization (3 boxes)
+    // 'level_004',  // Multi-destination delivery (2 boxes, different locations)
+    // 'level_005',  // Obstacle navigation (2 boxes with obstacles)
+    // 'level_006',
 ];
 
 /**
