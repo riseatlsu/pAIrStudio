@@ -342,9 +342,39 @@ class DataLogger {
     }
 
     /**
+     * Save Prolific and Qualtrics IDs to the participant's Firebase document
+     * @param {string|null} prolificId - Participant's Prolific PID
+     * @param {string|null} qualtricsResponseId - Qualtrics response UID
+     */
+    async setProlificData(prolificId, qualtricsResponseId) {
+        // Skip in sandbox mode
+        if (window.experimentManager?.sandboxMode) return;
+
+        // Persist locally
+        if (prolificId) localStorage.setItem('prolific_pid', prolificId);
+        if (qualtricsResponseId) localStorage.setItem('qualtrics_uid', qualtricsResponseId);
+
+        if (!this.currentUserId) {
+            console.warn('DataLogger: setProlificData called before Firebase ready — data already in localStorage');
+            return;
+        }
+
+        try {
+            const userRef = doc(this.db, this.participantsCollection, this.currentUserId);
+            const update = { lastUpdated: serverTimestamp() };
+            if (prolificId) update.prolificId = prolificId;
+            if (qualtricsResponseId) update.qualtricsResponseId = qualtricsResponseId;
+            await updateDoc(userRef, update);
+            console.log('DataLogger: Prolific/Qualtrics IDs saved to database');
+        } catch (error) {
+            console.error('DataLogger: Error saving prolific data:', error);
+        }
+    }
+
+    /**
      * Core logging function
-     * @param {string} eventType 
-     * @param {object} eventData 
+     * @param {string} eventType
+     * @param {object} eventData
      */
     async logEvent(eventType, eventData = {}) {
         // Skip logging in sandbox mode

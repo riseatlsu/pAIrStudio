@@ -25,7 +25,8 @@ body {
     margin: 0;
     padding: 0;
     min-height: 100vh;
-    height: 100vh;
+    height: auto;
+    overflow-y: auto;
     overflow: hidden;
     background: linear-gradient(180deg, var(--lsu-purple) 0%, var(--lsu-light-purple) 20%, var(--grass-green) 80%);
     background-attachment: fixed;
@@ -1872,6 +1873,37 @@ body.sandbox-page .game-canvas {
     font-size: 0.9rem;
     color: #999;
     font-style: italic;
+}
+
+/* Qualtrics Redirect Button */
+.survey-redirect-btn {
+    display: inline-block;
+    margin: 1.5rem auto;
+    padding: 1rem 2rem;
+    background: linear-gradient(135deg, var(--lsu-purple), #7b3fc4);
+    color: #fff;
+    font-size: 1.1rem;
+    font-weight: 600;
+    border-radius: 8px;
+    text-decoration: none;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(70, 29, 124, 0.3);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.survey-redirect-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(70, 29, 124, 0.4);
+    color: #fff;
+    text-decoration: none;
+}
+
+.survey-redirect-btn:active {
+    transform: translateY(0);
+}
+
+.survey-redirect-btn i {
+    margin-right: 0.5rem;
 }
 
 /* Responsive Design */

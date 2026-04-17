@@ -100,6 +100,12 @@ export class ExperimentManager {
             // Initialize Firebase auth and create participant record atomically
             window.dataLogger.initExperiment().then(() => {
                 window.dataLogger.setParticipantId(this.participantId, this.groupId);
+                // Save Prolific/Qualtrics IDs to database if present
+                const pid = localStorage.getItem('prolific_pid');
+                const uid = localStorage.getItem('qualtrics_uid');
+                if (pid || uid) {
+                    window.dataLogger.setProlificData(pid, uid);
+                }
                 console.log('DataLogger: Initialized after consent with participant ID:', this.participantId);
             }).catch(err => {
                 console.error('DataLogger: Initialization failed:', err);

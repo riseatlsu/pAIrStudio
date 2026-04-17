@@ -280,10 +280,23 @@
         document.addEventListener('DOMContentLoaded', () => {
             console.log('%c🐅 pAIrStudio v1.0', 'font-size: 24px; color: #fdd023; font-weight: bold;');
             console.log('%cWarehouse Robot Simulation Platform', 'color: #5a2ca0;');
-            
+
+            // Parse Prolific/Qualtrics URL parameters and persist them
+            const urlParams = new URLSearchParams(window.location.search);
+            const prolificId = urlParams.get('pid');
+            const qualtricsResponseId = urlParams.get('uid');
+            if (prolificId) {
+                localStorage.setItem('prolific_pid', prolificId);
+                console.log(`Prolific PID captured: ${prolificId}`);
+            }
+            if (qualtricsResponseId) {
+                localStorage.setItem('qualtrics_uid', qualtricsResponseId);
+                console.log(`Qualtrics UID captured: ${qualtricsResponseId}`);
+            }
+
             // Initialize experiment manager
             experimentManager.initialize();
-            
+
             // Check if user has already consented
             const hasConsented = experimentManager.getCookie('pair_consented');
             const consentOverlay = document.getElementById('consent-overlay');
@@ -299,9 +312,15 @@
                 if (window.dataLogger) {
                     window.dataLogger.initExperiment().then(() => {
                         window.dataLogger.setParticipantId(
-                            experimentManager.participantId, 
+                            experimentManager.participantId,
                             experimentManager.groupId
                         );
+                        // Save Prolific/Qualtrics IDs to database
+                        const pid = localStorage.getItem('prolific_pid');
+                        const uid = localStorage.getItem('qualtrics_uid');
+                        if (pid || uid) {
+                            window.dataLogger.setProlificData(pid, uid);
+                        }
                         console.log('DataLogger: Initialized for returning user');
                     }).catch(err => {
                         console.error('DataLogger: Initialization failed:', err);

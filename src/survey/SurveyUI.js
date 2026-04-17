@@ -236,17 +236,26 @@ export class SurveyUI {
     }
 
     /**
-     * Render completion message
+     * Render completion message with Qualtrics post-survey redirect button
      */
     renderCompletionMessage() {
+        const prolificId = localStorage.getItem('prolific_pid');
+        const baseUrl = 'https://lsu.qualtrics.com/jfe/form/SV_3xhVRiCfyqLEkR0';
+        const surveyUrl = prolificId
+            ? `${baseUrl}?PROLIFIC_PID=${encodeURIComponent(prolificId)}`
+            : baseUrl;
+
         this.container.innerHTML = `
             <div class="survey-complete">
                 <div class="survey-complete-icon">
                     <i class="fas fa-check-circle"></i>
                 </div>
                 <h2>Thank You!</h2>
-                <p>Your survey responses have been recorded. We appreciate your participation in this study.</p>
-                <p class="survey-complete-note">You may now close this window.</p>
+                <p>Your responses have been recorded. Please complete the final questionnaire to finish the study.</p>
+                <a href="${surveyUrl}" target="_blank" rel="noopener noreferrer" class="survey-redirect-btn">
+                    <i class="fas fa-external-link-alt"></i> Complete Final Questionnaire
+                </a>
+                <p class="survey-complete-note">Clicking the button above will open the final questionnaire in a new tab.</p>
             </div>
         `;
     }
