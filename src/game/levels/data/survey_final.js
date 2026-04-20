@@ -4,7 +4,6 @@
  * Uses 'S' as level type indicator
  */
 
-import { surveyManager } from '../../../survey/SurveyManager.js';
 import { SurveyUI } from '../../../survey/SurveyUI.js';
 
 export default {
@@ -13,29 +12,23 @@ export default {
     name: 'Survey',
     displayName: 'Post-Study Survey',
     description: 'Please complete this survey about your experience.',
-    
+
     /**
      * Initialize the survey level
      * This is called when the survey level is loaded
      */
     onLoad: function(scene, experimentManager) {
         console.log('Survey Level: Loading survey');
-        
-        // Initialize survey manager
-        surveyManager.initialize(experimentManager);
-        
-        // Create survey UI
-        const surveyUI = new SurveyUI(surveyManager);
-        
+
         // Hide game-related UI elements
         const gameCanvas = document.getElementById('game-container');
         const blocklyContainer = document.getElementById('blockly-container');
         const controlPanel = document.getElementById('control-panel');
-        
+
         if (gameCanvas) gameCanvas.style.display = 'none';
         if (blocklyContainer) blocklyContainer.style.display = 'none';
         if (controlPanel) controlPanel.style.display = 'none';
-        
+
         // Show survey container
         let surveyContainer = document.getElementById('survey-container');
         if (!surveyContainer) {
@@ -45,9 +38,11 @@ export default {
             document.body.appendChild(surveyContainer);
         }
         surveyContainer.style.display = 'block';
-        
-        // Render the survey
-        surveyUI.render('survey-container');
+
+        // Skip in-app questions — redirect directly to Qualtrics
+        const surveyUI = new SurveyUI(null);
+        surveyUI.container = surveyContainer;
+        surveyUI.renderCompletionMessage();
     },
     
     /**
