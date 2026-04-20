@@ -252,7 +252,7 @@ export class SurveyUI {
                 </div>
                 <h2>Thank You!</h2>
                 <p>Your responses have been recorded. Please complete the final questionnaire to finish the study.</p>
-                <a href="${surveyUrl}" target="_blank" rel="noopener noreferrer" class="survey-redirect-btn">
+                <a href="${surveyUrl}" class="survey-redirect-btn">
                     <i class="fas fa-external-link-alt"></i> Complete Final Questionnaire
                 </a>
                 <p class="survey-complete-note">Clicking the button above will open the final questionnaire in a new tab.</p>
