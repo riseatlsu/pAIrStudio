@@ -4,7 +4,7 @@
  * @module experiment/ExperimentManager
  */
 
-import { GROUPS, GROUP_FEATURES, ASSIGNMENT_WEIGHTS } from './GroupConfig.js';
+import { GROUPS, GROUP_FEATURES, ASSIGNMENT_WEIGHTS, LATIN_SQUARE } from './GroupConfig.js';
 
 /**
  * ExperimentManager - Singleton for experimental group management.
@@ -40,6 +40,7 @@ export class ExperimentManager {
         this.participantId = null;
         this.features = null;
         this.sandboxMode = false;
+        this.latinSquareRow = null;
     }
 
     /**
@@ -55,6 +56,15 @@ export class ExperimentManager {
             console.log(`ExperimentManager: Loaded existing group '${this.groupId}'`);
         } else {
             console.log('ExperimentManager: No group assigned yet.');
+        }
+
+        const savedRow = this.getCookie('pair_latin_row');
+        if (savedRow !== null) {
+            const parsed = parseInt(savedRow, 10);
+            if (!isNaN(parsed) && parsed >= 0 && parsed < LATIN_SQUARE.length) {
+                this.latinSquareRow = parsed;
+                console.log(`ExperimentManager: Loaded Latin square row ${this.latinSquareRow}`);
+            }
         }
 
         if (this.participantId) {
@@ -88,7 +98,12 @@ export class ExperimentManager {
         }
 
         this.setGroup(selectedGroupId);
-        
+
+        // Assign a Latin square row for counter-balanced level ordering
+        this.latinSquareRow = Math.floor(Math.random() * LATIN_SQUARE.length);
+        this.setCookie('pair_latin_row', String(this.latinSquareRow), 30);
+        console.log(`ExperimentManager: Assigned Latin square row ${this.latinSquareRow}`);
+
         // Generate Participant ID if missing
         if (!this.participantId) {
             this.participantId = 'cnt_' + Math.random().toString(36).substr(2, 9);
@@ -150,6 +165,10 @@ export class ExperimentManager {
         return !!this.getFeature(featureName);
     }
 
+    getLatinSquareRow() {
+        return this.latinSquareRow;
+    }
+
     getCurrentGroup() {
         return this.groupId;
     }
@@ -187,8 +206,10 @@ export class ExperimentManager {
     clearCookies() {
         this.setCookie('pair_group', '', -1);
         this.setCookie('pair_participant_id', '', -1);
+        this.setCookie('pair_latin_row', '', -1);
         this.groupId = null;
         this.features = null;
+        this.latinSquareRow = null;
     }
 
     enableSandboxMode(enable = true) {

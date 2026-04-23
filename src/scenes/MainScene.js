@@ -145,7 +145,10 @@ export class MainScene extends Phaser.Scene {
     
     // Set level progression based on assigned group (if already assigned)
     if (window.experimentManager && window.experimentManager.groupId) {
-        this.levelManager.setLevelProgression(window.experimentManager.groupId);
+        this.levelManager.setLevelProgression(
+            window.experimentManager.groupId,
+            window.experimentManager.getLatinSquareRow()
+        );
     }
 
     // Load the saved current level (or first level in progression if first time)

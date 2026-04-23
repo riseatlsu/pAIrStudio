@@ -48,28 +48,52 @@ export const TUTORIAL_PROGRESSION = {
 };
 
 /**
- * Experimental Level Progression
- * Levels that all groups will complete (after tutorials)
+ * Experimental levels in their canonical order (index 0 = level_001, etc.)
  */
 export const EXPERIMENTAL_LEVELS = [
-    // 'level_001',  // AI support varies by group
-    // 'level_002',  // No AI for any group
-    // 'level_003',  // Loop optimization (3 boxes)
-    // 'level_004',  // Multi-destination delivery (2 boxes, different locations)
-    // 'level_005',  // Obstacle navigation (2 boxes with obstacles)
-    // 'level_006',
+    'level_001',
+    'level_002',
+    'level_003',
+    'level_004',
+    'level_005',
+    'level_006',
 ];
 
 /**
- * Get the complete level progression for a specific group
+ * Williams balanced Latin square for 6 conditions.
+ * Each row is a permutation of indices 0–5 into EXPERIMENTAL_LEVELS.
+ * Properties: every level appears once per position; every level precedes
+ * every other level exactly once (first-order carry-over balanced).
+ */
+export const LATIN_SQUARE = [
+    [0, 1, 5, 2, 4, 3],
+    [1, 2, 0, 3, 5, 4],
+    [2, 3, 1, 4, 0, 5],
+    [3, 4, 2, 5, 1, 0],
+    [4, 5, 3, 0, 2, 1],
+    [5, 0, 4, 1, 3, 2],
+];
+
+/**
+ * Get the complete level progression for a specific group.
  * @param {string} groupId - The group ID
+ * @param {number|null} latinSquareRow - Row index (0–5) for counter-balanced
+ *   experimental level order. Null/undefined = canonical order (sandbox / fallback).
  * @returns {Array<string>} Array of level IDs in order
  */
-export function getLevelProgression(groupId) {
+export function getLevelProgression(groupId, latinSquareRow = null) {
     const tutorials = TUTORIAL_PROGRESSION[groupId] || TUTORIAL_PROGRESSION[GROUPS.CONTROL];
+
+    let experimentalOrder;
+    if (latinSquareRow !== null && latinSquareRow !== undefined && LATIN_SQUARE[latinSquareRow]) {
+        experimentalOrder = LATIN_SQUARE[latinSquareRow].map(i => EXPERIMENTAL_LEVELS[i]);
+    } else {
+        experimentalOrder = [...EXPERIMENTAL_LEVELS];
+    }
+
     return [
         ...tutorials,
-        ...EXPERIMENTAL_LEVELS,
-        'survey_final'  // Always end with survey
+        ...experimentalOrder,
+        'survey_final',
     ];
 }

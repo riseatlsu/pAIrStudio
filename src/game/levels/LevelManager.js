@@ -39,9 +39,9 @@ export class LevelManager {
      * This should be called after group assignment
      * @param {string} groupId - The experimental group ID
      */
-    setLevelProgression(groupId) {
-        this.allLevelIds = getLevelProgression(groupId);
-        console.log(`LevelManager: Set progression for group ${groupId}:`, this.allLevelIds);
+    setLevelProgression(groupId, latinSquareRow = null) {
+        this.allLevelIds = getLevelProgression(groupId, latinSquareRow);
+        console.log(`LevelManager: Set progression for group ${groupId} (Latin square row ${latinSquareRow}):`, this.allLevelIds);
         
         // Update progress UI if it exists
         if (document.getElementById('level-progress-container')) {
