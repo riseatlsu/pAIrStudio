@@ -187,6 +187,11 @@ async function initializeSandbox() {
         levelManager.setSandboxMode(true);
         levelManager.setCustomProgression(allLevelIds);
 
+        // Separate sandbox workspace storage from experiment storage
+        if (window.blocklyManager) {
+            window.blocklyManager.setSandboxMode(true);
+        }
+
         if (experimentManager.hasFeature('chatbot')) {
             chatbotManager.initialize(experimentManager, null);
         } else if (chatbotManager.isInitialized) {
@@ -233,5 +238,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const changeModeBtn = document.getElementById('sandbox-change-mode-btn');
     if (changeModeBtn) {
         changeModeBtn.addEventListener('click', resetSandbox);
+    }
+
+    // Bind reset workspace button
+    const resetWorkspaceBtn = document.getElementById('sandbox-reset-workspace-btn');
+    if (resetWorkspaceBtn) {
+        resetWorkspaceBtn.addEventListener('click', () => {
+            if (window.blocklyManager) {
+                window.blocklyManager.resetWorkspaceToDefault();
+            }
+        });
     }
 });

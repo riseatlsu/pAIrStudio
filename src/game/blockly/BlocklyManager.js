@@ -20,8 +20,13 @@ export class BlocklyManager {
         this.currentLevelId = null;
         this.currentLevelConfig = null;
         this.autoSaveEnabled = true;
-        this.isRunning = false; // Track if code is currently executing
-        this.pendingLevelConfig = null; // Store config if update requested before init
+        this.isRunning = false;
+        this.pendingLevelConfig = null;
+        this.sandboxMode = false;
+    }
+
+    setSandboxMode(enable = true) {
+        this.sandboxMode = enable;
     }
 
     init(containerId) {
@@ -115,8 +120,8 @@ export class BlocklyManager {
      * Get storage key for workspace state
      */
     getWorkspaceStorageKey() {
-        const participantId = this.getParticipantId();
-        return `blocklyWorkspace_${participantId}_${this.currentLevelId}`;
+        const prefix = this.sandboxMode ? 'sandbox' : this.getParticipantId();
+        return `blocklyWorkspace_${prefix}_${this.currentLevelId}`;
     }
 
     /**
@@ -301,10 +306,23 @@ export class BlocklyManager {
      */
     clearWorkspaceState() {
         if (!this.currentLevelId) return;
-        
+
         const key = this.getWorkspaceStorageKey();
         localStorage.removeItem(key);
         console.log(`BlocklyManager: Cleared workspace for ${this.currentLevelId}`);
+    }
+
+    /**
+     * Reset workspace to the level's configured defaults (starterBlocks or blank).
+     * Clears any saved state first so createDefaultWorkspace runs fresh.
+     */
+    resetWorkspaceToDefault() {
+        this.clearWorkspaceState();
+        this.autoSaveEnabled = false;
+        this.workspace.clear();
+        this.createDefaultWorkspace();
+        this.autoSaveEnabled = true;
+        console.log(`BlocklyManager: Workspace reset to defaults for ${this.currentLevelId}`);
     }
 
     getToolbox(allowedBlocks = null) {
