@@ -236,7 +236,8 @@ export class SurveyUI {
     }
 
     /**
-     * Render completion message with Qualtrics post-survey redirect button
+     * Render completion message with Qualtrics post-survey redirect button.
+     * For human-human sessions, also displays both participant IDs with copy buttons.
      */
     renderCompletionMessage() {
         const prolificId = localStorage.getItem('prolific_pid');
@@ -245,6 +246,28 @@ export class SurveyUI {
             ? `${baseUrl}?PROLIFIC_PID=${encodeURIComponent(prolificId)}`
             : baseUrl;
 
+        const em = window.experimentManager;
+        const isDualParticipant = em?.hasFeature('dualParticipant');
+        const idA = em?.participantId  || null;
+        const idB = em?.participantIdB || null;
+
+        const participantIdSection = isDualParticipant && idA && idB
+            ? `<div class="survey-participant-ids">
+                <h3><i class="fas fa-id-card"></i> Participant IDs</h3>
+                <p>Each person must enter their own ID in the questionnaire. Record yours before clicking the button below.</p>
+                <div class="participant-id-row">
+                    <span class="participant-id-label">Participant A</span>
+                    <code class="participant-id-value" id="pid-a">${idA}</code>
+                    <button class="copy-id-btn" onclick="navigator.clipboard.writeText('${idA}').then(()=>{ this.textContent='Copied!'; setTimeout(()=>this.textContent='Copy',2000); })">Copy</button>
+                </div>
+                <div class="participant-id-row">
+                    <span class="participant-id-label">Participant B</span>
+                    <code class="participant-id-value" id="pid-b">${idB}</code>
+                    <button class="copy-id-btn" onclick="navigator.clipboard.writeText('${idB}').then(()=>{ this.textContent='Copied!'; setTimeout(()=>this.textContent='Copy',2000); })">Copy</button>
+                </div>
+               </div>`
+            : '';
+
         this.container.innerHTML = `
             <div class="survey-complete">
                 <div class="survey-complete-icon">
@@ -252,6 +275,7 @@ export class SurveyUI {
                 </div>
                 <h2>Thank You!</h2>
                 <p>Your responses have been recorded. Please complete the final questionnaire to finish the study.</p>
+                ${participantIdSection}
                 <a href="${surveyUrl}" class="survey-redirect-btn">
                     <i class="fas fa-external-link-alt"></i> Complete Final Questionnaire
                 </a>

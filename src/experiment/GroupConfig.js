@@ -1,8 +1,9 @@
 // Configuration for Experimental Groups
 
 export const GROUPS = {
-    CONTROL: 'control',         // No AI
-    STANDARD_AI: 'standard_ai'  // AI Chatbot available (passive)
+    CONTROL: 'control',           // No AI — solo participant
+    STANDARD_AI: 'standard_ai',  // AI Chatbot available (passive) — solo participant
+    HUMAN_HUMAN: 'human_human'   // Two human participants collaborating — no AI
 };
 
 // Features enabled for each group
@@ -11,18 +12,29 @@ export const GROUP_FEATURES = {
         id: GROUPS.CONTROL,
         name: 'Control Group',
         chatbot: false,
-        roleSwitching: false
+        roleSwitching: false,
+        dualParticipant: false
     },
     [GROUPS.STANDARD_AI]: {
         id: GROUPS.STANDARD_AI,
         name: 'Standard AI Support',
         chatbot: true,
-        chatbotMode: 'assistant', // "Help me" mode
-        roleSwitching: false
+        chatbotMode: 'assistant',
+        roleSwitching: false,
+        dualParticipant: false
+    },
+    [GROUPS.HUMAN_HUMAN]: {
+        id: GROUPS.HUMAN_HUMAN,
+        name: 'Human-Human Collaboration',
+        chatbot: false,
+        roleSwitching: false,
+        dualParticipant: true  // Two participant IDs are generated for this group
     }
 };
 
-// Probability Weights (Sum does not need to be 1, but easier if normalized mentally)
+// Probability Weights for random assignment.
+// HUMAN_HUMAN is intentionally excluded — it is only activated via the
+// researcher-controlled URL parameter (?hh=1), never by random assignment.
 export const ASSIGNMENT_WEIGHTS = [
     { id: GROUPS.CONTROL, weight: 1 },
     { id: GROUPS.STANDARD_AI, weight: 1 }
