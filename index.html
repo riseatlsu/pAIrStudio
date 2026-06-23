@@ -313,7 +313,8 @@
                     window.dataLogger.initExperiment().then(() => {
                         window.dataLogger.setParticipantId(
                             experimentManager.participantId,
-                            experimentManager.groupId
+                            experimentManager.groupId,
+                            { participantIdB: experimentManager.getParticipantIdB() }
                         );
                         // Save Prolific/Qualtrics IDs to database
                         const pid = localStorage.getItem('prolific_pid');
@@ -327,10 +328,10 @@
                     });
                 }
                 
-                // Set level progression based on assigned group
+                // Set level progression based on assigned group (counter-balanced order)
                 if (window.LevelManager) {
-                    window.LevelManager.setLevelProgression(experimentManager.groupId);
-                    console.log(`📚 Level progression configured for ${experimentManager.groupId}`);
+                    window.LevelManager.setLevelProgression(experimentManager.groupId, experimentManager.getLatinSquareRow());
+                    console.log(`📚 Level progression configured for ${experimentManager.groupId} (Latin square row ${experimentManager.getLatinSquareRow()})`);
                 }
                 
                 // Initialize chatbot system if this group has chatbot support
@@ -379,10 +380,10 @@
                     console.log(`👤 Participant ID: ${experimentManager.participantId}`);
                     console.log(`📊 Assigned to group: ${assignedGroup}`);
                     
-                    // Set level progression based on assigned group
+                    // Set level progression based on assigned group (counter-balanced order)
                     if (window.LevelManager) {
-                        window.LevelManager.setLevelProgression(assignedGroup);
-                        console.log(`📚 Level progression configured for ${assignedGroup}`);
+                        window.LevelManager.setLevelProgression(assignedGroup, experimentManager.getLatinSquareRow());
+                        console.log(`📚 Level progression configured for ${assignedGroup} (Latin square row ${experimentManager.getLatinSquareRow()})`);
                     }
                     
                     // Initialize chatbot system if needed for this group

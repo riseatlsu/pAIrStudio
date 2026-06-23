@@ -20,8 +20,13 @@ export class BlocklyManager {
         this.currentLevelId = null;
         this.currentLevelConfig = null;
         this.autoSaveEnabled = true;
-        this.isRunning = false; // Track if code is currently executing
-        this.pendingLevelConfig = null; // Store config if update requested before init
+        this.isRunning = false;
+        this.pendingLevelConfig = null;
+        this.sandboxMode = false;
+    }
+
+    setSandboxMode(enable = true) {
+        this.sandboxMode = enable;
     }
 
     init(containerId) {
@@ -115,8 +120,8 @@ export class BlocklyManager {
      * Get storage key for workspace state
      */
     getWorkspaceStorageKey() {
-        const participantId = this.getParticipantId();
-        return `blocklyWorkspace_${participantId}_${this.currentLevelId}`;
+        const prefix = this.sandboxMode ? 'sandbox' : this.getParticipantId();
+        return `blocklyWorkspace_${prefix}_${this.currentLevelId}`;
     }
 
     /**
@@ -185,6 +190,42 @@ export class BlocklyManager {
         }
     }
 
+    /**
+     * Populate the workspace with the START block and any starter blocks
+     * defined in the level config.
+     *
+     * starterBlocks supports arbitrary nesting — loops, conditionals, etc.
+     * Each item in the array is a block descriptor:
+     *
+     *   { type, fields?, extraState?, inputs? }
+     *
+     *   fields     – { FIELD_NAME: value }   inline field values
+     *   extraState – { ... }                 Blockly extra state
+     *                                        (e.g. { hasElse: true } for controls_if)
+     *   inputs     – keyed by input name:
+     *                  array  → statement input (sequence of block descriptors)
+     *                  object → value input     (single block descriptor)
+     *
+     * Block reference:
+     *   Actions  move_forward · turn_clockwise · turn_counter_clockwise
+     *            pick_object · drop_object
+     *   Sensing  survey_front (value→String)
+     *            check_attribute  fields:{ ATTR:'broken' }  (value→Boolean)
+     *   Loops    controls_repeat_ext  inputs:{ TIMES:{math_number}, DO:[...] }
+     *            controls_whileUntil  fields:{ MODE:'WHILE'|'UNTIL' }
+     *                                 inputs:{ BOOL:{...}, DO:[...] }
+     *   Logic    controls_if  extraState:{ hasElse:true }
+     *                         inputs:{ IF0:{...}, DO0:[...], ELSE:[...] }
+     *            logic_compare    fields:{ OP:'EQ'|'NEQ'|'LT'|'LTE'|'GT'|'GTE' }
+     *                             inputs:{ A:{...}, B:{...} }
+     *            logic_operation  fields:{ OP:'AND'|'OR' }  inputs:{ A:{...}, B:{...} }
+     *            logic_boolean    fields:{ BOOL:'TRUE'|'FALSE' }
+     *            logic_negate     inputs:{ BOOL:{...} }
+     *   Math     math_number      fields:{ NUM: 5 }
+     *            math_arithmetic  fields:{ OP:'ADD'|'MINUS'|'MULTIPLY'|'DIVIDE'|'POWER' }
+     *                             inputs:{ A:{...}, B:{...} }
+     *   Text     text             fields:{ TEXT:'hello' }
+     */
     createDefaultWorkspace() {
         const startBlock = this.workspace.newBlock('custom_start');
         startBlock.initSvg();
@@ -193,29 +234,71 @@ export class BlocklyManager {
         startBlock.moveBy(20, 20);
 
         const starterBlocks = this.currentLevelConfig?.starterBlocks;
-        if (!Array.isArray(starterBlocks) || starterBlocks.length === 0) {
-            return;
+        if (!Array.isArray(starterBlocks) || starterBlocks.length === 0) return;
+
+        const firstBlock = this._buildBlockChain(starterBlocks);
+        if (firstBlock && startBlock.nextConnection && firstBlock.previousConnection) {
+            startBlock.nextConnection.connect(firstBlock.previousConnection);
+        }
+    }
+
+    /** Build a linear chain of statement blocks; returns the first block. */
+    _buildBlockChain(specs) {
+        if (!Array.isArray(specs) || specs.length === 0) return null;
+        let first = null;
+        let prev = null;
+        for (const spec of specs) {
+            const block = this._buildBlockFromSpec(spec);
+            if (!block) continue;
+            if (!first) first = block;
+            if (prev?.nextConnection && block.previousConnection) {
+                prev.nextConnection.connect(block.previousConnection);
+            }
+            prev = block;
+        }
+        return first;
+    }
+
+    /** Recursively build a single block and wire its inputs. */
+    _buildBlockFromSpec(spec) {
+        if (!spec?.type) return null;
+
+        const block = this.workspace.newBlock(spec.type);
+
+        // Apply extra state before initSvg so dynamic inputs are created in time
+        if (spec.extraState && typeof block.loadExtraState === 'function') {
+            block.loadExtraState(spec.extraState);
         }
 
-        let previousBlock = startBlock;
+        block.initSvg();
+        block.render();
 
-        starterBlocks.forEach((blockSpec) => {
-            const block = this.workspace.newBlock(blockSpec.type);
-            block.initSvg();
-            block.render();
-
-            if (blockSpec.fields) {
-                Object.entries(blockSpec.fields).forEach(([fieldName, value]) => {
-                    block.setFieldValue(value, fieldName);
-                });
+        if (spec.fields) {
+            for (const [name, value] of Object.entries(spec.fields)) {
+                try { block.setFieldValue(String(value), name); } catch (_) {}
             }
+        }
 
-            if (previousBlock.nextConnection && block.previousConnection) {
-                previousBlock.nextConnection.connect(block.previousConnection);
+        if (spec.inputs) {
+            for (const [inputName, inputValue] of Object.entries(spec.inputs)) {
+                const input = block.getInput(inputName);
+                if (!input?.connection) continue;
+
+                if (Array.isArray(inputValue)) {
+                    const firstInChain = this._buildBlockChain(inputValue);
+                    if (firstInChain?.previousConnection) {
+                        input.connection.connect(firstInChain.previousConnection);
+                    }
+                } else if (inputValue && typeof inputValue === 'object') {
+                    const valueBlock = this._buildBlockFromSpec(inputValue);
+                    if (valueBlock?.outputConnection) {
+                        input.connection.connect(valueBlock.outputConnection);
+                    }
+                }
             }
+        }
 
-            previousBlock = block;
-        });
+        return block;
     }
 
     /**
@@ -223,10 +306,23 @@ export class BlocklyManager {
      */
     clearWorkspaceState() {
         if (!this.currentLevelId) return;
-        
+
         const key = this.getWorkspaceStorageKey();
         localStorage.removeItem(key);
         console.log(`BlocklyManager: Cleared workspace for ${this.currentLevelId}`);
+    }
+
+    /**
+     * Reset workspace to the level's configured defaults (starterBlocks or blank).
+     * Clears any saved state first so createDefaultWorkspace runs fresh.
+     */
+    resetWorkspaceToDefault() {
+        this.clearWorkspaceState();
+        this.autoSaveEnabled = false;
+        this.workspace.clear();
+        this.createDefaultWorkspace();
+        this.autoSaveEnabled = true;
+        console.log(`BlocklyManager: Workspace reset to defaults for ${this.currentLevelId}`);
     }
 
     getToolbox(allowedBlocks = null) {

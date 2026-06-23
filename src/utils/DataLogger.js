@@ -227,9 +227,9 @@ class DataLogger {
             // Process pending participant registration if any
             if (this.pendingParticipantData) {
                 console.log('DataLogger: Processing pending participant registration...');
-                const { participantId, group } = this.pendingParticipantData;
+                const { participantId, group, options } = this.pendingParticipantData;
                 this.pendingParticipantData = null;
-                await this.setParticipantId(participantId, group);
+                await this.setParticipantId(participantId, group, options || {});
             }
             
             // Process queued events
@@ -278,17 +278,19 @@ class DataLogger {
      * Set participant ID and create initial document
      * @param {string} participantId - The user-facing participant ID
      * @param {string} group - Experimental group/condition
+     * @param {Object} [options] - Optional extra data
+     * @param {string} [options.participantIdB] - Second participant ID (human-human condition)
      */
-    async setParticipantId(participantId, group) {
+    async setParticipantId(participantId, group, options = {}) {
         // Skip in sandbox mode
         if (window.experimentManager?.sandboxMode) {
             return;
         }
-        
+
         // Store locally regardless of connection status
         this.sessionData.participantId = participantId;
         this.currentCondition = group;
-        
+
         // Save to localStorage as backup
         try {
             localStorage.setItem('dataLogger_participantId', participantId);
@@ -300,11 +302,11 @@ class DataLogger {
         // If not connected, queue for later
         if (!this.currentUserId) {
             console.warn("DataLogger: Offline - queueing participant registration");
-            this.pendingParticipantData = { participantId, group };
-            
+            this.pendingParticipantData = { participantId, group, options };
+
             // Try to initialize Firebase
             await this.initExperiment();
-            
+
             // If still offline, data will be processed when connection is restored
             if (!this.currentUserId) {
                 return;
@@ -313,16 +315,21 @@ class DataLogger {
 
         try {
             const userRef = doc(this.db, this.participantsCollection, this.currentUserId);
-            
+
             // Check if exists to avoid overwriting if called multiple times
             const docSnap = await getDoc(userRef);
-            
+
             const userData = {
                 participantId: participantId,
                 firebaseUserId: this.currentUserId,
                 experimentalGroup: group,
                 lastUpdated: serverTimestamp()
             };
+
+            // Store second participant ID for human-human condition
+            if (options.participantIdB) {
+                userData.participantIdB = options.participantIdB;
+            }
 
             if (!docSnap.exists()) {
                 userData.startTime = serverTimestamp();
@@ -332,12 +339,11 @@ class DataLogger {
             } else {
                 await updateDoc(userRef, userData);
             }
-            
+
             console.log("DataLogger: Participant registered:", participantId, group);
         } catch (error) {
             console.error("DataLogger: Error creating participant doc:", error);
-            // Re-queue if failed
-            this.pendingParticipantData = { participantId, group };
+            this.pendingParticipantData = { participantId, group, options };
         }
     }
 

@@ -4,7 +4,7 @@
  * @module experiment/ExperimentManager
  */
 
-import { GROUPS, GROUP_FEATURES, ASSIGNMENT_WEIGHTS } from './GroupConfig.js';
+import { GROUPS, GROUP_FEATURES, ASSIGNMENT_WEIGHTS, LATIN_SQUARE } from './GroupConfig.js';
 
 /**
  * ExperimentManager - Singleton for experimental group management.
@@ -38,8 +38,10 @@ export class ExperimentManager {
     constructor() {
         this.groupId = null;
         this.participantId = null;
+        this.participantIdB = null; // Second participant for human-human condition
         this.features = null;
         this.sandboxMode = false;
+        this.latinSquareRow = null;
     }
 
     /**
@@ -57,8 +59,24 @@ export class ExperimentManager {
             console.log('ExperimentManager: No group assigned yet.');
         }
 
+        const savedRow = this.getCookie('pair_latin_row');
+        if (savedRow !== null) {
+            const parsed = parseInt(savedRow, 10);
+            if (!isNaN(parsed) && parsed >= 0 && parsed < LATIN_SQUARE.length) {
+                this.latinSquareRow = parsed;
+                console.log(`ExperimentManager: Loaded Latin square row ${this.latinSquareRow}`);
+            }
+        }
+
         if (this.participantId) {
             console.log(`ExperimentManager: Participant ID '${this.participantId}'`);
+        }
+
+        // Load second participant ID for human-human condition
+        const savedIdB = this.getCookie('pair_participant_id_b');
+        if (savedIdB) {
+            this.participantIdB = savedIdB;
+            console.log(`ExperimentManager: Participant ID B '${this.participantIdB}'`);
         }
     }
 
@@ -73,34 +91,62 @@ export class ExperimentManager {
             return this.groupId;
         }
 
-        // Weighted Random Selection
-        const totalWeight = ASSIGNMENT_WEIGHTS.reduce((sum, item) => sum + item.weight, 0);
-        let random = Math.random() * totalWeight;
-        
-        let selectedGroupId = GROUPS.CONTROL; // Default fallback
+        // Check for researcher-controlled session type (hidden from regular participants).
+        // Researchers schedule human-human sessions by sending participants a link with ?hh=1.
+        const urlParams = new URLSearchParams(window.location.search);
+        let selectedGroupId = null;
 
-        for (const item of ASSIGNMENT_WEIGHTS) {
-            if (random < item.weight) {
-                selectedGroupId = item.id;
-                break;
+        if (urlParams.get('hh') === '1') {
+            selectedGroupId = GROUPS.HUMAN_HUMAN;
+            console.log('ExperimentManager: Human-human session activated via URL param');
+        }
+
+        // Fall through to weighted random selection for all other sessions
+        if (!selectedGroupId) {
+            const totalWeight = ASSIGNMENT_WEIGHTS.reduce((sum, item) => sum + item.weight, 0);
+            let random = Math.random() * totalWeight;
+            selectedGroupId = GROUPS.CONTROL; // Default fallback
+
+            for (const item of ASSIGNMENT_WEIGHTS) {
+                if (random < item.weight) {
+                    selectedGroupId = item.id;
+                    break;
+                }
+                random -= item.weight;
             }
-            random -= item.weight;
         }
 
         this.setGroup(selectedGroupId);
-        
-        // Generate Participant ID if missing
+
+        // Assign a Latin square row for counter-balanced level ordering
+        this.latinSquareRow = Math.floor(Math.random() * LATIN_SQUARE.length);
+        this.setCookie('pair_latin_row', String(this.latinSquareRow), 30);
+        console.log(`ExperimentManager: Assigned Latin square row ${this.latinSquareRow}`);
+
+        // Generate participant ID(s)
         if (!this.participantId) {
-            this.participantId = 'cnt_' + Math.random().toString(36).substr(2, 9);
-            this.setCookie('pair_participant_id', this.participantId);
+            if (selectedGroupId === GROUPS.HUMAN_HUMAN) {
+                // Shared session code so paired IDs are visually linked
+                const sessionCode = Math.random().toString(36).substr(2, 7);
+                this.participantId  = `hh_${sessionCode}_a`;
+                this.participantIdB = `hh_${sessionCode}_b`;
+                this.setCookie('pair_participant_id',   this.participantId,  30);
+                this.setCookie('pair_participant_id_b', this.participantIdB, 30);
+                console.log(`ExperimentManager: Human-human pair — A: ${this.participantId}, B: ${this.participantIdB}`);
+            } else {
+                this.participantId = 'cnt_' + Math.random().toString(36).substr(2, 9);
+                this.setCookie('pair_participant_id', this.participantId, 30);
+            }
         }
-        
+
         // Initialize DataLogger NOW (after consent) and register participant
         if (window.dataLogger) {
-            // Initialize Firebase auth and create participant record atomically
             window.dataLogger.initExperiment().then(() => {
-                window.dataLogger.setParticipantId(this.participantId, this.groupId);
-                // Save Prolific/Qualtrics IDs to database if present
+                window.dataLogger.setParticipantId(
+                    this.participantId,
+                    this.groupId,
+                    { participantIdB: this.participantIdB }
+                );
                 const pid = localStorage.getItem('prolific_pid');
                 const uid = localStorage.getItem('qualtrics_uid');
                 if (pid || uid) {
@@ -150,6 +196,14 @@ export class ExperimentManager {
         return !!this.getFeature(featureName);
     }
 
+    getLatinSquareRow() {
+        return this.latinSquareRow;
+    }
+
+    getParticipantIdB() {
+        return this.participantIdB;
+    }
+
     getCurrentGroup() {
         return this.groupId;
     }
@@ -187,8 +241,13 @@ export class ExperimentManager {
     clearCookies() {
         this.setCookie('pair_group', '', -1);
         this.setCookie('pair_participant_id', '', -1);
+        this.setCookie('pair_participant_id_b', '', -1);
+        this.setCookie('pair_latin_row', '', -1);
         this.groupId = null;
         this.features = null;
+        this.participantId = null;
+        this.participantIdB = null;
+        this.latinSquareRow = null;
     }
 
     enableSandboxMode(enable = true) {

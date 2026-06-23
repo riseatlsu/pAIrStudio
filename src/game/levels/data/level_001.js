@@ -15,6 +15,7 @@ export const Level1 = {
     isExperiment: true,
     chatbotEnabled: true,
 
+
     map: {
         width: 8,
         height: 8,
