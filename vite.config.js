@@ -7,7 +7,15 @@ const rootDir = fileURLToPath(new URL('.', import.meta.url));
 export default defineConfig({
   base: '/pAIrStudio/',
   server: {
-    host: true
+    host: true,
+    proxy: {
+      '/api/getChatResponse': {
+        target: 'https://us-central1-pair-studio-v1.cloudfunctions.net',
+        changeOrigin: true,
+        rewrite: (path) => '/getChatResponse',
+        secure: true,
+      }
+    }
   },
   build: {
     outDir: 'dist',

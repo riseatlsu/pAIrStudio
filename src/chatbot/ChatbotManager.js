@@ -15,7 +15,9 @@ import { ChatbotUI } from './ChatbotUI.js';
 import * as BlocklyActions from './BlocklyActions.js';
 import { directionToString } from '../game/iso/DirectionConstants.js';
 
-const CHAT_FUNCTION_URL = "https://us-central1-pair-studio-v1.cloudfunctions.net/getChatResponse";
+const CHAT_FUNCTION_URL = import.meta.env.DEV
+  ? '/api/getChatResponse'
+  : 'https://us-central1-pair-studio-v1.cloudfunctions.net/getChatResponse';
 
 /**
  * ChatbotManager - Manages AI chatbot functionality and experimental modes.
