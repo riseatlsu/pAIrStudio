@@ -33,10 +33,10 @@ export const Level6 = {
     objects: {
         stationary: [
             ...createVerticalConveyor(1, 1, "level6_input"),
-            { type: "zone", row: 2, col: 2, id: "level6_input_zone", attributes: { allowDrop: true, frame: 1 } },
+            { type: "pickup_zone", row: 2, col: 2, id: "level6_input_zone", attributes: { allowDrop: true, frame: 1 } },
 
             ...createHorizontalConveyor(7, 4, "level6_output"),
-            { type: "zone", row: 7, col: 7, id: "level6_output_zone", attributes: { allowDrop: true, frame: 0 } },
+            { type: "dropoff_zone", row: 7, col: 7, id: "level6_output_zone", attributes: { allowDrop: true, frame: 0 } },
 
             ...walls,
 

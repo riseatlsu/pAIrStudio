@@ -37,13 +37,13 @@ export const TutorialC = {
             // { type: "conveyor", row: 0, col: 1, id: "input_conveyor", attributes: { allowDrop: false, frame: 1 } },
             // { type: "conveyor", row: 0, col: 2, id: "input_conveyor", attributes: { allowDrop: false, frame: 2 } },
             ...[0, 1, 2].map(frame => ({ type: "conveyor", row: 0, col: frame, id: "input_conveyor", attributes: { allowDrop: false, frame } })), // shorten the code from above
-            { type: "zone", row: 0, col: 3, id: "input_zone", attributes: { allowDrop: true } },
+            { type: "pickup_zone", row: 0, col: 3, id: "input_zone", attributes: { allowDrop: true } },
             { type: "walls", row: 1, col: -2, id: "walls", attributes: { allowDrop: false, frame: 0 } }, // testing wall
             { type: "shelves", row: 2, col: 3, id: "shelf", attributes: { allowDrop: false, frame: 0 } }, // testing shelf
             { type: "pillars", row: 0, col: 0, id: "pillar", attributes: { allowDrop: false, frame: 0 } }, // testing pillar
             // Output conveyor
             { type: "conveyor", row: 4, col: 2, id: "output_conveyor", attributes: { allowDrop: false } },
-            { type: "zone", row: 4, col: 3, id: "output_zone", attributes: { allowDrop: true } }
+            { type: "dropoff_zone", row: 4, col: 3, id: "output_zone", attributes: { allowDrop: true } }
         ],
         moveable: [
             // Single box

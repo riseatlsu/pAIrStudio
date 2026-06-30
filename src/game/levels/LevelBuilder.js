@@ -37,7 +37,8 @@ export class LevelBuilder {
             robot: { key: 'robot', frameOffset: 0 }, // robot_type_1 (Row 0)
             box: { key: 'box', frame: 0 },
             conveyor: Array.from({ length: 6 }, (_, frame) => ({ key: 'conveyor', frame })), // conveyor frames 0-5
-            zone: Array.from({ length: 4 }, (_, frame) => ({ key: 'zone', frame })), // zone frames 0-3
+            pickup_zone: Array.from({ length: 4 }, (_, frame) => ({ key: 'pickup_zone', frame })), // pickup zone frames 0-3
+            dropoff_zone: Array.from({ length: 4 }, (_, frame) => ({ key: 'dropoff_zone', frame })), // dropoff zone frames 0-3
             pillars: Array.from({ length: 4 }, (_, frame) => ({ key: 'pillars', frame })), // pillars frames 0-3
             walls: Array.from({ length: 2 }, (_, frame) => ({ key: 'walls', frame })), // walls frames 0-1
             shelves: Array.from({ length: 8 }, (_, frame) => ({ key: 'shelves', frame })), // shelves frames 0-7
@@ -83,16 +84,17 @@ export class LevelBuilder {
                         }
                     });
                 } 
-                else if (obj.type === 'zone') {
-                    // Zones are special Stationary Objects
-                    const zoneConfig = this.textureMap.zone[obj.attributes.frame % this.textureMap.zone.length]; // Support zone as array with frame selection
+                else if (obj.type === 'pickup_zone' || obj.type === 'dropoff_zone') {
+                    const textureArray = this.textureMap[obj.type];
+                    const frameIndex = (obj.attributes?.frame ?? 0) % textureArray.length;
+                    const zoneConfig = textureArray[frameIndex];
                     this.board.addStationaryObject(obj.row, obj.col, zoneConfig.key, {
                         frame: zoneConfig.frame,
-                        collidable: false, // Can walk on zone
-                        isZone: true, // Mark as zone for game logic (for IsoBoard and win conditions)
+                        collidable: false,
+                        isZone: true,
                         attributes: {
                             allowDrop: false,
-                            id: obj.id, // e.g., 'input_zone', 'output_zone_1'
+                            id: obj.id,
                             ...obj.attributes
                         }
                     });

@@ -62,10 +62,16 @@ export class MainScene extends Phaser.Scene {
         frameHeight: 50,
     });
 
-    // Dropoff Floor
-    this.load.spritesheet('zone', 'DropOff-Floor.png', { 
-        frameWidth: 66, 
-        frameHeight: 33 
+    // Pickup Floor (used for input zones)
+    this.load.spritesheet('pickup_zone', 'PickUp-Floor.png', {
+        frameWidth: 66,
+        frameHeight: 33
+    });
+
+    // Dropoff Floor (used for output zones)
+    this.load.spritesheet('dropoff_zone', 'DropOff-Floor.png', {
+        frameWidth: 66,
+        frameHeight: 33
     });
 
     this.load.spritesheet('pillars', 'Pillars.png', { 
@@ -130,7 +136,8 @@ export class MainScene extends Phaser.Scene {
         robot: { key: 'robot', frameOffset: 0 }, 
         box: { key: 'box', frame: 0 },
         conveyor: Array.from({ length: 6 }, (_, frame) => ({ key: 'conveyor', frame })), // conveyor frames 0-5
-        zone: Array.from({ length: 4 }, (_, frame) => ({ key: 'zone', frame })), // zone frames 0-3
+        pickup_zone: Array.from({ length: 4 }, (_, frame) => ({ key: 'pickup_zone', frame })), // pickup zone frames 0-3
+        dropoff_zone: Array.from({ length: 4 }, (_, frame) => ({ key: 'dropoff_zone', frame })), // dropoff zone frames 0-3
         pillars: Array.from({ length: 4 }, (_, frame) => ({ key: 'pillars', frame })), // pillars frames 0-3
         walls: Array.from({ length: 2 }, (_, frame) => ({ key: 'walls', frame })), // walls frames 0-1
         shelves: Array.from({ length: 8 }, (_, frame) => ({ key: 'shelves', frame })), // shelves frames 0-7

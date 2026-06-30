@@ -106,14 +106,14 @@ export class LevelManager {
         
         if (titleElement && textElement) {
             const levelName = config.title || `Level ${levelId}`;
-            titleElement.textContent = `${levelName} Instructions`;
+            titleElement.textContent = levelName;
             
             let instructions = config.instructions || config.description || 'Complete the level objectives.';
             
             // Instructions are now uniform for all groups
             // Role-specific instructions removed since pair programming mode is archived
             
-            textElement.textContent = instructions;
+            textElement.innerHTML = instructions;
         }
     }
 

@@ -24,10 +24,10 @@ export const Level4 = {
     objects: {
         stationary: [
             ...createHorizontalConveyor(0, 1, "level4_input"),
-            { type: "zone", row: 1, col: 2, id: "level4_input_zone", attributes: { allowDrop: true, frame: 2 } },
+            { type: "pickup_zone", row: 1, col: 2, id: "level4_input_zone", attributes: { allowDrop: true, frame: 2 } },
 
             ...createHorizontalConveyor(7, 4, "level4_output"),
-            { type: "zone", row: 6, col: 5, id: "level4_output_zone", attributes: { allowDrop: true, frame: 1 } },
+            { type: "dropoff_zone", row: 6, col: 5, id: "level4_output_zone", attributes: { allowDrop: true, frame: 1 } },
 
             ...walls,
 

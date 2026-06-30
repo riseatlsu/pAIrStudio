@@ -660,6 +660,19 @@ body.offline-mode .main-container {
     margin-bottom: 0.5rem;
 }
 
+.instructions-label {
+    font-weight: 700;
+    color: var(--lsu-gold);
+}
+
+.ui-ref {
+    font-weight: 700;
+    color: var(--lsu-gold);
+    background: rgba(253, 208, 35, 0.12);
+    padding: 0 4px;
+    border-radius: 3px;
+}
+
 .instructions-text {
     color: rgba(255, 255, 255, 0.95);
     line-height: 1.5;

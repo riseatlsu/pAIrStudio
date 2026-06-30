@@ -1,4 +1,4 @@
-import { NORTH } from '../../iso/DirectionConstants';
+import { EAST, NORTH } from '../../iso/DirectionConstants';
 import {
     createEdgeWalls,
     createFullFloor,
@@ -25,10 +25,10 @@ export const Level1 = {
     objects: {
         stationary: [
             ...createHorizontalConveyor(0, 2, "level1_input"),
-            { type: "zone", row: 0 , col: 1, id: "level1_input_zone", attributes: { allowDrop: true, frame: 2 } },
+            { type: "pickup_zone", row: 0 , col: 1, id: "level1_input_zone", attributes: { allowDrop: true, frame: 2 } },
 
-            ...createHorizontalConveyor(7, 3, "level1_output"),
-            { type: "zone", row: 7, col: 6, id: "level1_output_zone", attributes: { allowDrop: true, frame: 0 } },
+            ...createHorizontalConveyor(7, 2, "level1_output"),
+            { type: "dropoff_zone", row: 7, col: 1, id: "level1_output_zone", attributes: { allowDrop: true, frame: 0 } },
 
             ...walls,
 
@@ -43,9 +43,9 @@ export const Level1 = {
             { type: "OilDrums", row: 5, col: 1, id: "level1_drum_d", attributes: { allowDrop: false, frame: 3 } },
             { type: "OilDrums", row: 1, col: 7, id: "level1_drum_e", attributes: { allowDrop: false, frame: 1 } },
             
-            { type: "pillars", row: 4, col: 3, id: "level1_pillar_a", attributes: { allowDrop: false, frame: 0 } },
-            { type: "pillars", row: 3, col: 1, id: "level1_pillar_b", attributes: { allowDrop: false, frame: 1 } },
-            { type: "pillars", row: 1, col: 3, id: "level1_pillar_c", attributes: { allowDrop: false, frame: 2 } }
+            { type: "pillars", row: 0, col: 7, id: "level1_pillar_a", attributes: { allowDrop: false, frame: 3 } },
+            { type: "pillars", row: 7, col: 0, id: "level1_pillar_b", attributes: { allowDrop: false, frame: 1 } },
+            { type: "pillars", row: 0, col: 0, id: "level1_pillar_c", attributes: { allowDrop: false, frame: 2 } }
         ],
         moveable: [
             { type: "box", id: "level1_box", row: 0, col: 2, attributes: {} }
@@ -53,8 +53,8 @@ export const Level1 = {
     },
 
     player: {
-        startRow: 3,
-        startCol: 3,
+        startRow: 1,
+        startCol: 1,
         startDir: NORTH,
         scale: 1.5
     },
