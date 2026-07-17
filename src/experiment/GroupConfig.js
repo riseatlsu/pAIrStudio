@@ -43,19 +43,24 @@ export const ASSIGNMENT_WEIGHTS = [
 /**
  * Tutorial Level Progression Configuration
  * Defines which tutorial levels each group should complete
- * 
+ *
  * Tutorial Types:
  * - tutorial_A: Basic movement and object manipulation (all groups)
- * - tutorial_B: Advanced block usage and logic (all groups)
+ * - tutorial_B: Longer route planning with loops (all groups)
+ * - tutorial_C: Chatbot interaction practice (only groups with chatbot support)
+ * - tutorial_D: Sensing + conditional logic ("if wall ahead, turn") + the Print block (all groups)
  */
 export const TUTORIAL_PROGRESSION = {
     [GROUPS.CONTROL]: [
         'tutorial_A',
-        'tutorial_B'
+        'tutorial_B',
+        'tutorial_D'
     ],
     [GROUPS.STANDARD_AI]: [
         'tutorial_A',
-        'tutorial_B'
+        'tutorial_B',
+        'tutorial_C',
+        'tutorial_D'
     ]
 };
 

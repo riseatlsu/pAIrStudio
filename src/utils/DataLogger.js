@@ -387,11 +387,11 @@ class DataLogger {
         if (window.experimentManager?.sandboxMode) {
             return;
         }
-        
+
         if (!this.isFirebaseReady || !this.currentUserId) {
             console.log(`DataLogger: Queueing event: ${eventType} (offline or not authenticated)`);
             this.eventQueue.push({ eventType, eventData });
-            
+
             // Save queue to localStorage as backup
             try {
                 const queueData = JSON.stringify(this.eventQueue.slice(-100)); // Keep last 100 events
@@ -399,11 +399,13 @@ class DataLogger {
             } catch (e) {
                 console.warn('DataLogger: Could not save event queue to localStorage');
             }
-            
+
             return;
         }
 
         try {
+            const { isExperiment, levelPhase } = this.getLevelPhaseInfo(eventData.levelId || this.sessionData.currentLevel);
+
             const logEntry = {
                 eventType: eventType,
                 timestamp: serverTimestamp(),
@@ -411,6 +413,8 @@ class DataLogger {
                 currentLevel: this.sessionData.currentLevel || null,
                 experimentalGroup: this.currentCondition || null,
                 participantId: this.sessionData.participantId || null,
+                isExperiment: isExperiment,
+                levelPhase: levelPhase,
                 ...eventData
             };
 
@@ -430,6 +434,22 @@ class DataLogger {
         }
     }
     
+    /**
+     * Look up whether a level is part of the experimental dataset or a tutorial/practice level.
+     * Reads the level's `isExperiment` flag (default true) via the global LevelManager registry
+     * so every logged event can be filtered by phase without a separate level-ID lookup table.
+     * @param {string} levelId
+     * @returns {{isExperiment: boolean, levelPhase: 'tutorial'|'experimental'}}
+     */
+    getLevelPhaseInfo(levelId) {
+        const config = levelId ? window.LevelManager?.levels?.[levelId] : null;
+        const isExperiment = config?.isExperiment !== false;
+        return {
+            isExperiment,
+            levelPhase: isExperiment ? 'experimental' : 'tutorial'
+        };
+    }
+
     /**
      * Recursively remove undefined and null values from objects and arrays
      * @param {*} obj - Object to clean

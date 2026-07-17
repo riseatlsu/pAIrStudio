@@ -109,6 +109,25 @@ export class GameAPI {
         return { type: 'floor' }; // Empty floor
     }
 
+    /**
+     * Print a message to the on-screen terminal panel and log it for research analysis.
+     * @param {*} message - Value to print (coerced to a string).
+     */
+    static async printMessage(message) {
+        const text = String(message);
+        console.log(`API: Print -> ${text}`);
+
+        if (window.terminalUI) {
+            window.terminalUI.print(text);
+        }
+
+        const scene = GameAPI.getScene();
+        const levelId = scene?.levelManager?.currentLevelId;
+        if (window.dataLogger && levelId) {
+            window.dataLogger.logEvent('print_message', { levelId, message: text });
+        }
+    }
+
     static async resetLevel() {
         const scene = GameAPI.getScene();
         if (scene) {

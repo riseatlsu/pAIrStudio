@@ -10,8 +10,8 @@ const walls = createEdgeWalls([0, 2, 4], [1, 3, 5]);
 export const TutorialB = {
     id: "tutorial_B",
     title: "Tutorial B: Route Practice",
-    description: "Practice planning a longer route using block code to move the robot from the green pickup zone to the red dropoff zone.",
-    instructions: `This tutorial gives you a slightly longer warehouse route. To pick up the box, stand on the <span class="ui-ref">green pickup zone</span>, face the conveyor belt, and use the <span class="ui-ref">Pick Up Object</span> block. To drop off the box, navigate to the <span class="ui-ref">red dropoff zone</span>, face the output conveyor belt, and use the <span class="ui-ref">Drop Object</span> block. Use the <span class="ui-ref">Actions</span> tab to drag blocks onto the canvas, connect them top to bottom under the <span class="ui-ref">When Program Starts</span> block, then press <span class="ui-ref">Run Code</span> to execute your program. Tip: check out the <span class="ui-ref">Loops</span> category to repeat actions and shorten your block code.`,
+    description: "The floor manager hands you a longer route this time — plan the path from the green pickup zone to the red dropoff zone around the shelving.",
+    instructions: `Word travels fast on the warehouse floor — the manager liked your last delivery and handed you a longer route this time, with some shelving in the way. To pick up the box, stand on the <span class="ui-ref">green pickup zone</span>, face the conveyor belt, and use the <span class="ui-ref">Pick Up Object</span> block. To drop off the box, navigate to the <span class="ui-ref">red dropoff zone</span>, face the output conveyor belt, and use the <span class="ui-ref">Drop Object</span> block. Use the <span class="ui-ref">Actions</span> tab to drag blocks onto the canvas, connect them top to bottom under the <span class="ui-ref">When Program Starts</span> block, then press <span class="ui-ref">Run Code</span> to execute your program. Tip: check out the <span class="ui-ref">Loops</span> category to repeat actions and shorten your block code.`,
     isExperiment: false,
     chatbotEnabled: false,
 

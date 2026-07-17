@@ -27,7 +27,6 @@ body {
     min-height: 100vh;
     height: auto;
     overflow-y: auto;
-    overflow: hidden;
     background: linear-gradient(180deg, var(--lsu-purple) 0%, var(--lsu-light-purple) 20%, var(--grass-green) 80%);
     background-attachment: fixed;
     color: var(--text-light);
@@ -423,11 +422,19 @@ body.offline-mode .main-container {
 /* ===== GAME PANEL ===== */
 .game-panel .panel-body {
     background: var(--dark-bg);
+    gap: 0.75rem;
+    /* The canvas + terminal don't always both fit in the fixed-height
+       workspace-container (the main experiment page locks page scroll),
+       so let this panel scroll internally rather than silently clipping
+       the terminal with no way to reach it. */
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
 .game-canvas {
     width: 100%;
-    height: 100%;
+    flex: 1;
+    min-height: 220px;
     background: var(--dark-bg);
     border: 3px solid var(--border-color);
     border-radius: 10px;
@@ -436,6 +443,116 @@ body.offline-mode .main-container {
     justify-content: center;
     position: relative;
     overflow: hidden;
+}
+
+/* ===== SIMULATED TERMINAL ===== */
+.terminal-panel {
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    background: #0d0d0d;
+    border: 2px solid var(--border-color);
+    border-radius: 10px;
+    overflow: hidden;
+    height: 160px;
+    transition: height 0.2s ease;
+}
+
+.terminal-panel.collapsed {
+    height: 40px;
+}
+
+.terminal-panel.collapsed .terminal-body {
+    display: none;
+}
+
+.terminal-header {
+    flex-shrink: 0;
+    height: 40px;
+    padding: 0 0.85rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #1c1c1c;
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 0.85rem;
+    font-weight: 600;
+    font-family: 'JetBrains Mono', monospace;
+}
+
+.terminal-header-actions {
+    display: flex;
+    gap: 0.4rem;
+}
+
+.terminal-header-btn {
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.6);
+    cursor: pointer;
+    padding: 0.3rem 0.5rem;
+    border-radius: 6px;
+    transition: color 0.15s ease, background 0.15s ease;
+}
+
+.terminal-header-btn:hover {
+    color: var(--text-light);
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.terminal-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0.5rem 0.85rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    line-height: 1.5;
+}
+
+.terminal-line {
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.terminal-line-output {
+    color: #9be89b;
+}
+
+.terminal-line::before {
+    content: '> ';
+    opacity: 0.5;
+}
+
+.terminal-line-info {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.terminal-line-info::before {
+    content: '';
+}
+
+.terminal-line-system {
+    color: #7ec8e3;
+}
+
+.terminal-line-system::before {
+    content: '';
+}
+
+.terminal-line-system-success {
+    color: #9be89b;
+}
+
+.terminal-line-system-success::before {
+    content: '';
+}
+
+.terminal-line-error {
+    color: #f28b82;
+}
+
+.terminal-line-error::before {
+    content: '';
 }
 
 .canvas-placeholder {
@@ -545,9 +662,13 @@ body.offline-mode .main-container {
     }
     
     .game-canvas {
-        height: 50vh;
+        min-height: 40vh;
     }
-    
+
+    .terminal-panel {
+        height: 120px;
+    }
+
     .blockly-workspace {
         height: 45vh;
     }
@@ -1389,7 +1510,8 @@ body.sandbox-page .blockly-workspace {
 }
 
 body.sandbox-page .game-canvas {
-    height: 100%;
+    flex: 1;
+    min-height: 0;
 }
 
 @media (max-width: 992px) {
