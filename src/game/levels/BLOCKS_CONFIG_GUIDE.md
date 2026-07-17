@@ -40,6 +40,7 @@ Each category can be configured in three ways:
 - `turn_counter_clockwise` - Turn robot 45° counter-clockwise
 - `pick_object` - Pick up object in front of robot
 - `drop_object` - Drop carried object
+- `print_message` - Print a message to the on-screen terminal panel (accepts any value input, e.g. a text block or a sensing block's result)
 
 ### Sensing Category
 - `survey_front` - Get type of object in front

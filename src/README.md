@@ -248,6 +248,8 @@ This table documents **every data point** captured by the system, organized by e
 | **Timestamp (Server)** | Firestore server timestamp | Auto-added by `logEvent()` | `events/{id}/timestamp` |
 | **Local Time** | Client timestamp (ISO 8601) | Auto-added by `logEvent()` | `events/{id}/localTime` |
 | **Experimental Group** | Participant's assigned group | Auto-added by `logEvent()` | `events/{id}/experimentalGroup` |
+| **Is Experiment** | `true` if the event's level is part of the experimental dataset, `false` for tutorial/practice levels | Auto-added by `logEvent()` from the level's `isExperiment` flag | `events/{id}/isExperiment` |
+| **Level Phase** | `'experimental'` or `'tutorial'` — human-readable version of `isExperiment`, lets you filter tutorial-level data (e.g. `tutorial_A`, `tutorial_D`) from the Firestore console without a separate level-ID lookup | Auto-added by `logEvent()` | `events/{id}/levelPhase` |
 
 ### Event Types Summary
 

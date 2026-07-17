@@ -10,6 +10,7 @@ import { BlocklyManager } from './game/blockly/BlocklyManager';
 import { experimentManager } from './experiment/ExperimentManager.js';
 import { chatbotManager } from './chatbot/ChatbotManager.js';
 import dataLogger from './utils/DataLogger.js';
+import terminalUI from './game/terminal/TerminalUI.js';
 
 const config = {
   type: Phaser.AUTO,
@@ -42,10 +43,14 @@ function initializeUI() {
     
     // Expose DataLogger globally (but don't initialize until consent)
     window.dataLogger = dataLogger;
-    
+
     // Note: DataLogger and Chatbot are initialized in index.html after consent
     // to ensure they initialize after group assignment and user has accepted terms
-    
+
+    // Init simulated terminal (prints from the "Print" block show up here)
+    terminalUI.init('terminal-body');
+    window.terminalUI = terminalUI;
+
     // Init Blockly Workspace
     blocklyManager.init('blockly-workspace');
 

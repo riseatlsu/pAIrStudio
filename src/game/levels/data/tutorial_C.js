@@ -1,88 +1,63 @@
-// Tutorial Level C - Chatbot Practice
-// Tutorial level for groups with chatbot support
-// Teaches participants how to interact with the AI assistant
+import { NORTH } from '../../iso/DirectionConstants';
+import {
+    createEdgeWalls,
+    createFullFloor,
+    createHorizontalConveyor
+} from './layoutHelpers';
 
-import { type } from 'firebase/firestore/pipelines';
-import { NORTH, SOUTH, EAST, WEST } from '../../iso/DirectionConstants';
+const walls = createEdgeWalls([0, 2, 4], [1, 3, 5]);
 
 export const TutorialC = {
     id: "tutorial_C",
-    title: "Tutorial: Working with AI",
-    description: "Learn to use the chatbot for programming assistance.",
-    instructions: "This level introduces you to the AI chatbot assistant. Try asking the chatbot questions like 'How do I pick up a box?' or 'What blocks should I use?'. Complete the challenge by moving the box to the output conveyor while practicing chatbot interaction.",
-    
-    // Mark as non-experimental (won't be included in study data)
+    title: "Tutorial C: Working with Your AI Assistant",
+    description: "Meet Aura, your AI assistant, and practice asking for help while completing a familiar delivery.",
+    instructions: `You've got a new coworker on this shift: an AI assistant named Aura who can answer questions while you work. Try asking things like "How do I pick up a box?" or "What does the Repeat block do?" in the chat panel. While you chat, complete the same kind of delivery you've already practiced: stand on the <span class="ui-ref">green pickup zone</span>, face the input conveyor, and use the <span class="ui-ref">Pick Up Object</span> block. Then navigate to the <span class="ui-ref">red dropoff zone</span>, face the output conveyor, and use the <span class="ui-ref">Drop Object</span> block.`,
     isExperiment: false,
-    
-    // ENABLE chatbot for this tutorial (only shown to groups that have chatbot)
     chatbotEnabled: true,
-    
-    // Simple 5x5 Grid similar to tutorial_A
+
     map: {
-        width: 5,
-        height: 5,
-        data: [
-            [1, 1, 1, 1, 1],
-            [1, 1, 1, 1, 1],
-            [1, 1, 1, 1, 1],
-            [1, 1, 1, 1, 1],
-            [1, 1, 1, 1, 1]
-        ]
+        width: 6,
+        height: 6,
+        data: createFullFloor(6)
     },
 
     objects: {
         stationary: [
-            // Input conveyor with box
-            // { type: "conveyor", row: 0, col: 0, id: "input_conveyor", attributes: { allowDrop: false, frame: 0 } },
-            // { type: "conveyor", row: 0, col: 1, id: "input_conveyor", attributes: { allowDrop: false, frame: 1 } },
-            // { type: "conveyor", row: 0, col: 2, id: "input_conveyor", attributes: { allowDrop: false, frame: 2 } },
-            ...[0, 1, 2].map(frame => ({ type: "conveyor", row: 0, col: frame, id: "input_conveyor", attributes: { allowDrop: false, frame } })), // shorten the code from above
-            { type: "zone", row: 0, col: 3, id: "input_zone", attributes: { allowDrop: true } },
-            { type: "walls", row: 1, col: -2, id: "walls", attributes: { allowDrop: false, frame: 0 } }, // testing wall
-            { type: "shelves", row: 2, col: 3, id: "shelf", attributes: { allowDrop: false, frame: 0 } }, // testing shelf
-            { type: "pillars", row: 0, col: 0, id: "pillar", attributes: { allowDrop: false, frame: 0 } }, // testing pillar
-            // Output conveyor
-            { type: "conveyor", row: 4, col: 2, id: "output_conveyor", attributes: { allowDrop: false } },
-            { type: "zone", row: 4, col: 3, id: "output_zone", attributes: { allowDrop: true } }
+            ...createHorizontalConveyor(0, 1, "tutorial_c_input"),
+            { type: "pickup_zone", row: 1, col: 2, id: "tutorial_c_input_zone", attributes: { allowDrop: true, frame: 0 } },
+
+            ...createHorizontalConveyor(5, 2, "tutorial_c_output"),
+            { type: "dropoff_zone", row: 4, col: 3, id: "tutorial_c_output_zone", attributes: { allowDrop: true, frame: 1 } },
+
+            ...walls,
+
+            { type: "pillars", row: 2, col: 5, id: "tutorial_c_pillar", attributes: { allowDrop: false, frame: 2 } },
+            { type: "shelves", row: 5, col: 0, id: "tutorial_c_shelf", attributes: { allowDrop: false, frame: 6 } }
         ],
         moveable: [
-            // Single box
-            { type: "box", id: "chatbot_practice_box", row: 0, col: 2, attributes: {} }
+            { type: "box", id: "tutorial_c_box", row: 0, col: 2, attributes: {} }
         ]
     },
 
     player: {
-        startRow: 2,
+        startRow: 3,
         startCol: 2,
-        startDir: NORTH,  // Facing North
+        startDir: NORTH,
         scale: 1.5
     },
 
     winConditions: [
-        // Win when box is on the output conveyor
-        { type: "itemAtPos", itemId: "chatbot_practice_box", row: 4, col: 2 }
+        { type: "itemAtPos", itemId: "tutorial_c_box", row: 5, col: 3 }
     ],
 
-    failConditions: [
-        {
-            type: "object_wrong_location",
-            description: "The box was placed in the wrong location"
-        }
-    ],
+    maxSteps: 14,
 
-    // Toolbox configuration - similar to tutorial_A
     allowedBlocks: {
         actions: true,
         sensing: false,
         logic: false,
         math: false,
         text: false,
-        loops: true  // Allow loops like tutorial_B
-    },
-    
-    // Custom chatbot prompt for this tutorial level
-    chatbotPrompt: {
-        systemMessage: "You are Aura, a friendly programming tutor helping a student learn to use visual block-based programming. This is a tutorial level designed to help them practice asking questions and using AI assistance. Be encouraging and guide them step-by-step. Remind them they can ask you questions anytime during their programming tasks.",
-        initialGreeting: "Hi! 👋 I'm Aura, your AI programming assistant. I'm here to help you learn! Try asking me questions like:\n• 'How do I pick up a box?'\n• 'What should I do first?'\n• 'Can you explain the move forward block?'\n\nWhat would you like to know?"
+        loops: true
     }
 };

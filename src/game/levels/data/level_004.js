@@ -9,9 +9,9 @@ const walls = createEdgeWalls([0, 2, 4, 6], [1, 3, 5, 7]);
 
 export const Level4 = {
     id: "level_004",
-    title: "Level 4: Easy Code Maintenance / Completion",
-    description: "Fix or extend a partial Blockly program for a simple delivery route.",
-    instructions: "This merged Maintenance / Completion level starts with partial Blockly. The starter code helps the robot reach and pick up the box, but it does not finish the task correctly. Debug or extend it without completing the whole program for the player.",
+    title: "Level 4: Easy Code Maintenance",
+    description: "Find the missing block that prevents the robot from picking up the box.",
+    instructions: `The starter code moves the robot to the <span class="ui-ref">green pickup zone</span> and then all the way to the <span class="ui-ref">red dropoff zone</span> — but the box never moves. Press <span class="ui-ref">Run Code</span> to watch what happens, then figure out which block is missing and drag it into the right spot in the program. Once the fix is in place, run the code again to confirm the box reaches the output conveyor.`,
     isExperiment: true,
     chatbotEnabled: true,
 
@@ -23,44 +23,51 @@ export const Level4 = {
 
     objects: {
         stationary: [
-            ...createHorizontalConveyor(0, 1, "level4_input"),
-            { type: "zone", row: 1, col: 2, id: "level4_input_zone", attributes: { allowDrop: true, frame: 2 } },
+            ...createHorizontalConveyor(0, 2, "level4_input"),
+            { type: "pickup_zone", row: 1, col: 3, id: "level4_input_zone", attributes: { allowDrop: true, frame: 1 } },
 
-            ...createHorizontalConveyor(7, 4, "level4_output"),
-            { type: "zone", row: 6, col: 5, id: "level4_output_zone", attributes: { allowDrop: true, frame: 1 } },
+            ...createHorizontalConveyor(7, 2, "level4_output"),
+            { type: "dropoff_zone", row: 6, col: 3, id: "level4_output_zone", attributes: { allowDrop: true, frame: 0 } },
 
             ...walls,
 
             { type: "shelves", row: 2, col: 6, id: "level4_shelf_a", attributes: { allowDrop: false, frame: 0 } },
             { type: "shelves", row: 2, col: 7, id: "level4_shelf_b", attributes: { allowDrop: false, frame: 3 } },
-            { type: "OilDrums", row: 5, col: 1, id: "level4_drum_a", attributes: { allowDrop: false, frame: 0 } },
-            { type: "pillars", row: 5, col: 6, id: "level4_pillar_a", attributes: { allowDrop: false, frame: 1 } }
+            { type: "OilDrums", row: 3, col: 6, id: "level4_drum_a", attributes: { allowDrop: false, frame: 1 } },
+            { type: "OilDrums", row: 4, col: 1, id: "level4_drum_b", attributes: { allowDrop: false, frame: 0 } },
+            { type: "pillars", row: 4, col: 5, id: "level4_pillar_a", attributes: { allowDrop: false, frame: 1 } }
         ],
         moveable: [
-            { type: "box", id: "level4_box", row: 0, col: 2, attributes: {} }
+            { type: "box", id: "level4_box", row: 0, col: 3, attributes: {} }
         ]
     },
 
     player: {
-        startRow: 3,
-        startCol: 2,
+        startRow: 2,
+        startCol: 3,
         startDir: NORTH,
         scale: 1.5
     },
 
+    // Bug: pick_object is missing after the first move_forward.
+    // The robot reaches the pickup zone and walks away without the box.
     starterBlocks: [
         { type: "move_forward" },
-        { type: "move_forward" },
-        { type: "pick_object" },
         { type: "turn_clockwise" },
-        { type: "move_forward" }
+        { type: "turn_clockwise" },
+        { type: "move_forward" },
+        { type: "move_forward" },
+        { type: "move_forward" },
+        { type: "move_forward" },
+        { type: "move_forward" },
+        { type: "drop_object" }
     ],
 
     winConditions: [
-        { type: "itemAtPos", itemId: "level4_box", row: 7, col: 5 }
+        { type: "itemAtPos", itemId: "level4_box", row: 7, col: 3 }
     ],
 
-    maxSteps: 18,
+    maxSteps: 14,
 
     allowedBlocks: {
         actions: ['move_forward', 'turn_clockwise', 'turn_counter_clockwise', 'pick_object', 'drop_object'],

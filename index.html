@@ -127,8 +127,7 @@
                     <i class="fas fa-info-circle"></i>
                     <span id="instructions-title-text">Level Instructions</span>
                 </div>
-                <div class="instructions-text" id="instructions-text">
-                    Loading instructions...
+                <div class="instructions-text"><span class="instructions-label">Instructions:</span> <span id="instructions-text">Loading instructions...</span>
                 </div>
             </div>
 
@@ -147,6 +146,24 @@
                         <!-- Game Canvas -->
                         <div class="game-canvas" id="game-canvas">
                             <!-- Phaser will inject here -->
+                        </div>
+
+                        <!-- Simulated Terminal: shows messages printed by the "Print" block -->
+                        <div class="terminal-panel" id="terminal-panel">
+                            <div class="terminal-header">
+                                <span><i class="fas fa-terminal"></i> Terminal</span>
+                                <div class="terminal-header-actions">
+                                    <button class="terminal-header-btn" id="terminal-clear-btn" title="Clear terminal">
+                                        <i class="fas fa-eraser"></i>
+                                    </button>
+                                    <button class="terminal-header-btn" id="terminal-toggle-btn" title="Collapse/expand terminal">
+                                        <i class="fas fa-chevron-down" id="terminal-toggle-icon"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="terminal-body" id="terminal-body">
+                                <div class="terminal-line terminal-line-info">Ready. Messages printed by your program will appear here.</div>
+                            </div>
                         </div>
                     </div>
                 </div>

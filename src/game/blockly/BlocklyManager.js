@@ -343,7 +343,19 @@ export class BlocklyManager {
                 { kind: "block", type: "turn_counter_clockwise" },
                 { kind: "block", type: "turn_clockwise" },
                 { kind: "block", type: "pick_object" },
-                { kind: "block", type: "drop_object" }
+                { kind: "block", type: "drop_object" },
+                {
+                    kind: "block",
+                    type: "print_message",
+                    inputs: {
+                        MESSAGE: {
+                            shadow: {
+                                type: "text",
+                                fields: { TEXT: "Hello!" }
+                            }
+                        }
+                    }
+                }
             ],
             sensing: [
                 { kind: "block", type: "survey_front" },
@@ -540,6 +552,19 @@ export class BlocklyManager {
                 this.setTooltip("Checks if the object in front has a specific tag/attribute.");
             }
         };
+
+        // 9. Print Message - displays a message in the on-screen terminal
+        Blockly.Blocks['print_message'] = {
+            init: function () {
+                this.appendValueInput("MESSAGE")
+                    .setCheck(null)
+                    .appendField("Print");
+                this.setPreviousStatement(true, null);
+                this.setNextStatement(true, null);
+                this.setColour(160);
+                this.setTooltip("Prints a message to the terminal on screen.");
+            }
+        };
     }
 
     defineGenerators() {
@@ -575,6 +600,11 @@ export class BlocklyManager {
         javascriptGenerator.forBlock['check_attribute'] = function (block) {
             const attr = block.getFieldValue('ATTR');
             return [`((await GameAPI.survey()).attributes['${attr}'] === true)`, javascriptGenerator.ORDER_ATOMIC];
+        };
+
+        javascriptGenerator.forBlock['print_message'] = function (block) {
+            const message = javascriptGenerator.valueToCode(block, 'MESSAGE', javascriptGenerator.ORDER_NONE) || "''";
+            return `await GameAPI.printMessage(${message});\n`;
         };
     }
 
@@ -630,12 +660,18 @@ export class BlocklyManager {
                     try {
                         ${code}
                         console.log("Program Completed");
+                        if (window.terminalUI) window.terminalUI.runEnd(true);
                     } catch (e) {
                         console.error("Runtime Error:", e);
+                        if (window.terminalUI) window.terminalUI.runEnd(false, e.message);
                     }
                 })();
             `;
-            
+
+            if (window.terminalUI) {
+                window.terminalUI.runStart(this.currentLevelId);
+            }
+
             // Execute
             // Eval is used here as it's a simulation sandbox client-side.
             await eval(finalCode);
