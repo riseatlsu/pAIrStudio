@@ -723,6 +723,55 @@ class DataLogger {
             console.error("DataLogger: Error completing experiment:", error);
         }
     }
+
+    /**
+     * Record that a participant voluntarily quit the study before completing it.
+     * Always logs a `participant_quit` event (through the normal auto-queueing
+     * `logEvent` pipeline, so it's captured even if currently offline), and
+     * best-effort updates the participant document with quit status, the level
+     * they quit on, and total time spent — unless the experiment was already
+     * marked `completed`, in which case the completed record is left alone.
+     * @param {string|null} levelId - The level the participant was on when they quit
+     * @returns {Promise<{levelId: string|null, quitTimeMs: number, quitTimeSeconds: number, quitTimeMinutes: number}>}
+     */
+    async logQuit(levelId) {
+        const totalTime = Date.now() - (this.experimentStartTime || Date.now());
+        const quitInfo = {
+            levelId: levelId || this.sessionData.currentLevel || null,
+            quitTimeMs: totalTime,
+            quitTimeSeconds: Math.round(totalTime / 1000),
+            quitTimeMinutes: Math.round(totalTime / 60000)
+        };
+
+        await this.logEvent('participant_quit', quitInfo);
+
+        if (!this.currentUserId) return quitInfo;
+
+        try {
+            const userRef = doc(this.db, this.participantsCollection, this.currentUserId);
+            const docSnap = await getDoc(userRef);
+
+            if (docSnap.exists() && docSnap.data().status === 'completed') {
+                console.warn('DataLogger: Ignoring quit — experiment was already marked completed.');
+                return quitInfo;
+            }
+
+            await updateDoc(userRef, {
+                status: 'quit',
+                quitTime: serverTimestamp(),
+                quitLevelId: quitInfo.levelId,
+                totalTimeMs: totalTime,
+                totalTimeSeconds: quitInfo.quitTimeSeconds,
+                totalTimeMinutes: quitInfo.quitTimeMinutes
+            });
+
+            console.log('DataLogger: Participant quit recorded:', quitInfo);
+        } catch (error) {
+            console.error("DataLogger: Error recording quit:", error);
+        }
+
+        return quitInfo;
+    }
 }
 
 // Export singleton

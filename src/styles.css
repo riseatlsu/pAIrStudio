@@ -953,6 +953,209 @@ body.offline-mode .main-container {
     box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
 }
 
+/* ===== QUIT STUDY BUTTON ===== */
+.quit-study-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.5rem 1rem;
+    background: transparent;
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    color: rgba(255, 255, 255, 0.85);
+    border-radius: 50px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.quit-study-btn:hover {
+    background: rgba(220, 53, 69, 0.25);
+    border-color: #dc3545;
+    color: #fff;
+}
+
+/* ===== QUIT CONFIRMATION MODAL ===== */
+.quit-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 10001;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    animation: fadeIn 0.3s ease-out;
+}
+
+.quit-modal-overlay.show {
+    display: flex;
+}
+
+.quit-modal {
+    background: white;
+    border-radius: 20px;
+    max-width: 520px;
+    width: 100%;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    animation: slideUpBounce 0.4s ease-out;
+}
+
+.quit-modal-header {
+    padding: 2rem 2rem 1.5rem;
+    text-align: center;
+    background: linear-gradient(135deg, #dc3545, #c82333);
+}
+
+.quit-modal-icon {
+    font-size: 3rem;
+    color: white;
+    margin-bottom: 0.5rem;
+}
+
+.quit-modal-title {
+    color: white;
+    font-size: 1.6rem;
+    font-weight: 800;
+    margin: 0;
+}
+
+.quit-modal-body {
+    padding: 2rem;
+}
+
+.quit-modal-message {
+    color: #495057;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+}
+
+.quit-checkbox-container {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background: #fff3cd;
+    border-radius: 8px;
+    border: 2px solid #ffc107;
+}
+
+.quit-checkbox {
+    margin-top: 0.25rem;
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.quit-checkbox-label {
+    color: #856404;
+    font-weight: 600;
+    cursor: pointer;
+    user-select: none;
+    font-size: 0.95rem;
+}
+
+.quit-modal-buttons {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.quit-modal-btn {
+    flex: 1;
+    min-width: 140px;
+    padding: 1rem 1.25rem;
+    font-size: 1rem;
+    font-weight: 700;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.quit-cancel-btn {
+    background: #e9ecef;
+    color: var(--text-dark);
+}
+
+.quit-cancel-btn:hover:not(:disabled) {
+    background: #dee2e6;
+}
+
+.quit-cancel-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.quit-confirm-btn {
+    background: linear-gradient(135deg, #dc3545, #c82333);
+    color: white;
+    box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+}
+
+.quit-confirm-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(220, 53, 69, 0.4);
+}
+
+.quit-confirm-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* ===== QUIT COMPLETE OVERLAY ===== */
+.quit-complete-overlay {
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(135deg, var(--lsu-purple), var(--lsu-light-purple));
+    z-index: 10002;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+}
+
+.quit-complete-overlay.show {
+    display: flex;
+}
+
+.quit-complete-box {
+    background: white;
+    border-radius: 20px;
+    max-width: 560px;
+    width: 100%;
+    padding: 3rem 2.5rem;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    animation: slideUpBounce 0.5s ease-out;
+}
+
+.quit-complete-icon {
+    font-size: 4rem;
+    color: var(--lsu-purple);
+    margin-bottom: 1rem;
+}
+
+.quit-complete-box h1 {
+    color: var(--lsu-purple);
+    font-size: 1.8rem;
+    font-weight: 800;
+    margin-bottom: 1rem;
+}
+
+.quit-complete-box p {
+    color: #495057;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+}
+
 /* ===== SCROLLBAR STYLING ===== */
 ::-webkit-scrollbar {
     width: 8px;
@@ -1027,7 +1230,12 @@ body.offline-mode .main-container {
 }
 
 .main-container-inline {
-    padding: 0.5rem 0 2rem;
+    /* Extra bottom padding so scrolling all the way down clears the fixed
+       .site-footer (~34px tall) instead of having it sit on top of content.
+       !important is required here: .main-container sets `padding: 0.5rem 0
+       !important` (with a dead, never-applied `padding: 2rem 0` right after
+       it), which otherwise overrides this regardless of source order. */
+    padding: 0.5rem 0 4.5rem !important;
 }
 
 .btn-compact {

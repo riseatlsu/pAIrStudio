@@ -243,6 +243,7 @@ export class ExperimentManager {
         this.setCookie('pair_participant_id', '', -1);
         this.setCookie('pair_participant_id_b', '', -1);
         this.setCookie('pair_latin_row', '', -1);
+        this.setCookie('pair_consented', '', -1);
         this.groupId = null;
         this.features = null;
         this.participantId = null;

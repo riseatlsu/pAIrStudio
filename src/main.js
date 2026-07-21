@@ -9,6 +9,7 @@ import { MainScene } from './scenes/MainScene';
 import { BlocklyManager } from './game/blockly/BlocklyManager';
 import { experimentManager } from './experiment/ExperimentManager.js';
 import { chatbotManager } from './chatbot/ChatbotManager.js';
+import { quitManager } from './experiment/QuitManager.js';
 import dataLogger from './utils/DataLogger.js';
 import terminalUI from './game/terminal/TerminalUI.js';
 
@@ -50,6 +51,9 @@ function initializeUI() {
     // Init simulated terminal (prints from the "Print" block show up here)
     terminalUI.init('terminal-body');
     window.terminalUI = terminalUI;
+
+    // Wire up the "Quit Study" button/confirmation flow
+    quitManager.init();
 
     // Init Blockly Workspace
     blocklyManager.init('blockly-workspace');
