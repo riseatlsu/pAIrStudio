@@ -128,6 +128,16 @@ export class GameAPI {
         }
     }
 
+    /**
+     * Pause program execution for a number of seconds. Used to poll sensing
+     * results (e.g. waiting for an NPC robot to clear a tile) without a busy loop.
+     * @param {number} seconds
+     */
+    static async wait(seconds) {
+        const ms = Math.max(0, Number(seconds) || 0) * 1000;
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
     static async resetLevel() {
         const scene = GameAPI.getScene();
         if (scene) {

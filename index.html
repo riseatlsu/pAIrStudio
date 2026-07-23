@@ -473,7 +473,7 @@
         console.log('%cLSU Warehouse Robot Simulation Platform', 'color: #5a2ca0;');
         
         // Result Modal Functions
-        window.showResultModal = function(isWin, currentLevel) {
+        window.showResultModal = function(isWin, currentLevel, customLoseMessage) {
             const modal = document.getElementById('result-modal');
             const header = document.getElementById('result-modal-header');
             const icon = document.getElementById('result-icon');
@@ -492,7 +492,7 @@
             } else {
                 icon.textContent = '❌';
                 title.textContent = 'Level Failed';
-                message.textContent = 'The box was dropped in the wrong location. Try again!';
+                message.textContent = customLoseMessage || 'The box was dropped in the wrong location. Try again!';
             }
 
             // Clear and add appropriate buttons

@@ -401,11 +401,20 @@ export class LevelManager {
             if (condition.type === 'itemAtPos') {
                 // Find the item by ID in the moveable objects list
                 const item = board.moveableObjects.find(o => o.id === condition.itemId);
-                
+
                 if (!item) return false; // Item missing?
-                
+
                 // Check position match
                 return item.gridRow === condition.row && item.gridCol === condition.col && !item.isCarried;
+            }
+            if (condition.type === 'itemNotAtPos') {
+                // Inverse of itemAtPos - used to require that an item (e.g. a
+                // defective box) NOT be delivered to a given position.
+                const item = board.moveableObjects.find(o => o.id === condition.itemId);
+
+                if (!item) return true; // Missing item can't be "at" the forbidden tile
+
+                return !(item.gridRow === condition.row && item.gridCol === condition.col && !item.isCarried);
             }
             return false;
         });
@@ -419,8 +428,12 @@ export class LevelManager {
         // Let's implement that specific strict rule:
         // Any box not on a conveyor = FAIL.
         
-        // Filter for boxes only (exclude the player who is also a MoveableObject)
-        const boxes = board.moveableObjects.filter(o => !o.isCarried && o.type !== 'player'); // Items on ground, excluding player
+        // Filter for boxes only - must positively match isoType 'box' rather than
+        // just excluding the player, since NPC robots (isoType 'robot') are also
+        // MoveableObjects that spend most of their time on ordinary floor tiles;
+        // an exclusion-based filter would false-positive-fail any level with an
+        // NPC the instant a drop action re-checks conditions.
+        const boxes = board.moveableObjects.filter(o => !o.isCarried && o.isoType === 'box');
         
         for (let box of boxes) {
              const stat = board.getStationaryAt(box.gridRow, box.gridCol);

@@ -23,6 +23,23 @@ The pAIrStudio platform supports two types of levels:
   - `true` - Chatbot visibility follows experimental group assignment
   - `false` - Chatbot is **hidden for ALL groups** on this level (overrides group settings)
 
+### `npcRobots` (Optional)
+- **Type**: Array of `{ id, path, stepIntervalMs?, stepDurationMs?, tint? }`
+- **Default**: none (no NPC robots)
+- **Purpose**: Spawn one or more scripted robots that patrol a fixed grid path independently of the player, blocking movement into their current tile and reporting as `'robot'` to the player's sensing blocks (`Sense Object Ahead`). Colliding with an NPC robot is a hard fail (ends the level immediately) - the player must sense and wait rather than drive through it.
+- **Fields**:
+  - `id` - Unique identifier for the robot
+  - `path` - Ordered array of adjacent grid tiles (`{ row, col }`) to patrol; the robot spawns at `path[0]` and walks the list back and forth (ping-pong), pausing to retry if its next tile is currently occupied
+  - `stepIntervalMs` (default `750`) - Time between the start of each step
+  - `stepDurationMs` (default `400`) - How long each step's movement animation takes
+  - `tint` (default `0xffa500`, amber) - Sprite tint so the NPC reads as visually distinct from the player
+- **Example**:
+  ```javascript
+  npcRobots: [
+      { id: "guard_1", path: [{row:2,col:1},{row:2,col:2},{row:2,col:3}], stepIntervalMs: 750 }
+  ]
+  ```
+
 ## Naming Conventions
 
 ### Tutorial Levels

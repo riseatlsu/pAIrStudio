@@ -14,6 +14,17 @@ if (Blockly.Workspace.prototype.getAllVariables && !Blockly.Workspace.prototype.
     Blockly.Workspace.prototype.getAllVariables.patched = true;
 }
 
+// Fixed, known set of attributes level designers can tag objects/boxes with
+// (see LEVEL_TYPES_GUIDE.md / level data files' `attributes` fields). Used by
+// the "Object Ahead is ___" dropdown so students pick from real options
+// instead of free-typing a value that may not exist on anything.
+const ATTRIBUTE_OPTIONS = [
+    ["broken", "broken"],
+    ["fragile", "fragile"],
+    ["priority", "priority"],
+    ["hazard", "hazard"]
+];
+
 export class BlocklyManager {
     constructor() {
         this.workspace = null;
@@ -346,12 +357,12 @@ export class BlocklyManager {
                 { kind: "block", type: "drop_object" },
                 {
                     kind: "block",
-                    type: "print_message",
+                    type: "wait_seconds",
                     inputs: {
-                        MESSAGE: {
+                        SECONDS: {
                             shadow: {
-                                type: "text",
-                                fields: { TEXT: "Hello!" }
+                                type: "math_number",
+                                fields: { NUM: 1 }
                             }
                         }
                     }
@@ -363,8 +374,8 @@ export class BlocklyManager {
             ],
             logic: [
                 { kind: "block", type: "controls_if" },
-                { 
-                    kind: "block", 
+                {
+                    kind: "block",
                     type: "controls_if",
                     extraState: { hasElse: true }
                 },
@@ -378,11 +389,23 @@ export class BlocklyManager {
                 { kind: "block", type: "math_arithmetic" }
             ],
             text: [
-                { kind: "block", type: "text" }
+                { kind: "block", type: "text" },
+                {
+                    kind: "block",
+                    type: "print_message",
+                    inputs: {
+                        MESSAGE: {
+                            shadow: {
+                                type: "text",
+                                fields: { TEXT: "Hello!" }
+                            }
+                        }
+                    }
+                }
             ],
             loops: [
-                { 
-                    kind: "block", 
+                {
+                    kind: "block",
                     type: "controls_repeat_ext",
                     inputs: {
                         TIMES: {
@@ -397,17 +420,23 @@ export class BlocklyManager {
             ]
         };
 
+        // Variables is a dynamic category (Blockly generates "Create Variable"
+        // + get/set blocks from whatever variables exist in the workspace), so
+        // it has no static block list to filter - it's just shown or hidden.
+        const variablesCategory = { kind: "category", name: "Variables", colour: 330, custom: "VARIABLE" };
+
         // If no restrictions, return all blocks
         if (!allowedBlocks) {
             return {
                 kind: "categoryToolbox",
                 contents: [
-                    { kind: "category", name: "Actions", colour: 160, contents: allBlocks.actions },
+                    { kind: "category", name: "Movements", colour: 160, contents: allBlocks.actions },
                     { kind: "category", name: "Sensing", colour: 210, contents: allBlocks.sensing },
-                    { kind: "category", name: "Logic", colour: 290, contents: allBlocks.logic },
+                    { kind: "category", name: "Conditionals", colour: 290, contents: allBlocks.logic },
                     { kind: "category", name: "Math", colour: 230, contents: allBlocks.math },
                     { kind: "category", name: "Text", colour: 160, contents: allBlocks.text },
-                    { kind: "category", name: "Loops", colour: 120, contents: allBlocks.loops }
+                    { kind: "category", name: "Loops", colour: 120, contents: allBlocks.loops },
+                    variablesCategory
                 ]
             };
         }
@@ -418,7 +447,7 @@ export class BlocklyManager {
         if (allowedBlocks.actions !== false) {
             const actionBlocks = filterBlocks(allBlocks.actions, allowedBlocks.actions);
             if (actionBlocks.length > 0) {
-                categories.push({ kind: "category", name: "Actions", colour: 160, contents: actionBlocks });
+                categories.push({ kind: "category", name: "Movements", colour: 160, contents: actionBlocks });
             }
         }
 
@@ -432,7 +461,7 @@ export class BlocklyManager {
         if (allowedBlocks.logic !== false) {
             const logicBlocks = filterBlocks(allBlocks.logic, allowedBlocks.logic);
             if (logicBlocks.length > 0) {
-                categories.push({ kind: "category", name: "Logic", colour: 290, contents: logicBlocks });
+                categories.push({ kind: "category", name: "Conditionals", colour: 290, contents: logicBlocks });
             }
         }
 
@@ -455,6 +484,10 @@ export class BlocklyManager {
             if (loopBlocks.length > 0) {
                 categories.push({ kind: "category", name: "Loops", colour: 120, contents: loopBlocks });
             }
+        }
+
+        if (allowedBlocks.variables === true) {
+            categories.push(variablesCategory);
         }
 
         return {
@@ -532,7 +565,7 @@ export class BlocklyManager {
         // Returns the TYPE of the object in front as a String ('box', 'conveyor', 'wall', 'floor')
         Blockly.Blocks['survey_front'] = {
             init: function () {
-                this.appendDummyInput().appendField("Identify Object Ahead");
+                this.appendDummyInput().appendField("Sense Object Ahead");
                 this.setOutput(true, "String");
                 this.setColour(210);
                 this.setTooltip("Returns the type of object in front: 'wall', 'box', 'conveyor', 'floor'.");
@@ -542,11 +575,13 @@ export class BlocklyManager {
         // 8. Sensing: Check Attribute
         // Does the object in front have attribute X?
         // E.g. "Object Ahead has attribute 'broken'"
+        // ATTR is a dropdown rather than free text since it's a fixed, known
+        // set of attributes level designers actually use (see ATTRIBUTE_OPTIONS).
         Blockly.Blocks['check_attribute'] = {
             init: function () {
                 this.appendDummyInput()
                     .appendField("Object Ahead is")
-                    .appendField(new Blockly.FieldTextInput("broken"), "ATTR");
+                    .appendField(new Blockly.FieldDropdown(ATTRIBUTE_OPTIONS), "ATTR");
                 this.setOutput(true, "Boolean");
                 this.setColour(210);
                 this.setTooltip("Checks if the object in front has a specific tag/attribute.");
@@ -563,6 +598,22 @@ export class BlocklyManager {
                 this.setNextStatement(true, null);
                 this.setColour(160);
                 this.setTooltip("Prints a message to the terminal on screen.");
+            }
+        };
+
+        // 10. Wait - pauses the program for a number of seconds
+        Blockly.Blocks['wait_seconds'] = {
+            init: function () {
+                this.appendValueInput("SECONDS")
+                    .setCheck("Number")
+                    .appendField("Wait");
+                this.appendDummyInput()
+                    .appendField("seconds");
+                this.setInputsInline(true);
+                this.setPreviousStatement(true, null);
+                this.setNextStatement(true, null);
+                this.setColour(160);
+                this.setTooltip("Pauses the robot's program for the given number of seconds.");
             }
         };
     }
@@ -606,6 +657,11 @@ export class BlocklyManager {
             const message = javascriptGenerator.valueToCode(block, 'MESSAGE', javascriptGenerator.ORDER_NONE) || "''";
             return `await GameAPI.printMessage(${message});\n`;
         };
+
+        javascriptGenerator.forBlock['wait_seconds'] = function (block) {
+            const seconds = javascriptGenerator.valueToCode(block, 'SECONDS', javascriptGenerator.ORDER_NONE) || '1';
+            return `await GameAPI.wait(${seconds});\n`;
+        };
     }
 
     async runCode() {
@@ -638,8 +694,13 @@ export class BlocklyManager {
             // Initialize the code generator with the workspace
             javascriptGenerator.init(this.workspace);
 
-            // Generate code only from blocks connected to the start block
-            const code = javascriptGenerator.blockToCode(startBlock);
+            // Generate code only from blocks connected to the start block.
+            // finish() prepends variable declarations (e.g. `let x;`) that
+            // Blockly's variable blocks rely on - blockToCode() alone only
+            // compiles the block chain and skips that step, since finish()
+            // is normally only called by workspaceToCode().
+            let code = javascriptGenerator.blockToCode(startBlock);
+            code = javascriptGenerator.finish(code);
             console.log("Generated Code:\n", code);
 
             // Reset Level First

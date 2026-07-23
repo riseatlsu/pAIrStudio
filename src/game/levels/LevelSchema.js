@@ -33,7 +33,10 @@
         winConditions: [
              // Definition: Verify that Box X is at Location Y (or on Conveyor Z)
              // Simplified: Check if item with 'id' is at grid location (x,y)
-             { type: "itemAtPos", itemId: "box_1", x: 8, y: 8 }
+             { type: "itemAtPos", itemId: "box_1", x: 8, y: 8 },
+             // Inverse: require that an item NOT be at a given location (e.g.
+             // a defective box must not be delivered to the output conveyor)
+             { type: "itemNotAtPos", itemId: "box_2", x: 8, y: 8 }
         ],
 
         maxSteps: 50,

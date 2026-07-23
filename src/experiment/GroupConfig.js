@@ -49,18 +49,24 @@ export const ASSIGNMENT_WEIGHTS = [
  * - tutorial_B: Longer route planning with loops (all groups)
  * - tutorial_C: Chatbot interaction practice (only groups with chatbot support)
  * - tutorial_D: Sensing + conditional logic ("if wall ahead, turn") + the Print block (all groups)
+ * - tutorial_E: Attribute-based sorting ("Object Ahead is broken") + If/Else (all groups)
+ * - tutorial_F: NPC robot avoidance via sensing + While loop + the Wait block (all groups)
  */
 export const TUTORIAL_PROGRESSION = {
     [GROUPS.CONTROL]: [
         'tutorial_A',
         'tutorial_B',
-        'tutorial_D'
+        'tutorial_D',
+        'tutorial_E',
+        'tutorial_F'
     ],
     [GROUPS.STANDARD_AI]: [
         'tutorial_A',
         'tutorial_B',
         'tutorial_C',
-        'tutorial_D'
+        'tutorial_D',
+        'tutorial_E',
+        'tutorial_F'
     ]
 };
 

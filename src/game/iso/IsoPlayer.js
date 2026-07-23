@@ -178,7 +178,7 @@ export class IsoPlayer extends MoveableObject {
     } else {
         // Collision occurred - log it
         const collisionInfo = this.board.getCollisionInfo(target.row, target.col);
-        
+
         // Log collision event if DataLogger is available
         if (window.dataLogger && window.LevelManager) {
             window.dataLogger.logCollision(
@@ -195,7 +195,23 @@ export class IsoPlayer extends MoveableObject {
                 }
             );
         }
-        
+
+        // Crashing into another (NPC) robot is a hard fail - the robot is
+        // meant to safely route around other robots, not drive into them.
+        // Throwing (rather than just returning false, like other collisions)
+        // halts the rest of the running program immediately, so it can't go
+        // on to complete the delivery and overwrite this fail with a win.
+        if (collisionInfo.type === 'robot') {
+            if (window.showResultModal) {
+                window.showResultModal(
+                    false,
+                    window.LevelManager?.currentLevelId,
+                    "You crashed into another robot! Robots must safely avoid each other while transporting boxes."
+                );
+            }
+            throw new Error('Crashed into another robot!');
+        }
+
         return false; // Collision or OOB
     }
   }

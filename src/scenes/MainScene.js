@@ -8,6 +8,7 @@ import Phaser from 'phaser';
 
 import { IsoBoard } from '../game/iso/IsoBoard';
 import { IsoPlayer } from '../game/iso/IsoPlayer';
+import { IsoNPC } from '../game/iso/IsoNPC';
 import { LevelBuilder } from '../game/levels/LevelBuilder';
 import { LevelManager } from '../game/levels/LevelManager';
 import { getLevel } from '../game/levels/index';
@@ -32,6 +33,7 @@ export class MainScene extends Phaser.Scene {
   constructor() {
     super({ key: 'MainScene' });
     this.levelManager = new LevelManager();
+    this.npcRobots = [];
   }
 
   /**
@@ -185,18 +187,27 @@ export class MainScene extends Phaser.Scene {
   }
 
   loadLevel(levelId) {
+      // 0. Stop any NPC patrol timers FIRST, before anything destroys their
+      // sprites. This must happen before isoBoard.clear() - a timer firing
+      // after clear() would try to tween a null sprite. Since GameAPI.resetLevel()
+      // calls loadLevel() on every single "Run Code" click (LevelManager has no
+      // restartLevel() method to short-circuit to), skipping this would leak a
+      // new timer on every run.
+      this.npcRobots.forEach(npc => npc.stopPatrol());
+      this.npcRobots = [];
+
       // 1. Clear existing board state
       if (this.isoBoard) {
           this.isoBoard.clear();
       }
-      
+
       // 2. Clear existing player
       if (this.player) {
-          // IsoPlayer.destroy() might not exist or might just destroy sprite. 
+          // IsoPlayer.destroy() might not exist or might just destroy sprite.
           // Since board.clear() destroyed the sprite, we just null the ref.
-          this.player = null; 
+          this.player = null;
       }
-      
+
       const config = getLevel(levelId);
       if (!config) {
           console.error(`Level ${levelId} not found!`);
@@ -223,6 +234,22 @@ export class MainScene extends Phaser.Scene {
       // Add player to the board's sprite list so updateDepth() sees it
       this.isoBoard.allSprites.push(this.player.sprite);
       this.isoBoard.moveableObjects.push(this.player);
+
+      // 3. Spawn NPC robots (patrolling non-player robots), if this level has any
+      (config.npcRobots || []).forEach(npcCfg => {
+          const start = npcCfg.path[0];
+          const npc = new IsoNPC(this, this.isoBoard, start.row, start.col, 'robot', {
+              id: npcCfg.id,
+              path: npcCfg.path,
+              stepIntervalMs: npcCfg.stepIntervalMs,
+              tint: npcCfg.tint,
+              scale: playerConfig.scale
+          });
+          this.isoBoard.allSprites.push(npc.sprite);
+          this.isoBoard.moveableObjects.push(npc);
+          npc.startPatrol();
+          this.npcRobots.push(npc);
+      });
 
       // Register level as current
       this.levelManager.currentLevelId = levelId;
