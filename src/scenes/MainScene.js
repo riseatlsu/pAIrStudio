@@ -105,10 +105,17 @@ export class MainScene extends Phaser.Scene {
 
     // 3. Boxes
     // Frame Width: 22, Height: 21
-    this.load.spritesheet('box', 'box.png', { 
-        frameWidth: 22, 
-        frameHeight: 21 
+    this.load.spritesheet('box', 'box.png', {
+        frameWidth: 22,
+        frameHeight: 21
     });
+
+    // 4. Sound Effects
+    this.load.audio('tire_move', 'sounds/Tire_move.wav');
+    this.load.audio('victory', 'sounds/victory.wav');
+    this.load.audio('robot_impact', 'sounds/robot_impact.wav');
+    this.load.audio('box_sound', 'sounds/box_sound1.wav');
+    this.load.audio('talking_sound', 'sounds/talking_sound.wav');
   }
 
   /**

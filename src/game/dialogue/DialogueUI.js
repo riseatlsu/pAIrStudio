@@ -10,6 +10,11 @@
 
 const SPEAKER_NAME = 'Mack';
 const TYPEWRITER_MS_PER_CHAR = 18;
+// talking_sound.wav is a short blip - retrigger it every few characters
+// (skipping spaces) while text types out, Animal Crossing-style, rather than
+// on every single character (which would just be a wall of overlapping noise).
+const TALK_SOUND_CHAR_INTERVAL = 4;
+const TALK_SOUND_VOLUME = 0.3;
 
 export class DialogueUI {
     constructor() {
@@ -139,12 +144,29 @@ export class DialogueUI {
         this.typewriterTimer = setInterval(() => {
             charIndex++;
             this.textEl.textContent = line.slice(0, charIndex);
+
+            const revealedChar = line[charIndex - 1];
+            if (revealedChar && revealedChar !== ' ' && charIndex % TALK_SOUND_CHAR_INTERVAL === 0) {
+                this._playTalkSound();
+            }
+
             if (charIndex >= line.length) {
                 clearInterval(this.typewriterTimer);
                 this.isTyping = false;
                 if (this.continueEl) this.continueEl.classList.add('show');
             }
         }, TYPEWRITER_MS_PER_CHAR);
+    }
+
+    /** Plays via the shared Phaser sound manager (window.game.sound) since
+     * this module lives outside any Phaser scene. */
+    _playTalkSound() {
+        try {
+            window.game?.sound?.play('talking_sound', { volume: TALK_SOUND_VOLUME });
+        } catch (e) {
+            // Audio playback failing (e.g. browser autoplay policy) shouldn't
+            // break the dialogue itself.
+        }
     }
 
     _advance() {

@@ -130,7 +130,9 @@ export class IsoPlayer extends MoveableObject {
     
     if (this.board.isWalkable(target.row, target.col)) {
         this.isMoving = true;
-        
+
+        if (this.scene.sound) this.scene.sound.play('tire_move', { volume: 0.35 });
+
         return new Promise(resolve => {
             // Calculate target screen position
             const pos = gridToScreen(target.row, target.col, this.board.tileWidth, this.board.tileHeight, this.zHeight);
@@ -202,6 +204,7 @@ export class IsoPlayer extends MoveableObject {
         // halts the rest of the running program immediately, so it can't go
         // on to complete the delivery and overwrite this fail with a win.
         if (collisionInfo.type === 'robot') {
+            if (this.scene.sound) this.scene.sound.play('robot_impact');
             if (window.showResultModal) {
                 window.showResultModal(
                     false,
@@ -284,6 +287,7 @@ export class IsoPlayer extends MoveableObject {
           // Check pickupable flag (default to true if not set)
           const canPickup = obj.pickupable !== undefined ? obj.pickupable : true;
           if (canPickup) {
+              if (this.scene.sound) this.scene.sound.play('box_sound', { volume: 1.4 });
               obj.pickUp(this);
               this.carriedItem = obj;
               
@@ -355,7 +359,9 @@ export class IsoPlayer extends MoveableObject {
       const droppedItem = this.carriedItem;
       const objectId = droppedItem.attributes?.id || null;
       const objectType = droppedItem.type || 'object';
-      
+
+      if (this.scene.sound) this.scene.sound.play('box_sound');
+
       this.carriedItem.drop(front.row, front.col);
       this.carriedItem = null;
       
@@ -410,6 +416,7 @@ export class IsoPlayer extends MoveableObject {
           
           if (won) {
               console.log('Level Complete!');
+              if (this.scene.sound) this.scene.sound.play('victory');
               // Mark level as complete
               levelManager.completeLevel(levelManager.currentLevelId);
               // Show win modal/notification
