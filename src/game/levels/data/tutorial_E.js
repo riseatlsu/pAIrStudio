@@ -15,6 +15,11 @@ export const TutorialE = {
     isExperiment: false,
     chatbotEnabled: false,
 
+    dialogue: [
+        "Got a call from quality control this morning — a batch came in with at least one defective unit mixed in, and it can not go out the door.",
+        "I need you to have the robot check each box before it loads it. Anything flagged broken stays put. Everything else ships."
+    ],
+
     map: {
         width: 6,
         height: 6,

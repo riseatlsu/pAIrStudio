@@ -15,6 +15,10 @@ export const Level1 = {
     isExperiment: true,
     chatbotEnabled: true,
 
+    dialogue: [
+        "Here's a fresh work order — pickup on one side, dropoff on the other, open floor between them. Nothing fancy, but you're building the whole program yourself this time.",
+        "No starter code to lean on. Get the box from A to B."
+    ],
 
     map: {
         width: 8,

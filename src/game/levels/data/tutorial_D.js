@@ -15,6 +15,11 @@ export const TutorialD = {
     isExperiment: false,
     chatbotEnabled: false,
 
+    dialogue: [
+        "Maintenance came through last night and wired motion sensors into the whole fleet. Fancy upgrade — figured you'd want to be the first to try it.",
+        "Instead of memorizing every obstacle by eye, have the robot check what's in front of it and decide for itself. Wrap it in a loop and it'll keep reacting on its own."
+    ],
+
     map: {
         width: 6,
         height: 6,

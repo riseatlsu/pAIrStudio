@@ -15,6 +15,11 @@ export const TutorialB = {
     isExperiment: false,
     chatbotEnabled: false,
 
+    dialogue: [
+        "Not bad for your first day. Word already got around — that first delivery ran clean.",
+        "Ready for something with a bit more legwork? This next route's longer, so don't be afraid to lean on that Repeat block instead of writing every step by hand."
+    ],
+
     map: {
         width: 6,
         height: 6,

@@ -1156,6 +1156,138 @@ body.offline-mode .main-container {
     margin-bottom: 1rem;
 }
 
+/* ===== NPC DIALOGUE BOX (Pokemon-style level intro) ===== */
+.dialogue-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    z-index: 10000;
+    display: none;
+    align-items: flex-end;
+    justify-content: center;
+    padding: 0 2rem 3rem;
+    animation: fadeIn 0.3s ease-out;
+}
+
+.dialogue-overlay.show {
+    display: flex;
+}
+
+.dialogue-box {
+    position: relative;
+    width: 100%;
+    max-width: 900px;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    padding: 1.75rem 2rem 1.75rem 160px;
+    cursor: pointer;
+    user-select: none;
+    animation: slideUp 0.4s ease-out;
+}
+
+.dialogue-portrait {
+    position: absolute;
+    left: 24px;
+    bottom: 0;
+    width: 130px;
+    height: auto;
+    filter: drop-shadow(0 10px 15px rgba(0, 0, 0, 0.4));
+    animation: dialoguePortraitIn 0.4s ease-out;
+}
+
+@keyframes dialoguePortraitIn {
+    from {
+        opacity: 0;
+        transform: translateX(-40px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.dialogue-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.dialogue-speaker {
+    align-self: flex-start;
+    background: linear-gradient(135deg, var(--lsu-purple), var(--lsu-light-purple));
+    color: var(--text-light);
+    font-weight: 800;
+    font-size: 0.95rem;
+    padding: 0.3rem 1.1rem;
+    border-radius: 50px;
+}
+
+.dialogue-text {
+    color: var(--text-dark);
+    font-size: 1.15rem;
+    line-height: 1.6;
+    min-height: 3.4rem;
+}
+
+.dialogue-continue-indicator {
+    position: absolute;
+    right: 2rem;
+    bottom: 1.1rem;
+    color: var(--lsu-gold);
+    font-size: 1.3rem;
+    opacity: 0;
+}
+
+.dialogue-continue-indicator.show {
+    opacity: 1;
+    animation: dialogueBlink 1s ease-in-out infinite;
+}
+
+@keyframes dialogueBlink {
+    0%, 100% { transform: translateY(0); opacity: 1; }
+    50% { transform: translateY(4px); opacity: 0.5; }
+}
+
+.dialogue-skip-btn {
+    position: absolute;
+    top: 1rem;
+    right: 1.25rem;
+    background: transparent;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    border-radius: 50px;
+    padding: 0.3rem 0.9rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #888;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.dialogue-skip-btn:hover {
+    background: rgba(0, 0, 0, 0.06);
+    color: var(--text-dark);
+}
+
+@media (max-width: 576px) {
+    .dialogue-box {
+        padding: 5.5rem 1.25rem 1.25rem 1.25rem;
+    }
+
+    .dialogue-portrait {
+        left: 50%;
+        bottom: auto;
+        top: -50px;
+        transform: translateX(-50%);
+        width: 90px;
+    }
+
+    @keyframes dialoguePortraitIn {
+        from { opacity: 0; transform: translate(-50%, -20px); }
+        to { opacity: 1; transform: translate(-50%, 0); }
+    }
+}
+
 /* ===== SCROLLBAR STYLING ===== */
 ::-webkit-scrollbar {
     width: 8px;

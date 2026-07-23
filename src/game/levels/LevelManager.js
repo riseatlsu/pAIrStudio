@@ -205,9 +205,9 @@ export class LevelManager {
     /**
      * Load a level by its ID (for level circle clicks)
      */
-    loadLevelById(levelId) {
+    async loadLevelById(levelId) {
         let config = this.levels[levelId];
-        
+
         // If level not registered yet, try to get it from the LEVELS registry
         if (!config) {
             config = getLevel(levelId);
@@ -218,13 +218,23 @@ export class LevelManager {
             // REGISTER IT NOW so other managers can see it
             this.levels[levelId] = config;
         }
-        
+
         // Set current level ID FIRST
         this.currentLevelId = levelId;
-        
+
         // Save current level to localStorage for persistence across page reloads (BEFORE survey check)
         this.saveCurrentLevel(levelId);
-        
+
+        // Show the NPC dialogue intro (once per participant per level) before
+        // anything else loads. Covers both normal levels and the survey level
+        // uniformly since it runs before the survey-type branch below.
+        if (Array.isArray(config.dialogue) && window.dialogueUI) {
+            if (!window.dialogueUI.hasSeen(levelId)) {
+                await window.dialogueUI.show(config.dialogue, levelId);
+                window.dialogueUI.markSeen(levelId);
+            }
+        }
+
         // Check if this is a survey level
         if (config.type === 'survey') {
             console.log('Loading survey level');

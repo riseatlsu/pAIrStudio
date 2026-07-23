@@ -16,6 +16,10 @@ export const Level3 = {
     isExperiment: true,
     chatbotEnabled: true,
 
+    dialogue: [
+        "Careful with this one — two obstacle walls between the pickup and the dropoff. Trace the path in your head first, then write it."
+    ],
+
     map: {
         width: 8,
         height: 8,

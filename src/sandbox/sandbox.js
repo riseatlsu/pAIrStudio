@@ -192,6 +192,12 @@ async function initializeSandbox() {
             window.blocklyManager.setSandboxMode(true);
         }
 
+        // Never gate dialogue as "already seen" in sandbox - always show it
+        // fresh so researchers can preview any level's story on demand.
+        if (window.dialogueUI) {
+            window.dialogueUI.setSandboxMode(true);
+        }
+
         if (experimentManager.hasFeature('chatbot')) {
             chatbotManager.initialize(experimentManager, null);
         } else if (chatbotManager.isInitialized) {

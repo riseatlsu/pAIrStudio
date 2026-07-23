@@ -15,6 +15,12 @@ export const TutorialF = {
     isExperiment: false,
     chatbotEnabled: false,
 
+    dialogue: [
+        "Careful today — corporate leased us a second unit to help with the backlog, and it's already out there running its own patrol route.",
+        "Robots don't yield to each other, so if yours drives straight into it, you'll both be stuck till someone walks over and resets things. Sense it, wait it out, then go.",
+        "That's the last of your training runs, by the way. Everything after this is real work — actual orders, actual deadlines. You ready?"
+    ],
+
     map: {
         width: 6,
         height: 6,

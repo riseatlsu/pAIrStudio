@@ -40,6 +40,23 @@ The pAIrStudio platform supports two types of levels:
   ]
   ```
 
+### `dialogue` (Optional)
+- **Type**: Array of strings
+- **Default**: none (no dialogue shown)
+- **Purpose**: Pokemon-style NPC dialogue box shown once per participant before this level loads, telling the "new hire training at Ironhaul Logistics" story (see `src/game/dialogue/DialogueUI.js`). Blocking - the player must click through every line before the level becomes interactive.
+- **Behavior**:
+  - Each array entry is one click-through page of dialogue, spoken by the single hardcoded character ("Mack", portrait at `public/assets/construction-worker.jpg`, set independently by each HTML page's own `<img>` tag since root vs sandbox pages need different relative paths - only the speaker name is hardcoded in `DialogueUI.js`).
+  - Shown once per participant per level, persisted via a participant-scoped localStorage key (`dialogueSeen_${participantId}_${levelId}`, mirroring `BlocklyManager`'s workspace-storage key convention). Reloading, resetting, or re-running the level (`Run Code`) will **not** replay it - only navigating to the level fresh will, and only if it hasn't been seen yet.
+  - In sandbox mode, always shows fresh (never persisted) so researchers can preview any level's dialogue on demand.
+- **Writing dialogue for graded levels**: the six experimental levels (`level_001`-`level_006`) are shown to each participant in a **counterbalanced order** (see `GroupConfig.js`'s `LATIN_SQUARE`), not always 1→2→3→4→5→6. Don't write dialogue that references relative sequence ("last time," "your final job") for these levels - each one's dialogue must stand alone. Tutorials, by contrast, always run in the same fixed order per group, so sequential callbacks are safe there.
+- **Example**:
+  ```javascript
+  dialogue: [
+      "Here's a fresh work order — pickup on one side, dropoff on the other.",
+      "No starter code to lean on this time."
+  ]
+  ```
+
 ## Naming Conventions
 
 ### Tutorial Levels
