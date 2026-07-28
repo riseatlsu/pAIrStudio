@@ -98,8 +98,8 @@ body::before {
 }
 
 .consent-logo {
-    width: 80px;
-    height: 80px;
+    width: min(280px, 60%);
+    height: auto; /* PS_logo.png is a 2:1 wordmark; auto height preserves its aspect ratio */
     object-fit: contain;
     margin: 0 auto 1rem;
     display: block;
@@ -638,6 +638,22 @@ body.offline-mode .main-container {
     background: linear-gradient(135deg, #f4c430, var(--lsu-gold));
 }
 
+.stop-btn {
+    background: linear-gradient(135deg, #dc3545, #c82333);
+    box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+    color: white;
+}
+
+.stop-btn:hover:not(:disabled) {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(220, 53, 69, 0.4);
+}
+
+.stop-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
 .reset-btn {
     background: linear-gradient(135deg, var(--lsu-gold), #f4c430);
     box-shadow: 0 4px 15px rgba(253, 208, 35, 0.3);
@@ -886,6 +902,14 @@ body.offline-mode .main-container {
 .result-icon {
     font-size: 5rem;
     margin-bottom: 1rem;
+}
+
+.result-icon-img {
+    width: 5rem;
+    height: 5rem;
+    object-fit: contain;
+    display: block;
+    margin: 0 auto;
 }
 
 .result-title {
@@ -1192,7 +1216,6 @@ body.offline-mode .main-container {
     bottom: 0;
     width: 130px;
     height: auto;
-    filter: drop-shadow(0 10px 15px rgba(0, 0, 0, 0.4));
     animation: dialoguePortraitIn 0.4s ease-out;
 }
 
@@ -1583,8 +1606,8 @@ body.offline-mode .main-container {
 }
 
 .sandbox-logo {
-    width: 80px;
-    height: 80px;
+    width: min(280px, 60%);
+    height: auto; /* PS_logo.png is a 2:1 wordmark; auto height preserves its aspect ratio */
     object-fit: contain;
     margin: 0 auto 1rem;
     display: block;

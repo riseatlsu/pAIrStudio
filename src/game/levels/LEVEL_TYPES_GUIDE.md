@@ -24,19 +24,19 @@ The pAIrStudio platform supports two types of levels:
   - `false` - Chatbot is **hidden for ALL groups** on this level (overrides group settings)
 
 ### `npcRobots` (Optional)
-- **Type**: Array of `{ id, path, stepIntervalMs?, stepDurationMs?, tint? }`
+- **Type**: Array of `{ id, path, ticksPerStep?, tint? }`
 - **Default**: none (no NPC robots)
 - **Purpose**: Spawn one or more scripted robots that patrol a fixed grid path independently of the player, blocking movement into their current tile and reporting as `'robot'` to the player's sensing blocks (`Sense Object Ahead`). Colliding with an NPC robot is a hard fail (ends the level immediately) - the player must sense and wait rather than drive through it.
+- **Ticks, not milliseconds**: NPC steps advance on the same shared `GameClock` (see `src/game/GameClock.js`) as the player's own actions, rather than an independent real-time timer - this is what guarantees a collision can never be missed due to one entity's visual position lagging its logical position.
 - **Fields**:
   - `id` - Unique identifier for the robot
   - `path` - Ordered array of adjacent grid tiles (`{ row, col }`) to patrol; the robot spawns at `path[0]` and walks the list back and forth (ping-pong), pausing to retry if its next tile is currently occupied
-  - `stepIntervalMs` (default `750`) - Time between the start of each step
-  - `stepDurationMs` (default `400`) - How long each step's movement animation takes
+  - `ticksPerStep` (default `2`) - Game-loop ticks between each step; higher = slower patrol
   - `tint` (default `0xffa500`, amber) - Sprite tint so the NPC reads as visually distinct from the player
 - **Example**:
   ```javascript
   npcRobots: [
-      { id: "guard_1", path: [{row:2,col:1},{row:2,col:2},{row:2,col:3}], stepIntervalMs: 750 }
+      { id: "guard_1", path: [{row:2,col:1},{row:2,col:2},{row:2,col:3}], ticksPerStep: 2 }
   ]
   ```
 

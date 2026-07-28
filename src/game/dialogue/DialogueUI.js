@@ -15,6 +15,17 @@ const TYPEWRITER_MS_PER_CHAR = 18;
 // on every single character (which would just be a wall of overlapping noise).
 const TALK_SOUND_CHAR_INTERVAL = 4;
 const TALK_SOUND_VOLUME = 0.3;
+// Randomly switching between the regular and lower-pitched blip gives
+// Mack's "voice" some up-down inflection instead of a flat monotone. A
+// strict alternation (regular/low/regular/low...) reads as too mechanical -
+// real speech doesn't tick-tock like a metronome - so pick randomly each
+// time, biased away from repeating the same pitch too many times in a row
+// so it doesn't get stuck on one note either.
+const TALK_SOUND_KEYS = ['talking_sound', 'talking_sound_low'];
+// Chance of repeating the previous pitch instead of switching. Low enough
+// that switching is still the common case, but non-zero so it doesn't feel
+// robotically strict.
+const TALK_SOUND_REPEAT_CHANCE = 0.25;
 
 export class DialogueUI {
     constructor() {
@@ -31,6 +42,7 @@ export class DialogueUI {
         this.isTyping = false;
         this.resolvePromise = null;
         this.sandboxMode = false;
+        this._lastTalkSoundKey = null;
     }
 
     setSandboxMode(enable = true) {
@@ -139,6 +151,10 @@ export class DialogueUI {
         clearInterval(this.typewriterTimer);
         this.isTyping = true;
         this.textEl.textContent = '';
+        // Each new line starts with no pitch history so the first blip of a
+        // line is an unbiased coin flip rather than carrying a repeat/switch
+        // bias over from wherever the previous line happened to end.
+        this._lastTalkSoundKey = null;
 
         let charIndex = 0;
         this.typewriterTimer = setInterval(() => {
@@ -159,10 +175,19 @@ export class DialogueUI {
     }
 
     /** Plays via the shared Phaser sound manager (window.game.sound) since
-     * this module lives outside any Phaser scene. */
+     * this module lives outside any Phaser scene. Randomly picks a pitch,
+     * mostly switching from the last one played, for speech-like inflection. */
     _playTalkSound() {
         try {
-            window.game?.sound?.play('talking_sound', { volume: TALK_SOUND_VOLUME });
+            let key;
+            if (this._lastTalkSoundKey && Math.random() < TALK_SOUND_REPEAT_CHANCE) {
+                key = this._lastTalkSoundKey;
+            } else {
+                const other = TALK_SOUND_KEYS.find((k) => k !== this._lastTalkSoundKey);
+                key = other || TALK_SOUND_KEYS[0];
+            }
+            this._lastTalkSoundKey = key;
+            window.game?.sound?.play(key, { volume: TALK_SOUND_VOLUME });
         } catch (e) {
             // Audio playback failing (e.g. browser autoplay policy) shouldn't
             // break the dialogue itself.

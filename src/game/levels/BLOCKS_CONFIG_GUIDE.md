@@ -45,7 +45,7 @@ as **"Movements"** and `logic` displays as **"Conditionals"**.
 - `turn_counter_clockwise` - Turn robot 45° counter-clockwise
 - `pick_object` - Pick up object in front of robot
 - `drop_object` - Drop carried object
-- `wait_seconds` - Pause the program for a number of seconds (accepts a Number value input, e.g. a math_number block); useful for polling sensing results in a loop (e.g. waiting for a patrolling NPC robot to clear a tile)
+- `wait_loops` - Pause the program for a number of game-loop ticks (accepts a Number value input, e.g. a math_number block); useful for polling sensing results in a loop (e.g. waiting for a patrolling NPC robot to clear a tile). Ticks, not real seconds - see `src/game/GameClock.js` - so it stays perfectly in sync with player/NPC movement instead of racing against it.
 
 ### Sensing Category
 - `survey_front` - "Sense Object Ahead" - get type of object in front

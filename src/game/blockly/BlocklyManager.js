@@ -357,9 +357,9 @@ export class BlocklyManager {
                 { kind: "block", type: "drop_object" },
                 {
                     kind: "block",
-                    type: "wait_seconds",
+                    type: "wait_loops",
                     inputs: {
-                        SECONDS: {
+                        LOOPS: {
                             shadow: {
                                 type: "math_number",
                                 fields: { NUM: 1 }
@@ -601,19 +601,19 @@ export class BlocklyManager {
             }
         };
 
-        // 10. Wait - pauses the program for a number of seconds
-        Blockly.Blocks['wait_seconds'] = {
+        // 10. Wait - pauses the program for a number of game-loop ticks
+        Blockly.Blocks['wait_loops'] = {
             init: function () {
-                this.appendValueInput("SECONDS")
+                this.appendValueInput("LOOPS")
                     .setCheck("Number")
                     .appendField("Wait");
                 this.appendDummyInput()
-                    .appendField("seconds");
+                    .appendField("loops");
                 this.setInputsInline(true);
                 this.setPreviousStatement(true, null);
                 this.setNextStatement(true, null);
                 this.setColour(160);
-                this.setTooltip("Pauses the robot's program for the given number of seconds.");
+                this.setTooltip("Pauses the robot's program for the given number of game loops, so it stays in sync with everything else moving.");
             }
         };
     }
@@ -658,9 +658,9 @@ export class BlocklyManager {
             return `await GameAPI.printMessage(${message});\n`;
         };
 
-        javascriptGenerator.forBlock['wait_seconds'] = function (block) {
-            const seconds = javascriptGenerator.valueToCode(block, 'SECONDS', javascriptGenerator.ORDER_NONE) || '1';
-            return `await GameAPI.wait(${seconds});\n`;
+        javascriptGenerator.forBlock['wait_loops'] = function (block) {
+            const loops = javascriptGenerator.valueToCode(block, 'LOOPS', javascriptGenerator.ORDER_NONE) || '1';
+            return `await GameAPI.waitLoops(${loops});\n`;
         };
     }
 
@@ -723,8 +723,15 @@ export class BlocklyManager {
                         console.log("Program Completed");
                         if (window.terminalUI) window.terminalUI.runEnd(true);
                     } catch (e) {
-                        console.error("Runtime Error:", e);
-                        if (window.terminalUI) window.terminalUI.runEnd(false, e.message);
+                        if (e.message === 'Stopped by user') {
+                            // User-initiated (Stop button), not a bug - don't
+                            // log it as an error or show a scary message.
+                            console.log('Program stopped by user');
+                            if (window.terminalUI) window.terminalUI.runEnd(false, 'Stopped by user.');
+                        } else {
+                            console.error("Runtime Error:", e);
+                            if (window.terminalUI) window.terminalUI.runEnd(false, e.message);
+                        }
                     }
                 })();
             `;
@@ -749,13 +756,32 @@ export class BlocklyManager {
     }
 
     /**
+     * Abort the currently running program (e.g. the user hit "Stop" on an
+     * accidental infinite loop). Works by requesting a stop on the shared
+     * GameClock, which every player action and the "Wait" block already
+     * await - the next one to check in rejects, unwinding back up through
+     * the running program's own try/catch inside runCode()'s eval'd IIFE.
+     */
+    stopExecution() {
+        if (!this.isRunning) return;
+        const scene = window.game?.scene?.getScene('MainScene');
+        if (scene?.gameClock) {
+            scene.gameClock.requestStop();
+        }
+    }
+
+    /**
      * Update the run button state to show running/ready status
      * @param {boolean} isRunning - Whether code is currently executing
      */
     updateRunButtonState(isRunning) {
         const runBtn = document.getElementById('run-code-btn');
+        const stopBtn = document.getElementById('stop-code-btn');
+
+        if (stopBtn) stopBtn.disabled = !isRunning;
+
         if (!runBtn) return;
-        
+
         if (isRunning) {
             runBtn.disabled = true;
             runBtn.classList.add('running');

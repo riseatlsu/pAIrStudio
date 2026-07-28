@@ -13,6 +13,12 @@ import { LevelBuilder } from '../game/levels/LevelBuilder';
 import { LevelManager } from '../game/levels/LevelManager';
 import { getLevel } from '../game/levels/index';
 import { gridToScreen } from '../game/iso/IsoUtils';
+import { GameClock } from '../game/GameClock';
+
+// Real-world ms per game-loop tick. Every player action (move/turn/pick/drop)
+// and every NPC patrol step advances by whole ticks, so they're always
+// perfectly synchronized - see src/game/GameClock.js.
+const TICK_MS = 500;
 
 /**
  * MainScene - Primary game scene for the warehouse robot simulation.
@@ -34,6 +40,7 @@ export class MainScene extends Phaser.Scene {
     super({ key: 'MainScene' });
     this.levelManager = new LevelManager();
     this.npcRobots = [];
+    this.gameClock = null;
   }
 
   /**
@@ -116,6 +123,7 @@ export class MainScene extends Phaser.Scene {
     this.load.audio('robot_impact', 'sounds/robot_impact.wav');
     this.load.audio('box_sound', 'sounds/box_sound1.wav');
     this.load.audio('talking_sound', 'sounds/talking_sound.wav');
+    this.load.audio('talking_sound_low', 'sounds/lower_talking_sound.wav');
   }
 
   /**
@@ -194,12 +202,13 @@ export class MainScene extends Phaser.Scene {
   }
 
   loadLevel(levelId) {
-      // 0. Stop any NPC patrol timers FIRST, before anything destroys their
-      // sprites. This must happen before isoBoard.clear() - a timer firing
-      // after clear() would try to tween a null sprite. Since GameAPI.resetLevel()
-      // calls loadLevel() on every single "Run Code" click (LevelManager has no
-      // restartLevel() method to short-circuit to), skipping this would leak a
-      // new timer on every run.
+      // 0. Stop the shared game clock and any NPC patrol subscriptions FIRST,
+      // before anything destroys their sprites. This must happen before
+      // isoBoard.clear() - a tick firing after clear() would try to tween a
+      // null sprite. Since GameAPI.resetLevel() calls loadLevel() on every
+      // single "Run Code" click (LevelManager has no restartLevel() method to
+      // short-circuit to), skipping this would leak ticks/timers on every run.
+      if (this.gameClock) this.gameClock.stop();
       this.npcRobots.forEach(npc => npc.stopPatrol());
       this.npcRobots = [];
 
@@ -242,14 +251,18 @@ export class MainScene extends Phaser.Scene {
       this.isoBoard.allSprites.push(this.player.sprite);
       this.isoBoard.moveableObjects.push(this.player);
 
+      // Start the shared game clock BEFORE spawning NPCs - their startPatrol()
+      // subscribes to it immediately.
+      if (!this.gameClock) this.gameClock = new GameClock(this, TICK_MS);
+      this.gameClock.start();
+
       // 3. Spawn NPC robots (patrolling non-player robots), if this level has any
       (config.npcRobots || []).forEach(npcCfg => {
           const start = npcCfg.path[0];
           const npc = new IsoNPC(this, this.isoBoard, start.row, start.col, 'robot', {
               id: npcCfg.id,
               path: npcCfg.path,
-              stepIntervalMs: npcCfg.stepIntervalMs,
-              tint: npcCfg.tint,
+              ticksPerStep: npcCfg.ticksPerStep,
               scale: playerConfig.scale
           });
           this.isoBoard.allSprites.push(npc.sprite);

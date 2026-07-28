@@ -68,7 +68,7 @@ export const TutorialF = {
                 { row: 2, col: 4 },
                 { row: 2, col: 5 }
             ],
-            stepIntervalMs: 750
+            ticksPerStep: 2
         }
     ],
 

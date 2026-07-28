@@ -78,7 +78,14 @@ function initializeUI() {
              import('./game/blockly/GameAPI').then(m => m.GameAPI.resetLevel());
         });
     }
-    
+
+    const stopBtn = document.getElementById('stop-code-btn');
+    if (stopBtn) {
+        stopBtn.addEventListener('click', () => {
+            blocklyManager.stopExecution();
+        });
+    }
+
     console.log('✅ pAIrStudio initialization complete');
 }
 
