@@ -13,6 +13,11 @@ export default {
     displayName: 'Post-Study Survey',
     description: 'Please complete this survey about your experience.',
 
+    dialogue: [
+        "That's a wrap for today — nice work out there. Before you clock out, HR's got a quick survey they want you to fill out.",
+        "Won't take long. Thanks for the hard work — see you next shift."
+    ],
+
     /**
      * Initialize the survey level
      * This is called when the survey level is loaded

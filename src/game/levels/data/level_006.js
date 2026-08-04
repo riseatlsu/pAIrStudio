@@ -16,6 +16,11 @@ export const Level6 = {
     isExperiment: true,
     chatbotEnabled: true,
 
+    dialogue: [
+        "Another inherited job — the toughest one on my clipboard today. Whoever had this before you got the robot to the box and picked it up clean, then never finished the delivery.",
+        "There's a wall blocking the direct path back that they never routed around, either. Finish what they started."
+    ],
+
     map: {
         width: 8,
         height: 8,

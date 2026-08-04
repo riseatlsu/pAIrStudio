@@ -24,16 +24,16 @@ export class GameAPI {
     static async moveForward(steps = 1) {
         const scene = GameAPI.getScene();
         if (!scene || !scene.player) return;
-        
+
         console.log(`API: Moving Forward ${steps}`);
         for (let i = 0; i < steps; i++) {
+            // player.moveForward() already awaits exactly one GameClock tick,
+            // so no extra inter-step delay is needed here.
             const success = await scene.player.moveForward();
             if (!success) {
                 console.warn("Move failed (collision or bound)");
                 break;
             }
-            // Small delay between steps
-            await new Promise(r => setTimeout(r, 100));
         }
     }
 
@@ -57,14 +57,14 @@ export class GameAPI {
         const scene = GameAPI.getScene();
         if (!scene || !scene.player) return false;
         console.log("API: Picking Up");
-        return scene.player.pickUp();
+        return await scene.player.pickUp();
     }
 
     static async dropItem() {
         const scene = GameAPI.getScene();
         if (!scene || !scene.player) return false;
         console.log("API: Dropping");
-        return scene.player.drop();
+        return await scene.player.drop();
     }
 
     /**
@@ -126,6 +126,20 @@ export class GameAPI {
         if (window.dataLogger && levelId) {
             window.dataLogger.logEvent('print_message', { levelId, message: text });
         }
+    }
+
+    /**
+     * Pause program execution for a number of game-loop ticks. Used to poll
+     * sensing results (e.g. waiting for an NPC robot to clear a tile) without
+     * a busy loop. Ticks, not real seconds, so this stays perfectly in sync
+     * with player/NPC movement on the shared GameClock.
+     * @param {number} loopCount
+     */
+    static async waitLoops(loopCount) {
+        const scene = GameAPI.getScene();
+        if (!scene || !scene.gameClock) return;
+        const n = Math.max(1, Math.floor(Number(loopCount)) || 1);
+        await scene.gameClock.waitTicks(n);
     }
 
     static async resetLevel() {

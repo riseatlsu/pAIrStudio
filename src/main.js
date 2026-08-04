@@ -9,8 +9,10 @@ import { MainScene } from './scenes/MainScene';
 import { BlocklyManager } from './game/blockly/BlocklyManager';
 import { experimentManager } from './experiment/ExperimentManager.js';
 import { chatbotManager } from './chatbot/ChatbotManager.js';
+import { quitManager } from './experiment/QuitManager.js';
 import dataLogger from './utils/DataLogger.js';
 import terminalUI from './game/terminal/TerminalUI.js';
+import { dialogueUI } from './game/dialogue/DialogueUI.js';
 
 const config = {
   type: Phaser.AUTO,
@@ -51,6 +53,13 @@ function initializeUI() {
     terminalUI.init('terminal-body');
     window.terminalUI = terminalUI;
 
+    // Wire up the "Quit Study" button/confirmation flow
+    quitManager.init();
+
+    // Init the NPC dialogue box (shown before each level loads)
+    dialogueUI.init();
+    window.dialogueUI = dialogueUI;
+
     // Init Blockly Workspace
     blocklyManager.init('blockly-workspace');
 
@@ -69,7 +78,14 @@ function initializeUI() {
              import('./game/blockly/GameAPI').then(m => m.GameAPI.resetLevel());
         });
     }
-    
+
+    const stopBtn = document.getElementById('stop-code-btn');
+    if (stopBtn) {
+        stopBtn.addEventListener('click', () => {
+            blocklyManager.stopExecution();
+        });
+    }
+
     console.log('✅ pAIrStudio initialization complete');
 }
 

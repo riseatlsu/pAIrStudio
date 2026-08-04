@@ -15,6 +15,12 @@ export const TutorialA = {
     isExperiment: false,
     chatbotEnabled: false,
 
+    dialogue: [
+        "Hey — you must be the new automation tech. Name's Mack, I run this floor. Glad HQ finally sent someone who isn't afraid of a little code.",
+        "Here's the deal: every robot on this floor runs on block code you write. No experience required, but you'll want to learn fast — we've got trucks to load.",
+        "First things first: pick up a box, carry it to the dropoff, and set it down. Simple stuff. Let's see what you've got."
+    ],
+
     map: {
         width: 6,
         height: 6,

@@ -153,6 +153,22 @@ export class MoveableObject extends IsoObject {
     this.carrier = null;
     this.gridRow = gridRow;
     this.gridCol = gridCol;
+    // Kill any in-flight cosmetic tween still gliding this item's sprite
+    // from the carrier's last move (see IsoPlayer.moveForward()) BEFORE
+    // repositioning it - otherwise that tween keeps overriding the instant
+    // snap below on later frames, since the GameClock tick and the tween's
+    // own timer are independent and have no ordering guarantee, leaving the
+    // item visually stranded wherever the stale tween happened to end up
+    // instead of where it was actually dropped.
+    if (this.sprite && this.scene?.tweens) {
+      this.scene.tweens.killTweensOf(this.sprite);
+    }
     this.updateScreenPosition();
+    // pickUp() bumps sprite.isoZ up (carrier's zHeight + carriedZOffset) so
+    // the item renders on top of the robot while carried - reset it back to
+    // this object's own base zHeight now that it's resting on the ground
+    // again, otherwise it stays visually elevated (looks like it's floating
+    // above whatever it was just dropped onto) forever after.
+    this.sprite.isoZ = this.zHeight;
   }
 }

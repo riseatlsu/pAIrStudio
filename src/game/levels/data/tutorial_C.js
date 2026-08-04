@@ -10,10 +10,15 @@ const walls = createEdgeWalls([0, 2, 4], [1, 3, 5]);
 export const TutorialC = {
     id: "tutorial_C",
     title: "Tutorial C: Working with Your AI Assistant",
-    description: "Meet Aura, your AI assistant, and practice asking for help while completing a familiar delivery.",
-    instructions: `You've got a new coworker on this shift: an AI assistant named Aura who can answer questions while you work. Try asking things like "How do I pick up a box?" or "What does the Repeat block do?" in the chat panel. While you chat, complete the same kind of delivery you've already practiced: stand on the <span class="ui-ref">green pickup zone</span>, face the input conveyor, and use the <span class="ui-ref">Pick Up Object</span> block. Then navigate to the <span class="ui-ref">red dropoff zone</span>, face the output conveyor, and use the <span class="ui-ref">Drop Object</span> block.`,
+    description: "Meet Otto, your AI assistant, and practice asking for help while completing a familiar delivery.",
+    instructions: `You've got a new coworker on this shift: an AI assistant named Otto who can answer questions while you work. Try asking things like "How do I pick up a box?" or "What does the Repeat block do?" in the chat panel. While you chat, complete the same kind of delivery you've already practiced: stand on the <span class="ui-ref">green pickup zone</span>, face the input conveyor, and use the <span class="ui-ref">Pick Up Object</span> block. Then navigate to the <span class="ui-ref">red dropoff zone</span>, face the output conveyor, and use the <span class="ui-ref">Drop Object</span> block.`,
     isExperiment: false,
     chatbotEnabled: true,
+
+    dialogue: [
+        "Oh, before I forget — HQ set you up with some extra help. Company's rolling out an AI assistant program floor-wide.",
+        "Meet Otto. It can't write your whole program for you, but it's good for a second opinion when you're stuck. Try asking it something."
+    ],
 
     map: {
         width: 6,

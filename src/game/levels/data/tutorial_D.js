@@ -11,9 +11,14 @@ export const TutorialD = {
     id: "tutorial_D",
     title: "Tutorial D: Sense and Decide",
     description: "Use the robot's sensor to detect obstacles and decide, on its own, whether to turn or move forward.",
-    instructions: `The warehouse floor manager just wired motion sensors into your robot's chassis — time to put them to use. Use the <span class="ui-ref">Identify Object Ahead</span> block to see what's directly in front of the robot, then feed that result into an <span class="ui-ref">If / Else</span> block: if a pillar is blocking the way, turn; otherwise, keep moving forward. Wrap the check in a <span class="ui-ref">Repeat</span> loop so the robot re-checks its surroundings and reacts on its own each time, instead of you counting out every step by hand. Drop a <span class="ui-ref">Print</span> block in the loop too, so you can watch exactly what the sensor reports in the <span class="ui-ref">Terminal</span> panel as the robot moves. Start by standing on the <span class="ui-ref">green pickup zone</span> and using <span class="ui-ref">Pick Up Object</span>, then turn to face the route and build your sense-and-decide loop to steer around the pillar and reach the <span class="ui-ref">red dropoff zone</span>.`,
+    instructions: `The warehouse floor manager just wired motion sensors into your robot's chassis — time to put them to use. Use the <span class="ui-ref">Sense Object Ahead</span> block to see what's directly in front of the robot, then feed that result into an <span class="ui-ref">If / Else</span> block: if a pillar is blocking the way, turn; otherwise, keep moving forward. Wrap the check in a <span class="ui-ref">Repeat</span> loop so the robot re-checks its surroundings and reacts on its own each time, instead of you counting out every step by hand. Drop a <span class="ui-ref">Print</span> block in the loop too, so you can watch exactly what the sensor reports in the <span class="ui-ref">Terminal</span> panel as the robot moves. Start by standing on the <span class="ui-ref">green pickup zone</span> and using <span class="ui-ref">Pick Up Object</span>, then turn to face the route and build your sense-and-decide loop to steer around the pillar and reach the <span class="ui-ref">red dropoff zone</span>.`,
     isExperiment: false,
     chatbotEnabled: false,
+
+    dialogue: [
+        "Maintenance came through last night and wired motion sensors into the whole fleet. Fancy upgrade — figured you'd want to be the first to try it.",
+        "Instead of memorizing every obstacle by eye, have the robot check what's in front of it and decide for itself. Wrap it in a loop and it'll keep reacting on its own."
+    ],
 
     map: {
         width: 6,
@@ -56,11 +61,11 @@ export const TutorialD = {
     maxSteps: 15,
 
     allowedBlocks: {
-        actions: ['move_forward', 'turn_clockwise', 'turn_counter_clockwise', 'pick_object', 'drop_object', 'print_message'],
+        actions: ['move_forward', 'turn_clockwise', 'turn_counter_clockwise', 'pick_object', 'drop_object'],
         sensing: ['survey_front'],
         logic: ['controls_if', 'logic_compare'],
         math: false,
-        text: ['text'],
+        text: ['text', 'print_message'],
         loops: ['controls_repeat_ext']
     }
 };

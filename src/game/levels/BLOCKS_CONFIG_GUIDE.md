@@ -32,21 +32,26 @@ Each category can be configured in three ways:
 2. **`false`** - No blocks from this category are available (category hidden)
 3. **Array of block types** - Only specified blocks are available
 
+**Note:** the `allowedBlocks` keys below (`actions`, `logic`, etc.) are internal
+config names and stay the same for backward compatibility, but the toolbox
+category labels students actually see have been renamed: `actions` displays
+as **"Movements"** and `logic` displays as **"Conditionals"**.
+
 ## Available Block Types
 
-### Actions Category
+### Actions Category (displayed as "Movements")
 - `move_forward` - Move robot one tile forward
 - `turn_clockwise` - Turn robot 45° clockwise
 - `turn_counter_clockwise` - Turn robot 45° counter-clockwise
 - `pick_object` - Pick up object in front of robot
 - `drop_object` - Drop carried object
-- `print_message` - Print a message to the on-screen terminal panel (accepts any value input, e.g. a text block or a sensing block's result)
+- `wait_loops` - Pause the program for a number of game-loop ticks (accepts a Number value input, e.g. a math_number block); useful for polling sensing results in a loop (e.g. waiting for a patrolling NPC robot to clear a tile). Ticks, not real seconds - see `src/game/GameClock.js` - so it stays perfectly in sync with player/NPC movement instead of racing against it.
 
 ### Sensing Category
-- `survey_front` - Get type of object in front
-- `check_attribute` - Check boolean attribute of surveyed object
+- `survey_front` - "Sense Object Ahead" - get type of object in front
+- `check_attribute` - "Object Ahead is ___" - check a tagged attribute of the surveyed object; the blank is a dropdown of the known attribute set (`broken`, `fragile`, `priority`, `hazard`), not free text
 
-### Logic Category
+### Logic Category (displayed as "Conditionals")
 - `controls_if` - If statement (simple)
 - `controls_if` (with else) - If/else statement
 - `logic_compare` - Comparison operators (=, ≠, <, >, ≤, ≥)
@@ -60,10 +65,23 @@ Each category can be configured in three ways:
 
 ### Text Category
 - `text` - Text string
+- `print_message` - Print a message to the on-screen terminal panel (accepts any value input, e.g. a text block or a sensing block's result) - moved here from Actions since it's fundamentally a text/output block
 
 ### Loops Category
 - `controls_repeat_ext` - Repeat N times
 - `controls_whileUntil` - While/until loops
+
+### Variables Category (new, opt-in)
+Unlike the other categories, `variables` has no array of specific block
+types to allow-list - it's a dynamic Blockly category that generates a
+"Create Variable" button plus get/set blocks for whatever variables the
+student creates. Configure it as a plain boolean:
+```javascript
+allowedBlocks: {
+    // ...
+    variables: true  // Shows the Variables category; omit or false to hide it
+}
+```
 
 ## Example Configurations
 

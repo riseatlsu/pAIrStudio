@@ -19,17 +19,17 @@
     <div class="sandbox-mode-overlay" id="sandbox-mode-overlay">
         <div class="sandbox-mode-modal">
             <div class="sandbox-mode-header">
-                <img src="../assets/logo.png" alt="pAIrStudio Logo" class="sandbox-logo" />
+                <img src="../assets/PS_logo.png" alt="pAIrStudio Logo" class="sandbox-logo" />
                 <h1 class="sandbox-mode-title">Sandbox Mode</h1>
                 <p class="sandbox-mode-subtitle">Select an experimental group configuration</p>
             </div>
-            
+
             <div class="sandbox-mode-body">
                 <div class="sandbox-mode-description">
                     <h2>Choose Your Experience</h2>
                     <p>Select which experimental mode you'd like to explore. You can switch modes at any time using the "Change Mode" button.</p>
                 </div>
-                
+
                 <div class="sandbox-mode-options" id="sandbox-mode-options">
                     <!-- Mode cards will be populated by JavaScript -->
                 </div>
@@ -118,10 +118,16 @@
                 <div class="panel blockly-panel">
                     <div class="panel-header">
                         <h2 class="panel-section-heading"><i class="fas fa-puzzle-piece icon"></i>Visual Programming</h2>
-                        <button class="action-btn run-btn btn-compact" id="run-code-btn">
-                            <i class="fas fa-play"></i>
-                            Run Code
-                        </button>
+                        <div class="d-flex gap-2">
+                            <button class="action-btn run-btn btn-compact" id="run-code-btn">
+                                <i class="fas fa-play"></i>
+                                Run Code
+                            </button>
+                            <button class="action-btn stop-btn btn-compact" id="stop-code-btn" disabled title="Stop the running program (e.g. if it's stuck in a loop)">
+                                <i class="fas fa-stop"></i>
+                                Stop
+                            </button>
+                        </div>
                     </div>
                     <div class="panel-body">
                         <div class="blockly-workspace" id="blockly-workspace" style="position: relative;">
@@ -149,7 +155,7 @@
     <div class="result-modal-overlay" id="result-modal">
         <div class="result-modal">
             <div class="result-modal-header" id="result-modal-header">
-                <div class="result-icon" id="result-icon">🎉</div>
+                <div class="result-icon" id="result-icon"><img src="../assets/celebrate.png" alt="Celebration" class="result-icon-img" /></div>
                 <h2 class="result-title" id="result-title">Level Complete!</h2>
             </div>
             <div class="result-modal-body">
@@ -162,6 +168,22 @@
     </div>
 
     <div id="role-badge" style="display: none;"></div>
+
+    <!-- NPC Dialogue Box (Pokemon-style intro shown before each level) -->
+    <div class="dialogue-overlay" id="dialogue-overlay">
+        <div class="dialogue-box">
+            <img class="dialogue-portrait" id="dialogue-portrait" src="../assets/Boss_man.png" alt="">
+            <div class="dialogue-content">
+                <div class="dialogue-speaker" id="dialogue-speaker">Mack</div>
+                <div class="dialogue-text" id="dialogue-text"></div>
+                <button class="action-btn run-btn btn-compact dialogue-continue-btn" id="dialogue-continue">
+                    <i class="fas fa-arrow-right"></i>
+                    Continue
+                </button>
+            </div>
+            <button class="dialogue-skip-btn" id="dialogue-skip-btn">Skip</button>
+        </div>
+    </div>
 
     <div class="chatbot-container" id="chatbot" style="display: none;">
         <div class="chatbot-header" id="chatbot-header">
@@ -187,7 +209,7 @@
     
     <script>
         // Result Modal Functions for Sandbox Mode
-        window.showResultModal = function(isWin, currentLevel) {
+        window.showResultModal = function(isWin, currentLevel, customLoseMessage) {
             const modal = document.getElementById('result-modal');
             const header = document.getElementById('result-modal-header');
             const icon = document.getElementById('result-icon');
@@ -200,13 +222,13 @@
 
             // Update content based on win/lose
             if (isWin) {
-                icon.textContent = '🎉';
+                icon.innerHTML = '<img src="../assets/celebrate.png" alt="Celebration" class="result-icon-img" />';
                 title.textContent = 'Level Complete!';
                 message.textContent = 'Congratulations! You successfully completed the level and delivered the box to the goal.';
             } else {
                 icon.textContent = '❌';
                 title.textContent = 'Level Failed';
-                message.textContent = 'The box was dropped in the wrong location. Try again!';
+                message.textContent = customLoseMessage || 'The box was dropped in the wrong location. Try again!';
             }
 
             // Clear and add appropriate buttons

@@ -23,6 +23,40 @@ The pAIrStudio platform supports two types of levels:
   - `true` - Chatbot visibility follows experimental group assignment
   - `false` - Chatbot is **hidden for ALL groups** on this level (overrides group settings)
 
+### `npcRobots` (Optional)
+- **Type**: Array of `{ id, path, ticksPerStep?, tint? }`
+- **Default**: none (no NPC robots)
+- **Purpose**: Spawn one or more scripted robots that patrol a fixed grid path independently of the player, blocking movement into their current tile and reporting as `'robot'` to the player's sensing blocks (`Sense Object Ahead`). Colliding with an NPC robot is a hard fail (ends the level immediately) - the player must sense and wait rather than drive through it.
+- **Ticks, not milliseconds**: NPC steps advance on the same shared `GameClock` (see `src/game/GameClock.js`) as the player's own actions, rather than an independent real-time timer - this is what guarantees a collision can never be missed due to one entity's visual position lagging its logical position.
+- **Fields**:
+  - `id` - Unique identifier for the robot
+  - `path` - Ordered array of adjacent grid tiles (`{ row, col }`) to patrol; the robot spawns at `path[0]` and walks the list back and forth (ping-pong), pausing to retry if its next tile is currently occupied
+  - `ticksPerStep` (default `2`) - Game-loop ticks between each step; higher = slower patrol
+  - `tint` (default `0xffa500`, amber) - Sprite tint so the NPC reads as visually distinct from the player
+- **Example**:
+  ```javascript
+  npcRobots: [
+      { id: "guard_1", path: [{row:2,col:1},{row:2,col:2},{row:2,col:3}], ticksPerStep: 2 }
+  ]
+  ```
+
+### `dialogue` (Optional)
+- **Type**: Array of strings
+- **Default**: none (no dialogue shown)
+- **Purpose**: Pokemon-style NPC dialogue box shown once per participant before this level loads, telling the "new hire training at Ironhaul Logistics" story (see `src/game/dialogue/DialogueUI.js`). Blocking - the player must click through every line before the level becomes interactive.
+- **Behavior**:
+  - Each array entry is one click-through page of dialogue, spoken by the single hardcoded character ("Mack", portrait at `public/assets/construction-worker.jpg`, set independently by each HTML page's own `<img>` tag since root vs sandbox pages need different relative paths - only the speaker name is hardcoded in `DialogueUI.js`).
+  - Shown once per participant per level, persisted via a participant-scoped localStorage key (`dialogueSeen_${participantId}_${levelId}`, mirroring `BlocklyManager`'s workspace-storage key convention). Reloading, resetting, or re-running the level (`Run Code`) will **not** replay it - only navigating to the level fresh will, and only if it hasn't been seen yet.
+  - In sandbox mode, always shows fresh (never persisted) so researchers can preview any level's dialogue on demand.
+- **Writing dialogue for graded levels**: the six experimental levels (`level_001`-`level_006`) are shown to each participant in a **counterbalanced order** (see `GroupConfig.js`'s `LATIN_SQUARE`), not always 1→2→3→4→5→6. Don't write dialogue that references relative sequence ("last time," "your final job") for these levels - each one's dialogue must stand alone. Tutorials, by contrast, always run in the same fixed order per group, so sequential callbacks are safe there.
+- **Example**:
+  ```javascript
+  dialogue: [
+      "Here's a fresh work order — pickup on one side, dropoff on the other.",
+      "No starter code to lean on this time."
+  ]
+  ```
+
 ## Naming Conventions
 
 ### Tutorial Levels

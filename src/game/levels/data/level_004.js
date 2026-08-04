@@ -15,6 +15,11 @@ export const Level4 = {
     isExperiment: true,
     chatbotEnabled: true,
 
+    dialogue: [
+        "Different kind of job this time. Somebody started this program before you got here and never finished it — you're picking up where they left off.",
+        "It gets the robot to the box, then just... doesn't grab it. One block's missing in there. Find it."
+    ],
+
     map: {
         width: 8,
         height: 8,

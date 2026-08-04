@@ -98,8 +98,8 @@ body::before {
 }
 
 .consent-logo {
-    width: 80px;
-    height: 80px;
+    width: min(280px, 60%);
+    height: auto; /* PS_logo.png is a 2:1 wordmark; auto height preserves its aspect ratio */
     object-fit: contain;
     margin: 0 auto 1rem;
     display: block;
@@ -638,6 +638,22 @@ body.offline-mode .main-container {
     background: linear-gradient(135deg, #f4c430, var(--lsu-gold));
 }
 
+.stop-btn {
+    background: linear-gradient(135deg, #dc3545, #c82333);
+    box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+    color: white;
+}
+
+.stop-btn:hover:not(:disabled) {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(220, 53, 69, 0.4);
+}
+
+.stop-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
 .reset-btn {
     background: linear-gradient(135deg, var(--lsu-gold), #f4c430);
     box-shadow: 0 4px 15px rgba(253, 208, 35, 0.3);
@@ -888,6 +904,14 @@ body.offline-mode .main-container {
     margin-bottom: 1rem;
 }
 
+.result-icon-img {
+    width: 5rem;
+    height: 5rem;
+    object-fit: contain;
+    display: block;
+    margin: 0 auto;
+}
+
 .result-title {
     font-size: 2.5rem;
     font-weight: 800;
@@ -951,6 +975,338 @@ body.offline-mode .main-container {
 .result-btn-next:hover {
     transform: translateY(-2px);
     box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
+}
+
+/* ===== QUIT STUDY BUTTON ===== */
+.quit-study-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.5rem 1rem;
+    background: transparent;
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    color: rgba(255, 255, 255, 0.85);
+    border-radius: 50px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.quit-study-btn:hover {
+    background: rgba(220, 53, 69, 0.25);
+    border-color: #dc3545;
+    color: #fff;
+}
+
+/* ===== QUIT CONFIRMATION MODAL ===== */
+.quit-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 10001;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    animation: fadeIn 0.3s ease-out;
+}
+
+.quit-modal-overlay.show {
+    display: flex;
+}
+
+.quit-modal {
+    background: white;
+    border-radius: 20px;
+    max-width: 520px;
+    width: 100%;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    animation: slideUpBounce 0.4s ease-out;
+}
+
+.quit-modal-header {
+    padding: 2rem 2rem 1.5rem;
+    text-align: center;
+    background: linear-gradient(135deg, #dc3545, #c82333);
+}
+
+.quit-modal-icon {
+    font-size: 3rem;
+    color: white;
+    margin-bottom: 0.5rem;
+}
+
+.quit-modal-title {
+    color: white;
+    font-size: 1.6rem;
+    font-weight: 800;
+    margin: 0;
+}
+
+.quit-modal-body {
+    padding: 2rem;
+}
+
+.quit-modal-message {
+    color: #495057;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+}
+
+.quit-checkbox-container {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background: #fff3cd;
+    border-radius: 8px;
+    border: 2px solid #ffc107;
+}
+
+.quit-checkbox {
+    margin-top: 0.25rem;
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.quit-checkbox-label {
+    color: #856404;
+    font-weight: 600;
+    cursor: pointer;
+    user-select: none;
+    font-size: 0.95rem;
+}
+
+.quit-modal-buttons {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.quit-modal-btn {
+    flex: 1;
+    min-width: 140px;
+    padding: 1rem 1.25rem;
+    font-size: 1rem;
+    font-weight: 700;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.quit-cancel-btn {
+    background: #e9ecef;
+    color: var(--text-dark);
+}
+
+.quit-cancel-btn:hover:not(:disabled) {
+    background: #dee2e6;
+}
+
+.quit-cancel-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.quit-confirm-btn {
+    background: linear-gradient(135deg, #dc3545, #c82333);
+    color: white;
+    box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+}
+
+.quit-confirm-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(220, 53, 69, 0.4);
+}
+
+.quit-confirm-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* ===== QUIT COMPLETE OVERLAY ===== */
+.quit-complete-overlay {
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(135deg, var(--lsu-purple), var(--lsu-light-purple));
+    z-index: 10002;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+}
+
+.quit-complete-overlay.show {
+    display: flex;
+}
+
+.quit-complete-box {
+    background: white;
+    border-radius: 20px;
+    max-width: 560px;
+    width: 100%;
+    padding: 3rem 2.5rem;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    animation: slideUpBounce 0.5s ease-out;
+}
+
+.quit-complete-icon {
+    font-size: 4rem;
+    color: var(--lsu-purple);
+    margin-bottom: 1rem;
+}
+
+.quit-complete-box h1 {
+    color: var(--lsu-purple);
+    font-size: 1.8rem;
+    font-weight: 800;
+    margin-bottom: 1rem;
+}
+
+.quit-complete-box p {
+    color: #495057;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+}
+
+/* ===== NPC DIALOGUE BOX (Pokemon-style level intro) ===== */
+.dialogue-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    z-index: 10000;
+    display: none;
+    align-items: flex-end;
+    justify-content: center;
+    padding: 0 2rem 3rem;
+    animation: fadeIn 0.3s ease-out;
+}
+
+.dialogue-overlay.show {
+    display: flex;
+}
+
+.dialogue-box {
+    position: relative;
+    width: 100%;
+    max-width: 900px;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    padding: 1.75rem 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    cursor: pointer;
+    user-select: none;
+    animation: slideUp 0.4s ease-out;
+}
+
+.dialogue-portrait {
+    flex-shrink: 0;
+    width: 190px;
+    height: auto;
+    animation: dialoguePortraitIn 0.4s ease-out;
+}
+
+@keyframes dialoguePortraitIn {
+    from {
+        opacity: 0;
+        transform: translateX(-40px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.dialogue-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    flex: 1;
+    min-width: 0;
+}
+
+.dialogue-speaker {
+    align-self: flex-start;
+    background: linear-gradient(135deg, var(--lsu-purple), var(--lsu-light-purple));
+    color: var(--text-light);
+    font-weight: 800;
+    font-size: 0.95rem;
+    padding: 0.3rem 1.1rem;
+    border-radius: 50px;
+}
+
+.dialogue-text {
+    color: var(--text-dark);
+    font-size: 1.15rem;
+    line-height: 1.6;
+    min-height: 3.4rem;
+}
+
+.dialogue-continue-btn {
+    align-self: flex-end;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.dialogue-continue-btn.show {
+    opacity: 1;
+    pointer-events: auto;
+    animation: dialogueContinueFlash 1s ease-in-out infinite;
+}
+
+@keyframes dialogueContinueFlash {
+    0%, 100% { opacity: 1; box-shadow: 0 4px 15px rgba(253, 208, 35, 0.3); }
+    50% { opacity: 0.55; box-shadow: 0 4px 25px rgba(253, 208, 35, 0.65); }
+}
+
+.dialogue-skip-btn {
+    position: absolute;
+    top: 1rem;
+    right: 1.25rem;
+    background: transparent;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    border-radius: 50px;
+    padding: 0.3rem 0.9rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #888;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.dialogue-skip-btn:hover {
+    background: rgba(0, 0, 0, 0.06);
+    color: var(--text-dark);
+}
+
+@media (max-width: 576px) {
+    .dialogue-box {
+        flex-direction: column;
+        padding: 1.25rem;
+    }
+
+    .dialogue-portrait {
+        width: 110px;
+    }
+
+    @keyframes dialoguePortraitIn {
+        from { opacity: 0; transform: translateY(-20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
 }
 
 /* ===== SCROLLBAR STYLING ===== */
@@ -1027,7 +1383,12 @@ body.offline-mode .main-container {
 }
 
 .main-container-inline {
-    padding: 0.5rem 0 2rem;
+    /* Extra bottom padding so scrolling all the way down clears the fixed
+       .site-footer (~34px tall) instead of having it sit on top of content.
+       !important is required here: .main-container sets `padding: 0.5rem 0
+       !important` (with a dead, never-applied `padding: 2rem 0` right after
+       it), which otherwise overrides this regardless of source order. */
+    padding: 0.5rem 0 4.5rem !important;
 }
 
 .btn-compact {
@@ -1243,8 +1604,8 @@ body.offline-mode .main-container {
 }
 
 .sandbox-logo {
-    width: 80px;
-    height: 80px;
+    width: min(280px, 60%);
+    height: auto; /* PS_logo.png is a 2:1 wordmark; auto height preserves its aspect ratio */
     object-fit: contain;
     margin: 0 auto 1rem;
     display: block;

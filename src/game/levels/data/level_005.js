@@ -16,6 +16,11 @@ export const Level5 = {
     isExperiment: true,
     chatbotEnabled: true,
 
+    dialogue: [
+        "Another one of the previous tech's half-finished jobs. This program actually runs the whole route — it just stops short in two places.",
+        "My money's on the Repeat blocks. Count carefully."
+    ],
+
     map: {
         width: 8,
         height: 8,
