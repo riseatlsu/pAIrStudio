@@ -13,7 +13,10 @@ const TYPEWRITER_MS_PER_CHAR = 18;
 // talking_sound.wav is a short blip - retrigger it every few characters
 // (skipping spaces) while text types out, Animal Crossing-style, rather than
 // on every single character (which would just be a wall of overlapping noise).
-const TALK_SOUND_CHAR_INTERVAL = 4;
+// Kept fairly sparse (every 8th char, ~144ms apart at the current typing
+// speed) since anything denser starts to sound like overlapping blips
+// instead of distinct syllables.
+const TALK_SOUND_CHAR_INTERVAL = 8;
 const TALK_SOUND_VOLUME = 0.3;
 // Randomly switching between the regular and lower-pitched blip gives
 // Mack's "voice" some up-down inflection instead of a flat monotone. A
