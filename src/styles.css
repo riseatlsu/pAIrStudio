@@ -816,6 +816,99 @@ body.offline-mode .main-container {
     font-size: 0.9rem;
 }
 
+.help-gif-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin-left: auto;
+    padding: 0.25rem 0.75rem;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--lsu-purple);
+    background: var(--lsu-gold);
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.help-gif-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(253, 208, 35, 0.4);
+}
+
+/* ===== HELP GIF MODAL ===== */
+.help-gif-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 10001;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    animation: fadeIn 0.3s ease-out;
+}
+
+.help-gif-modal-overlay.show {
+    display: flex;
+}
+
+.help-gif-modal {
+    background: white;
+    border-radius: 20px;
+    max-width: 720px;
+    width: 100%;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    animation: slideUpBounce 0.4s ease-out;
+}
+
+.help-gif-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.25rem 1.5rem;
+    background: linear-gradient(135deg, rgba(70, 29, 124, 0.95), rgba(90, 44, 160, 0.95));
+}
+
+.help-gif-modal-title {
+    color: var(--lsu-gold);
+    font-size: 1.2rem;
+    font-weight: 800;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.help-gif-close-btn {
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 1.1rem;
+    cursor: pointer;
+    padding: 0.4rem;
+    line-height: 1;
+}
+
+.help-gif-close-btn:hover {
+    color: var(--lsu-gold);
+}
+
+.help-gif-modal-body {
+    padding: 1.5rem;
+    display: flex;
+    justify-content: center;
+}
+
+.help-gif-image {
+    max-width: 100%;
+    max-height: 70vh;
+    border-radius: 12px;
+    display: block;
+}
+
 /* ===== ANIMATIONS ===== */
 @keyframes fadeInUp {
     from {

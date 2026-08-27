@@ -130,6 +130,9 @@
                 <div class="instructions-title">
                     <i class="fas fa-info-circle"></i>
                     <span id="instructions-title-text">Level Instructions</span>
+                    <button class="help-gif-btn" id="help-gif-btn" title="Show me an example" style="display: none;">
+                        <i class="fas fa-circle-question"></i> Help
+                    </button>
                 </div>
                 <div class="instructions-text"><span class="instructions-label">Instructions:</span> <span id="instructions-text">Loading instructions...</span>
                 </div>
@@ -266,6 +269,21 @@
             <h1>You Have Exited the Study</h1>
             <p>Your session has ended and has been recorded as incomplete. As noted before quitting, you will not receive payment for this session since the study was not completed.</p>
             <p>Thank you for your time. You may now close this browser tab.</p>
+        </div>
+    </div>
+
+    <!-- Help GIF Modal (shows an example clip for the current level) -->
+    <div class="help-gif-modal-overlay" id="help-gif-modal-overlay">
+        <div class="help-gif-modal">
+            <div class="help-gif-modal-header">
+                <h2 class="help-gif-modal-title"><i class="fas fa-circle-question"></i> Example</h2>
+                <button class="help-gif-close-btn" id="help-gif-close-btn" title="Close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="help-gif-modal-body">
+                <img class="help-gif-image" id="help-gif-image" src="" alt="Example walkthrough">
+            </div>
         </div>
     </div>
 

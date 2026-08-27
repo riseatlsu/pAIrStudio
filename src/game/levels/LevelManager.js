@@ -103,17 +103,59 @@ export class LevelManager {
         
         const titleElement = document.getElementById('instructions-title-text');
         const textElement = document.getElementById('instructions-text');
-        
+
         if (titleElement && textElement) {
             const levelName = config.title || `Level ${levelId}`;
             titleElement.textContent = levelName;
-            
+
             let instructions = config.instructions || config.description || 'Complete the level objectives.';
-            
+
             // Instructions are now uniform for all groups
             // Role-specific instructions removed since pair programming mode is archived
-            
+
             textElement.innerHTML = instructions;
+        }
+
+        this.updateHelpGifUI(config);
+    }
+
+    /**
+     * Show/hide the "Help" button in the instructions banner based on whether
+     * the current level defines a helpGif, and wire up the modal that displays it.
+     */
+    updateHelpGifUI(config) {
+        const helpBtn = document.getElementById('help-gif-btn');
+        if (!helpBtn) return;
+
+        if (config.helpGif) {
+            helpBtn.style.display = '';
+            helpBtn.dataset.gif = config.helpGif;
+        } else {
+            helpBtn.style.display = 'none';
+            delete helpBtn.dataset.gif;
+        }
+
+        if (!this._helpGifModalInitialized) {
+            this._helpGifModalInitialized = true;
+
+            const modal = document.getElementById('help-gif-modal-overlay');
+            const closeBtn = document.getElementById('help-gif-close-btn');
+            const image = document.getElementById('help-gif-image');
+
+            helpBtn.addEventListener('click', () => {
+                if (!modal || !image || !helpBtn.dataset.gif) return;
+                image.src = helpBtn.dataset.gif;
+                modal.classList.add('show');
+            });
+
+            if (closeBtn && modal) {
+                closeBtn.addEventListener('click', () => modal.classList.remove('show'));
+            }
+            if (modal) {
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) modal.classList.remove('show');
+                });
+            }
         }
     }
 
